@@ -32,13 +32,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include <open-axiom/InputFragment>
 #include <algorithm>
 #include <iterator>
 #include <istream>
 #include <ostream>
 #include <iostream>
-#include <open-axiom/SourceInput>
+#include <open-axiom/InputFragment>
 
 namespace OpenAxiom {
 
@@ -101,6 +100,18 @@ namespace OpenAxiom {
          line.kind = LineKind::Ordinary;
       return line;
    }
+
+   // -- A source input transform a character stream into a program fragment
+   // -- stream, delivering a fragment one at a time.
+   struct SourceInput {
+      SourceInput(std::istream& is) : input(is), line{ } { }
+      // Return the next program fragment from this input source.
+      Fragment get();
+      
+   private:
+      std::istream& input;
+      Line line;
+   };
 
    // Decompose the input souce file into fragments, and return one
    // fragment at a time.
