@@ -37,7 +37,6 @@
 #include <string.h>
 #include <string>
 #include <open-axiom/diagnostics>
-#include <open-axiom/SourceInput>
 #include <open-axiom/Parser>
 
 namespace {

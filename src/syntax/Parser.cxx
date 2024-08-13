@@ -41,7 +41,6 @@
 
 #include <open-axiom/diagnostics>
 #include <open-axiom/InputFragment>
-#include <open-axiom/SourceInput>
 #include <open-axiom/token>
 #include <open-axiom/Parser>
 
@@ -149,7 +148,6 @@ namespace {
       out.stream << "## Input: " << in.path << '\n'
                  << "## Output: " << out.path << '\n';
 
-      SourceInput src { in.stream };
       for (auto& f : read_source(in.stream))
       {
          out.stream << "================================================\n";
