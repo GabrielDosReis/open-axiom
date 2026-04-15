@@ -1,0 +1,158 @@
+# ===========================================================================
+# cmake-phase1.yml -- CI validation for the OpenAxiom CMake migration
+# ===========================================================================
+# Runs configure + compile for each matrix entry.  The primary job
+# builds through phase6-native (all native executables across Phases
+# 1-6) and validates the install + export rules.  A secondary job
+# verifies the no-X11 (OA_ENABLE_GRAPHICS=OFF) gated configuration.
+#
+# CMake 3.31+ is required (FILE_SET HEADERS, CMAKE_CXX_BYTE_ORDER).
+# Ubuntu apt only ships 3.28, so we install via pip.
+#
+# Matrix layout:
+#   gcc-sbcl, clang-sbcl   -- primary configurations
+#   gcc-ecl                 -- tests ECL's standard-linking (Lisp -> C -> .o)
+#   gcc-clisp               -- tests CLisp with delayed FFI
+#   gcc-gcl                 -- tests GCL with GCL_ANSI=t workaround
+#
+# GCL note: the Ubuntu package is "gcl27" and the binary is also named
+# gcl27, so the matrix provides an explicit lisp_executable override.
+# ===========================================================================
+
+name: CMake Migration Validation
+
+on:
+  push:
+    branches:
+      - master
+      - cmake-migration-proposal
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  # -------------------------------------------------------------------
+  # Full build: configure + compile all native targets + install test
+  # -------------------------------------------------------------------
+  cmake-full:
+    name: full - ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc-sbcl
+            cc: gcc-14
+            cxx: g++-14
+            lisp: sbcl
+          - name: clang-sbcl
+            cc: clang-18
+            cxx: clang++-18
+            lisp: sbcl
+          - name: gcc-ecl
+            cc: gcc-14
+            cxx: g++-14
+            lisp: ecl
+          - name: gcc-clisp
+            cc: gcc-14
+            cxx: g++-14
+            lisp: clisp
+          - name: gcc-gcl
+            cc: gcc-14
+            cxx: g++-14
+            lisp: gcl
+            lisp_executable: gcl27
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build sbcl ecl clisp gcl27 \
+            gcc-14 g++-14 clang-18 \
+            build-essential pkg-config \
+            libxt-dev libxpm-dev qtbase5-dev
+          # Ubuntu apt cmake is 3.28; we need >= 3.31.
+          pip install --user 'cmake>=3.31'
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify CMake version
+        run: cmake --version
+
+      - name: Configure
+        run: |
+          lisp_exe="${{ matrix.lisp_executable || matrix.lisp }}"
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_C_COMPILER=${{ matrix.cc }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
+            -DOA_WITH_LISP=${{ matrix.lisp }} \
+            -DOA_LISP_EXECUTABLE="$(which $lisp_exe)" \
+            -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+
+      - name: Build phase6-native (all native executables)
+        run: cmake --build build --target phase6-native --parallel 2
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Verify install tree
+        run: |
+          # Smoke-test: the driver binary and at least one library must exist.
+          test -x "${{ runner.temp }}/install/bin/open-axiom"
+          ls "${{ runner.temp }}"/install/lib/open-axiom/*/*/lib/libopen-axiom-core.a
+
+      - name: Verify CMake package export
+        run: |
+          mkdir -p /tmp/consumer
+          cat > /tmp/consumer/CMakeLists.txt <<'EOF'
+          cmake_minimum_required(VERSION 3.31)
+          project(consumer LANGUAGES CXX)
+          find_package(OpenAxiom REQUIRED)
+          EOF
+          # The OpenAxiom CMake package lives inside the versioned layout
+          # (lib/open-axiom/<triple>/<ver>/lib/cmake/OpenAxiom), so we
+          # locate it with a glob and pass OpenAxiom_DIR explicitly.
+          oa_cmake_dir=$(dirname "$(find "${{ runner.temp }}/install" -name OpenAxiomConfig.cmake -print -quit)")
+          cmake -S /tmp/consumer -B /tmp/consumer/build \
+            -DOpenAxiom_DIR="$oa_cmake_dir"
+
+  # -------------------------------------------------------------------
+  # No-X11 build: verify the OA_ENABLE_GRAPHICS=OFF gated config
+  # -------------------------------------------------------------------
+  cmake-no-x11:
+    name: no-x11 - gcc-sbcl
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build sbcl gcc-14 g++-14 \
+            build-essential pkg-config qtbase5-dev
+          pip install --user 'cmake>=3.31'
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Configure (no X11)
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_C_COMPILER=gcc-14 \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DOA_ENABLE_GRAPHICS=OFF
+
+      - name: Build phase6-native
+        run: cmake --build build --target phase6-native --parallel 2
+
+      - name: Verify X11 targets are absent
+        run: |
+          # These targets must not exist when graphics are disabled.
+          for t in viewman view2D view3D viewAlone htadd hypertex spadbuf; do
+            if ninja -C build -t query "$t" 2>/dev/null; then
+              echo "FAIL: $t should not exist with OA_ENABLE_GRAPHICS=OFF"
+              exit 1
+            fi
+          done
+          echo "OK: all X11-gated targets correctly absent"
