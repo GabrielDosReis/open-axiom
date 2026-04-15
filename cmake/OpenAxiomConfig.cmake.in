@@ -1,0 +1,24 @@
+# OpenAxiomConfig.cmake.in -- package configuration for find_package(OpenAxiom)
+#
+# Provides the following imported targets when found:
+#   OpenAxiom::open-axiom-core  -- low-level C/C++ runtime (signals, sockets, parser)
+#   OpenAxiom::OpenAxiom        -- mid-level utility / VM / command-line library
+#   OpenAxiom::spad             -- legacy terminal / cursor / hashing layer
+#
+# Usage in a downstream CMakeLists.txt:
+#   find_package(OpenAxiom 1.5 REQUIRED)
+#   target_link_libraries(my_app PRIVATE OpenAxiom::OpenAxiom)
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# The exported libraries have PUBLIC dependencies on system packages that
+# must be located before the targets file is loaded.
+find_dependency(Threads)
+
+if(NOT TARGET OpenAxiom::open-axiom-core)
+  include("${CMAKE_CURRENT_LIST_DIR}/OpenAxiomTargets.cmake")
+endif()
+
+check_required_components(OpenAxiom)
