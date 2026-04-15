@@ -6,7 +6,8 @@
 # (Phase 3), the boot translator and interpreter chain (Phase 4),
 # the algebra substrate (Phase 5),
 # and the Phase 6 databases, HyperDoc data, and optional executables.
-# Later PRs add install rules, CMake export targets, and CI.
+# This file also provides install rules, CMake export targets, and CPack
+# packaging configuration.
 #
 # It is organised as follows:
 #
@@ -19,6 +20,8 @@
 #   G. Phase 4: Boot translator bootstrap and interpreter chain
 #   H. Phase 5: Algebra substrate
 #   P. Phase 6: Databases, HyperDoc data, and optional native executables
+#   I. Install rules and CMake export targets
+#   Q. CPack packaging
 # ===========================================================================
 
 
@@ -2033,3 +2036,184 @@ add_custom_target(phase2-native
   DEPENDS stage-native-layout
   COMMENT "Build and stage the completed Phase 2 native layer"
 )
+
+# -- I. Install rules ------------------------------------------------------
+# open-axiom goes into the system PATH ($PREFIX/bin) so that users can
+# invoke it directly.  All other binaries, libraries, and headers live
+# under the versioned layout root so multiple versions can coexist.
+#
+# User-facing executables (bin/): open-axiom, clef, viewAlone, sman, asq
+# Internal executables (lib/):    hammer, oa-lisp, viewman, view2D, view3D,
+#                                 session, spadclient, hypertex, spadbuf,
+#                                 htadd, ex2ht, hthits, htsearch
+
+install(TARGETS open-axiom
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(TARGETS hammer oa-lisp
+  RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+)
+
+# Libraries + their FILE_SET headers are installed together.
+# FILE_SET public_headers -> include/ (open-axiom.h + open-axiom/*)
+# FILE_SET generated_headers -> include/openaxiom-c-macros.h
+install(TARGETS open-axiom-core OpenAxiom spad
+  EXPORT OpenAxiomTargets
+  ARCHIVE DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/lib
+  LIBRARY DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/lib
+  FILE_SET public_headers DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/include
+  FILE_SET generated_headers DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/include
+)
+
+install(FILES
+  "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/share/open-axiom/cmake
+)
+
+# -- CMake package export --
+# Produces OpenAxiomTargets.cmake, OpenAxiomConfig.cmake, and
+# OpenAxiomConfigVersion.cmake so that downstream projects can use
+# find_package(OpenAxiom) to locate the libraries and headers.
+
+set(OA_CMAKE_INSTALL_DIR "${OA_INSTALL_LAYOUT_ROOT}/lib/cmake/OpenAxiom")
+
+install(EXPORT OpenAxiomTargets
+  FILE OpenAxiomTargets.cmake
+  NAMESPACE OpenAxiom::
+  DESTINATION ${OA_CMAKE_INSTALL_DIR}
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  "${PROJECT_SOURCE_DIR}/cmake/OpenAxiomConfig.cmake.in"
+  "${PROJECT_BINARY_DIR}/cmake/OpenAxiomConfig.cmake"
+  INSTALL_DESTINATION ${OA_CMAKE_INSTALL_DIR}
+)
+
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/cmake/OpenAxiomConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+  "${PROJECT_BINARY_DIR}/cmake/OpenAxiomConfig.cmake"
+  "${PROJECT_BINARY_DIR}/cmake/OpenAxiomConfigVersion.cmake"
+  DESTINATION ${OA_CMAKE_INSTALL_DIR}
+)
+
+# -- Phase 6 install rules --
+
+# User-facing executables -> $PREFIX/bin/
+install(TARGETS clef asq
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+if(OPENAXIOM_USE_SMAN)
+  install(TARGETS sman
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+  install(TARGETS session spadclient
+    RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+  )
+endif()
+
+if(OA_HAVE_X11)
+  install(TARGETS viewAlone
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+  install(TARGETS htadd ex2ht viewman view2D view3D hypertex spadbuf
+    RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+  )
+  if(HAVE_REGEX_H)
+    install(TARGETS hthits htsearch
+      RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+    )
+  endif()
+endif()
+
+if(OPENAXIOM_USE_GUI)
+  install(TARGETS open-axiom-gui
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+endif()
+
+# Help files
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/src/doc/help/"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/doc/help
+  FILES_MATCHING PATTERN "*.help"
+)
+
+# Glossary and message catalogs
+install(FILES "${PROJECT_SOURCE_DIR}/src/doc/gloss.text"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/doc
+)
+install(FILES
+  "${PROJECT_SOURCE_DIR}/src/doc/msgs/s2-us.msgs"
+  "${PROJECT_SOURCE_DIR}/src/doc/msgs/co-eng.msgs"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/share/msgs
+)
+
+# Shared resources
+install(FILES "${PROJECT_SOURCE_DIR}/src/share/algebra/command.list"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}
+)
+install(FILES "${PROJECT_SOURCE_DIR}/src/share/tex/open-axiom.sty"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/tex
+)
+install(FILES
+  "${PROJECT_SOURCE_DIR}/src/etc/summary"
+  "${PROJECT_SOURCE_DIR}/src/etc/copyright"
+  DESTINATION ${OA_INSTALL_LAYOUT_ROOT}
+)
+
+# HyperDoc pages, bitmaps, viewports
+if(OA_HAVE_X11)
+  install(DIRECTORY "${PROJECT_SOURCE_DIR}/src/hyper/pages/"
+    DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/share/hypertex/pages
+  )
+  install(DIRECTORY "${PROJECT_SOURCE_DIR}/src/hyper/bitmaps/"
+    DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/share/hypertex/bitmaps
+  )
+  install(DIRECTORY "${PROJECT_SOURCE_DIR}/src/hyper/viewports/"
+    DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/share/viewports
+  )
+endif()
+
+
+# ===========================================================================
+# Q. CPack packaging
+# ===========================================================================
+# Basic CPack configuration for generating distributable packages.
+# Supports TGZ (all platforms), DEB (Debian/Ubuntu), and RPM (Fedora/RHEL).
+# Run `cpack --config CPackConfig.cmake` after building to generate packages.
+
+set(CPACK_PACKAGE_NAME "open-axiom")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "OpenAxiom Project")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenAxiom computer algebra system")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/GabrielDosReis/open-axiom")
+set(CPACK_PACKAGE_CONTACT "open-axiom-bugs@lists.sf.net")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/src/etc/copyright")
+
+# Generator selection: TGZ always, DEB if dpkg available, RPM if rpmbuild.
+set(CPACK_GENERATOR "TGZ")
+find_program(_dpkg dpkg)
+if(_dpkg)
+  list(APPEND CPACK_GENERATOR "DEB")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6")
+  if(OA_HAVE_X11)
+    string(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS ", libx11-6, libxt6, libxpm4")
+  endif()
+  set(CPACK_DEBIAN_PACKAGE_SECTION "math")
+endif()
+find_program(_rpmbuild rpmbuild)
+if(_rpmbuild)
+  list(APPEND CPACK_GENERATOR "RPM")
+  set(CPACK_RPM_PACKAGE_LICENSE "BSD")
+  set(CPACK_RPM_PACKAGE_GROUP "Applications/Engineering")
+endif()
+
+include(CPack)
