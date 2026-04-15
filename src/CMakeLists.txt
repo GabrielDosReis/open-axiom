@@ -4,9 +4,9 @@
 # This file defines the native C/C++ libraries and executables that form
 # the foundation of the OpenAxiom build, plus the Lisp runtime compilation
 # (Phase 3), the boot translator and interpreter chain (Phase 4),
-# and the algebra substrate (Phase 5).
-# Later PRs add:
-#   - Optional subsystems and packaging (Phase 6)
+# the algebra substrate (Phase 5),
+# and the Phase 6 databases, HyperDoc data, and optional executables.
+# Later PRs add install rules, CMake export targets, and CI.
 #
 # It is organised as follows:
 #
@@ -18,6 +18,7 @@
 #   F. Staging targets: stage-native-layout, phase1-native, phase2-native
 #   G. Phase 4: Boot translator bootstrap and interpreter chain
 #   H. Phase 5: Algebra substrate
+#   P. Phase 6: Databases, HyperDoc data, and optional native executables
 # ===========================================================================
 
 
@@ -1402,9 +1403,567 @@ add_custom_target(phase5-algebra-substrate
 )
 
 
-endif()  # OA_LISP_EXECUTABLE guard
+# ===========================================================================
+# Phase 6a: Database generation and HyperDoc data staging
+# ===========================================================================
+# These targets require interpsys (from Phase 4) and belong inside the
+# Lisp guard.  Database generation builds the .daase files consumed by
+# the interpreter at runtime; HyperDoc data staging copies pages,
+# bitmaps, and viewports, then builds ht.db via the htadd tool.
+# ---------------------------------------------------------------------------
 
-# stage-native-layout copies all Phase 1-2 artifacts (binaries, libraries,
+# -- Database generation --
+# Runs interpsys --build-databases to produce the .daase database files,
+# libdb.text, comdb.text, and the USERS/DEPENDENTS indices.  These are
+# required for the interpreter to look up algebra constructors at runtime.
+
+set(oa_database_targets
+  "${OA_STAGE_ROOT}/algebra/interp.daase"
+  "${OA_STAGE_ROOT}/algebra/browse.daase"
+  "${OA_STAGE_ROOT}/algebra/categor.daase"
+  "${OA_STAGE_ROOT}/algebra/operation.daase"
+  "${OA_STAGE_ROOT}/algebra/compress.daase"
+)
+
+add_custom_command(
+  OUTPUT ${oa_database_targets}
+  COMMAND ${CMAKE_COMMAND} -E make_directory
+    "${OA_STAGE_ROOT}/algebra"
+    "${OA_STAGE_ROOT}/algebra/USERS.DAASE"
+    "${OA_STAGE_ROOT}/algebra/DEPENDENTS.DAASE"
+  COMMAND ${OA_DRIVER}
+    --execpath=${oa_interpsys}
+    --system=${OA_STAGE_ROOT}
+    --sysalg=${oa_algebra_outdir}
+    --sysdb=${oa_algebra_dbdir}/
+    --build-databases
+  # Core .daase files.
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    interp.daase browse.daase categor.daase operation.daase compress.daase
+    "${OA_STAGE_ROOT}/algebra/"
+  # Auxiliary database artifacts: text indices and per-constructor
+  # reverse-lookup tables used by )what, )show, and the browser.
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    libdb.text comdb.text
+    "${OA_STAGE_ROOT}/algebra/"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    USERS.DAASE/index.KAF
+    "${OA_STAGE_ROOT}/algebra/USERS.DAASE/"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    DEPENDENTS.DAASE/index.KAF
+    "${OA_STAGE_ROOT}/algebra/DEPENDENTS.DAASE/"
+  # Glossary files produced alongside databases (consumed by HyperDoc).
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    glosskey.text glossdef.text
+    "${OA_STAGE_ROOT}/doc/"
+  WORKING_DIRECTORY "${oa_algebra_builddir}"
+  DEPENDS phase5-algebra phase6-static-files "${oa_interpsys}"
+  COMMENT "[phase6] Build algebra databases (.daase files)"
+  VERBATIM
+)
+
+add_custom_target(phase6-databases
+  DEPENDS ${oa_database_targets}
+  COMMENT "Build the algebra database files"
+)
+
+# -- Stage static files needed at runtime --
+# summary and copyright go to the layout root; topics.data alongside
+# the databases; gloss.text in the doc directory (needed by
+# --build-databases for glossary cross-references).
+
+add_custom_target(phase6-static-files
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/etc/summary"
+    "${OA_STAGE_ROOT}/"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/etc/copyright"
+    "${OA_STAGE_ROOT}/"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/doc/topics.data"
+    "${OA_STAGE_ROOT}/algebra/"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/doc"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/doc/gloss.text"
+    "${OA_STAGE_ROOT}/doc/"
+  COMMENT "[phase6] Stage static runtime files"
+)
+
+# -- HyperDoc data staging (post-algebra, needs htadd which requires X11) --
+# Pages, bitmaps, and viewports are copied to the staging tree.  After
+# copying, htadd builds ht.db (the HyperDoc page index) by scanning
+# all .ht and .pht files.
+
+if(OA_HAVE_X11)
+  set(oa_hyper_srcdir "${PROJECT_SOURCE_DIR}/src/hyper")
+  set(oa_hyper_staged_db "${OA_STAGE_ROOT}/share/hypertex/pages/ht.db")
+
+  add_custom_command(
+    OUTPUT "${oa_hyper_staged_db}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+      "${OA_STAGE_ROOT}/share/hypertex/pages"
+      "${OA_STAGE_ROOT}/share/hypertex/bitmaps"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${oa_hyper_srcdir}/pages"
+      "${OA_STAGE_ROOT}/share/hypertex/pages"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${oa_hyper_srcdir}/bitmaps"
+      "${OA_STAGE_ROOT}/share/hypertex/bitmaps"
+    COMMAND $<TARGET_FILE:htadd> -s
+      "${OA_STAGE_ROOT}/share/hypertex/pages/"
+    WORKING_DIRECTORY "${OA_STAGE_ROOT}/share/hypertex/pages"
+    DEPENDS htadd phase5-algebra
+    COMMENT "[phase6] Stage HyperDoc pages/bitmaps and build ht.db"
+    VERBATIM
+  )
+
+  add_custom_target(phase6-hypertex-data
+    DEPENDS "${oa_hyper_staged_db}"
+    COMMENT "Stage HyperDoc data and build page index"
+  )
+
+  # -- Viewport data staging --
+  # Viewports are pre-rendered 2D/3D graph snapshots used by HyperDoc.
+  add_custom_target(phase6-viewports
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    "${OA_STAGE_ROOT}/share/viewports"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${oa_hyper_srcdir}/viewports"
+    "${OA_STAGE_ROOT}/share/viewports"
+  COMMENT "[phase6] Stage HyperDoc viewports"
+)
+
+  # -- PS files from Gdraws (graph PostScript resources) --
+  # The PS files are extracted from psFiles.pamphlet and staged into the
+  # graph resource directory.  The graph programs load them at runtime.
+  set(oa_gdraws_srcdir "${PROJECT_SOURCE_DIR}/src/graph/Gdraws")
+  set(oa_ps_names
+    colorpoly colorwol draw drawIstr drawarc drawcolor drawline
+    drawlines drawpoint drawrect drawstr drwfilled end fillarc
+    fillpoly fillwol header setup
+  )
+  set(oa_ps_outputs)
+  foreach(ps ${oa_ps_names})
+    set(_out "${OA_STAGE_ROOT}/graph/${ps}.ps")
+    add_custom_command(
+      OUTPUT "${_out}"
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/graph"
+      COMMAND $<TARGET_FILE:hammer>
+        --tangle=${ps}.ps
+        --output=${_out}
+        "${oa_gdraws_srcdir}/psFiles.pamphlet"
+      DEPENDS hammer "${oa_gdraws_srcdir}/psFiles.pamphlet"
+      COMMENT "[phase6] Extract ${ps}.ps from psFiles.pamphlet"
+      VERBATIM
+    )
+    list(APPEND oa_ps_outputs "${_out}")
+  endforeach()
+
+  add_custom_target(phase6-graph-ps
+    DEPENDS ${oa_ps_outputs}
+    COMMENT "Extract graph PostScript resources"
+  )
+
+  # -- Umbrella Phase 6 target (Lisp-dependent parts) --
+  set(oa_phase6_lisp_deps phase6-databases phase6-static-files
+    phase6-hypertex-data phase6-viewports phase6-graph-ps)
+endif()  # OA_HAVE_X11 (hypertex data, viewports, graph-ps)
+
+if(NOT OA_HAVE_X11)
+  set(oa_phase6_lisp_deps phase6-databases phase6-static-files)
+endif()
+
+add_custom_target(phase6-data
+  DEPENDS ${oa_phase6_lisp_deps}
+  COMMENT "Build all Phase 6 data targets (databases, HyperDoc, resources)"
+)
+
+else()
+  # Placeholders so that `cmake --build . --target <name>` always exists,
+  # even when no supported Lisp runtime was found.
+  set(oa_lisp_phase_targets
+    phase3-lisp-runtime
+    phase4-boot phase4-interpsys phase4-boot-interp
+    phase5-extract phase5-initdb phase5-bootstrap
+    phase5-algebra phase5-algebra-substrate
+    phase6-databases phase6-data
+  )
+  foreach(tgt ${oa_lisp_phase_targets})
+    add_custom_target(${tgt}
+      COMMAND ${CMAKE_COMMAND} -E echo
+        "${tgt} unavailable (no supported Lisp runtime configured)"
+    )
+  endforeach()
+endif()  # OA_LISP_EXECUTABLE guard (covers Phase 3 + Phase 4 + Phase 5 + Phase 6 data)
+
+# ===========================================================================
+# Phase 6b: Optional native executables
+# ===========================================================================
+# These targets are pure C/C++ and do not require a Lisp runtime.  They
+# are guarded by feature flags (OA_HAVE_X11, OPENAXIOM_USE_SMAN,
+# HAVE_REGEX_H, OPENAXIOM_USE_GUI) set during configuration.
+#
+# All .c files are compiled as C++ via the blanket LANGUAGE CXX policy
+# at the top of this file.
+# ===========================================================================
+
+# -- asq: pamphlet extraction + compilation --------------------------------
+# asq.c is tangled from asq.c.pamphlet by hammer (pure C++ tool, no
+# Lisp dependency), then compiled as a normal executable.  It queries
+# the algebra databases.
+set(oa_asq_c "${PROJECT_BINARY_DIR}/phase6/asq.c")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/phase6")
+
+add_custom_command(
+  OUTPUT "${oa_asq_c}"
+  COMMAND $<TARGET_FILE:hammer>
+    --tangle
+    --output=${oa_asq_c}
+    "${PROJECT_SOURCE_DIR}/src/etc/asq.c.pamphlet"
+  DEPENDS hammer "${PROJECT_SOURCE_DIR}/src/etc/asq.c.pamphlet"
+  COMMENT "[phase6] Extract asq.c from pamphlet"
+  VERBATIM
+)
+
+add_executable(asq "${oa_asq_c}")
+# asq.c is generated in the build tree, outside the src/ glob above.
+set_source_files_properties("${oa_asq_c}" PROPERTIES LANGUAGE CXX)
+target_link_libraries(asq PRIVATE spad open-axiom-core)
+
+# -- J. clef: command-line editor ------------------------------------------
+# clef provides line-editing and cursor control for the terminal-based
+# OpenAxiom session.  Single source file, always built.
+
+set(oa_clef_sources clef/edible.c)
+
+add_executable(clef ${oa_clef_sources})
+target_link_libraries(clef PRIVATE spad open-axiom-core)
+oa_apply_build_flags(clef)
+
+
+# -- K. Session manager (sman) --------------------------------------------
+# sman orchestrates the OpenAxiom session: it launches the interpreter,
+# HyperDoc, and the graphics viewport manager as child processes.
+# Requires fork() and wait(), so it is gated on OPENAXIOM_USE_SMAN.
+#
+# Three executables:
+#   sman        -- session manager (user-facing, installed in bin/)
+#   session     -- session process (internal, installed in lib/)
+#   spadclient  -- socket client for IDE integration (internal)
+
+if(OPENAXIOM_USE_SMAN)
+  set(oa_sman_sources    sman/sman.c)
+  set(oa_session_sources sman/session.c)
+  set(oa_spadclient_sources sman/spadclient.c)
+
+  add_executable(sman ${oa_sman_sources})
+  add_executable(session ${oa_session_sources})
+  add_executable(spadclient ${oa_spadclient_sources})
+
+  foreach(tgt sman session spadclient)
+    oa_apply_build_flags(${tgt})
+  endforeach()
+
+  target_link_libraries(sman PRIVATE OpenAxiom spad open-axiom-core)
+  target_link_libraries(session PRIVATE spad open-axiom-core)
+  target_link_libraries(spadclient PRIVATE OpenAxiom spad open-axiom-core)
+endif()
+
+
+# -- L. Graphics subsystem -------------------------------------------------
+# The graphics subsystem provides 2D and 3D viewport rendering via X11.
+# Gated on OA_HAVE_X11 (requires libX11, libXt, libXpm).
+#
+# Components:
+#   Gfun       -- shared drawing-primitives object (not a standalone exe)
+#   viewman    -- viewport manager (dispatches 2D/3D requests)
+#   view2D     -- 2D graph renderer
+#   view3D     -- 3D graph renderer
+#   viewAlone  -- standalone viewport viewer (user-facing)
+#
+# All graph .c sources are compiled as C++ (same rationale as spad lib).
+
+if(OA_HAVE_X11)
+  # X11 link libraries -- provided by find_package(X11) in the root.
+  set(oa_x11_libs X11::X11 X11::Xt X11::Xpm)
+
+  # -- Helper: oa_add_graph_executable ------------------------------------
+  # Factors the repeated pattern for graph subsystem executables.  Each
+  # needs the graph/include directory, its own subdirectory, X11 link
+  # libraries, and the standard build flags.  libm propagates transitively
+  # from open-axiom-core, so it is not listed here.
+  #
+  # Usage: oa_add_graph_executable(<name> <subdir> <sources>...
+  #            [OBJECTS <obj-lib>] [EXTRA_LIBS <libs>...])
+  function(oa_add_graph_executable name subdir)
+    cmake_parse_arguments(OA "" "" "OBJECTS;EXTRA_LIBS" ${ARGN})
+    set(_sources ${OA_UNPARSED_ARGUMENTS})
+    if(OA_OBJECTS)
+      add_executable(${name} ${_sources} $<TARGET_OBJECTS:${OA_OBJECTS}>)
+    else()
+      add_executable(${name} ${_sources})
+    endif()
+    target_include_directories(${name} PRIVATE
+      "${PROJECT_SOURCE_DIR}/src/graph/include"
+      "${PROJECT_SOURCE_DIR}/src/graph/${subdir}"
+    )
+    target_link_libraries(${name} PRIVATE spad ${oa_x11_libs} ${OA_EXTRA_LIBS})
+    oa_apply_build_flags(${name})
+  endfunction()
+
+  # -- Gfun: shared drawing object (compiled into view2D and view3D) --
+  add_library(Gfun OBJECT graph/Gdraws/Gfun.c)
+  target_include_directories(Gfun PRIVATE
+    "${PROJECT_SOURCE_DIR}/src/graph/include"
+    "${PROJECT_SOURCE_DIR}/src/graph/Gdraws"
+  )
+  target_link_libraries(Gfun PRIVATE open-axiom-core)
+  oa_apply_build_flags(Gfun)
+
+  # -- viewman --
+  oa_add_graph_executable(viewman viewman
+    graph/viewman/cleanup.c
+    graph/viewman/fun2D.c
+    graph/viewman/fun3D.c
+    graph/viewman/make2D.c
+    graph/viewman/make3D.c
+    graph/viewman/makeGraph.c
+    graph/viewman/readView.c
+    graph/viewman/sselect.c
+    graph/viewman/viewman.c
+  )
+
+  # -- view2D --
+  oa_add_graph_executable(view2D view2D
+    graph/view2D/buttons2d.c
+    graph/view2D/control2d.c
+    graph/view2D/graph2d.c
+    graph/view2D/main2d.c
+    graph/view2D/pot2d.c
+    graph/view2D/process2d.c
+    graph/view2D/spadAction2d.c
+    graph/view2D/stuff2d.c
+    graph/view2D/viewport2D.c
+    graph/view2D/write2d.c
+    OBJECTS Gfun
+    EXTRA_LIBS open-axiom-core
+  )
+
+  # -- view3D --
+  oa_add_graph_executable(view3D view3D
+    graph/view3D/buttons3d.c
+    graph/view3D/closeView3d.c
+    graph/view3D/component3d.c
+    graph/view3D/control3d.c
+    graph/view3D/illuminate3d.c
+    graph/view3D/lightbut3d.c
+    graph/view3D/lighting3d.c
+    graph/view3D/main3d.c
+    graph/view3D/mesh3d.c
+    graph/view3D/msort3d.c
+    graph/view3D/pot3d.c
+    graph/view3D/process3d.c
+    graph/view3D/project3d.c
+    graph/view3D/quit3d.c
+    graph/view3D/quitbut3d.c
+    graph/view3D/save3d.c
+    graph/view3D/savebut3d.c
+    graph/view3D/smoothShade3d.c
+    graph/view3D/spadAction3d.c
+    graph/view3D/stuff3d.c
+    graph/view3D/surface3d.c
+    graph/view3D/transform3d.c
+    graph/view3D/viewport3d.c
+    graph/view3D/volume3d.c
+    graph/view3D/write3d.c
+    OBJECTS Gfun
+    EXTRA_LIBS open-axiom-core
+  )
+
+  # -- viewAlone --
+  oa_add_graph_executable(viewAlone viewAlone
+    graph/viewAlone/viewAlone.c
+    graph/viewAlone/spoonComp.c
+    graph/viewAlone/spoon2D.c
+  )
+endif()  # OA_HAVE_X11 (graphics subsystem)
+
+
+# -- M. HyperDoc executables -----------------------------------------------
+# HyperDoc is the hypertext help system for OpenAxiom.  All HyperDoc
+# tools depend on X11 at compile time (via pixmap.h in hyper.h).
+# hthits and htsearch additionally require regex.h.
+#
+# htadd is needed by the Phase 6a data staging (ht.db generation).
+#
+# libm propagates transitively from open-axiom-core (PUBLIC), so it is
+# not repeated on individual targets.
+
+if(OA_HAVE_X11)
+
+  # -- Helper: oa_add_hyper_executable ------------------------------------
+  # Factors the repeated pattern for HyperDoc executables: each needs
+  # the src/hyper include directory, spad + open-axiom-core linkage, and
+  # the standard build flags.
+  #
+  # Usage: oa_add_hyper_executable(<name> <sources>... [EXTRA_LIBS <libs>...])
+  function(oa_add_hyper_executable name)
+    cmake_parse_arguments(OA "" "" "EXTRA_LIBS" ${ARGN})
+    add_executable(${name} ${OA_UNPARSED_ARGUMENTS})
+    target_include_directories(${name} PRIVATE
+      "${PROJECT_SOURCE_DIR}/src/hyper"
+    )
+    target_link_libraries(${name} PRIVATE spad open-axiom-core ${OA_EXTRA_LIBS})
+    oa_apply_build_flags(${name})
+  endfunction()
+
+  # -- htadd: adds pages to the HyperDoc database --
+  oa_add_hyper_executable(htadd
+    hyper/addfile.c hyper/htadd.c hyper/lex.c)
+
+  # -- ex2ht: converts examples to HyperDoc pages --
+  oa_add_hyper_executable(ex2ht hyper/ex2ht.c)
+
+  # -- hthits / htsearch: require regex.h --
+  if(HAVE_REGEX_H)
+    oa_add_hyper_executable(hthits hyper/hthits.c)
+    # htsearch is C++ (htsearch.cc), no LANGUAGE override needed.
+    oa_add_hyper_executable(htsearch hyper/htsearch.cc)
+  endif()  # HAVE_REGEX_H
+
+  # -- hypertex --
+  oa_add_hyper_executable(hypertex
+    hyper/addfile.c
+    hyper/cond.c
+    hyper/dialog.c
+    hyper/display.c
+    hyper/event.c
+    hyper/extent1.c
+    hyper/extent2.c
+    hyper/form-ext.c
+    hyper/group.c
+    hyper/htinp.c
+    hyper/hyper.c
+    hyper/initx.c
+    hyper/input.c
+    hyper/item.c
+    hyper/keyin.c
+    hyper/lex.c
+    hyper/macro.c
+    hyper/mem.c
+    hyper/parse.c
+    hyper/parse-aux.c
+    hyper/parse-input.c
+    hyper/parse-paste.c
+    hyper/parse-types.c
+    hyper/ReadBitmap.c
+    hyper/scrollbar.c
+    hyper/show-types.c
+    hyper/spadint.c
+    hyper/titlebar.c
+    EXTRA_LIBS ${oa_x11_libs}
+  )
+
+  # -- spadbuf --
+  oa_add_hyper_executable(spadbuf hyper/spadbuf.c
+    EXTRA_LIBS ${oa_x11_libs}
+  )
+
+endif()  # OA_HAVE_X11 (htadd, ex2ht, hthits, htsearch, hypertex, spadbuf)
+
+
+# -- N. Qt GUI frontend ----------------------------------------------------
+# When Qt Widgets is available, build a graphical front-end that replaces
+# the terminal-based driver.  The GUI provides a conversation-style
+# interface with input editing, output rendering, and embedded graphics.
+
+if(OPENAXIOM_USE_GUI)
+  set(CMAKE_AUTOMOC ON)
+
+  add_executable(open-axiom-gui
+    gui/main.cc
+    gui/server.cc
+    gui/conversation.cc
+    gui/main-window.cc
+    gui/debate.cc
+  )
+  target_include_directories(open-axiom-gui PRIVATE
+    "${PROJECT_SOURCE_DIR}/src/gui"
+  )
+  target_link_libraries(open-axiom-gui PRIVATE
+    OpenAxiom open-axiom-core ${OA_QT_TARGET}
+  )
+  # cxx_std_20 propagates transitively from OpenAxiom (PUBLIC).
+  oa_apply_build_flags(open-axiom-gui)
+
+  set(CMAKE_AUTOMOC OFF)
+endif()
+
+
+# -- O. Documentation and shared resource staging --------------------------
+# These copy rules stage help files, the glossary, the command list,
+# the message catalog, and the TeX style file into the runtime layout.
+# They are unconditional (no Lisp or X11 dependency).
+
+add_custom_target(phase6-docs
+  # Help files
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/doc/help"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${PROJECT_SOURCE_DIR}/src/doc/help"
+    "${OA_STAGE_ROOT}/doc/help"
+  # Glossary
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/doc/gloss.text"
+    "${OA_STAGE_ROOT}/doc/"
+  # Message catalogs (co-eng.msgs alongside s2-us.msgs)
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/share/msgs"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/doc/msgs/co-eng.msgs"
+    "${OA_STAGE_ROOT}/share/msgs/"
+  # command.list
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/share/algebra/command.list"
+    "${OA_STAGE_ROOT}/"
+  # TeX style file
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/tex"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${PROJECT_SOURCE_DIR}/src/share/tex/open-axiom.sty"
+    "${OA_STAGE_ROOT}/tex/"
+  COMMENT "[phase6] Stage documentation and shared resources"
+)
+
+
+# -- P. Umbrella Phase 6 targets -------------------------------------------
+
+# phase6-native: all optional executables that were enabled.
+set(oa_phase6_native_targets clef asq)
+if(OPENAXIOM_USE_SMAN)
+  list(APPEND oa_phase6_native_targets sman session spadclient)
+endif()
+if(OA_HAVE_X11)
+  list(APPEND oa_phase6_native_targets htadd ex2ht viewman view2D view3D viewAlone hypertex spadbuf)
+endif()
+if(OA_HAVE_X11 AND HAVE_REGEX_H)
+  list(APPEND oa_phase6_native_targets hthits htsearch)
+endif()
+if(OPENAXIOM_USE_GUI)
+  list(APPEND oa_phase6_native_targets open-axiom-gui)
+endif()
+
+add_custom_target(phase6-native
+  DEPENDS ${oa_phase6_native_targets}
+  COMMENT "Build all Phase 6 optional native executables"
+)
+
+# phase6-optional: everything in Phase 6 (native + docs + data if Lisp available).
+set(oa_phase6_all_deps phase6-native phase6-docs)
+add_custom_target(phase6-optional
+  DEPENDS ${oa_phase6_all_deps}
+  COMMENT "Build all Phase 6 optional subsystems"
+)
+
+
+
 # headers) into OA_STAGE_ROOT -- an in-tree directory that mirrors the
 # final installation layout.  Later phases read from this staging tree.
 #
