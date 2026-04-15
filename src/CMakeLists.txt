@@ -1938,8 +1938,8 @@ add_custom_target(phase6-docs
 
 # -- P. Umbrella Phase 6 targets -------------------------------------------
 
-# phase6-native: all optional executables that were enabled.
-set(oa_phase6_native_targets clef asq)
+# phase6-native: every native executable (core + optional).
+set(oa_phase6_native_targets open-axiom hammer oa-lisp clef asq)
 if(OPENAXIOM_USE_SMAN)
   list(APPEND oa_phase6_native_targets sman session spadclient)
 endif()
@@ -1955,7 +1955,7 @@ endif()
 
 add_custom_target(phase6-native
   DEPENDS ${oa_phase6_native_targets}
-  COMMENT "Build all Phase 6 optional native executables"
+  COMMENT "Build all native executables"
 )
 
 # phase6-optional: everything in Phase 6 (native + docs + data if Lisp available).
