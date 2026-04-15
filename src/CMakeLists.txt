@@ -3,9 +3,9 @@
 # ===========================================================================
 # This file defines the native C/C++ libraries and executables that form
 # the foundation of the OpenAxiom build, plus the Lisp runtime compilation
-# (Phase 3), and the boot translator and interpreter chain (Phase 4).
+# (Phase 3), the boot translator and interpreter chain (Phase 4),
+# and the algebra substrate (Phase 5).
 # Later PRs add:
-#   - Algebra substrate (Phase 5)
 #   - Optional subsystems and packaging (Phase 6)
 #
 # It is organised as follows:
@@ -17,6 +17,7 @@
 #   E. Phase 3: Lisp runtime compilation and image linking
 #   F. Staging targets: stage-native-layout, phase1-native, phase2-native
 #   G. Phase 4: Boot translator bootstrap and interpreter chain
+#   H. Phase 5: Algebra substrate
 # ===========================================================================
 
 
@@ -959,9 +960,450 @@ add_custom_target(phase4-boot-interp
 )
 
 
+
+# -- H. Phase 5: Algebra substrate -----------------------------------------
+# The algebra is the mathematical heart of OpenAxiom.  It is compiled from
+# SPAD source files (.spad) that are extracted from pamphlets (.spad.pamphlet)
+# by the hammer tool.  The build pipeline has five stages:
+#
+#   1. Whole-file extraction: hammer --tangle -> <name>.spad (for initdb)
+#   2. Per-constructor extraction: hammer --tangle="<chunk>" -> <ABBREV>.spad
+#   3. initdb:    scan whole .spad files -> build constructor database
+#   4. Bootstrap: three stages (strap-0/1/2) progressively compile categories
+#                 and domains using per-constructor .spad files
+#   5. Layers:    25 layers (0-24) compile the full algebra with layer N
+#                 depending on all layers < N
+#
+# The Autotools build generates src/algebra/extract.mk at configure time
+# by scanning pamphlets for chunk markers like:
+#   <<category SETCAT SetCategory>>=
+# We replicate this with cmake/OpenAxiomScanAlgebra.cmake, which scans
+# the pamphlets and populates OA_ALGEBRA_CTOR_PAMPHLET_<ABBREV> and
+# OA_ALGEBRA_CTOR_CHUNK_<ABBREV> for each constructor.
+#
+# Layer data and spad file lists: cmake/OpenAxiomAlgebraLayers.cmake
+# Constructor scanning:           cmake/OpenAxiomScanAlgebra.cmake
+# ===========================================================================
+
+include(OpenAxiomAlgebraLayers)
+include(OpenAxiomScanAlgebra)
+
+# -- Paths -----------------------------------------------------------------
+
+set(oa_algebra_srcdir   "${PROJECT_SOURCE_DIR}/src/algebra")
+set(oa_algebra_builddir "${PROJECT_BINARY_DIR}/phase5/algebra")
+set(oa_algebra_outsrc   "${OA_STAGE_ROOT}/src/algebra")
+set(oa_algebra_outdir   "${OA_STAGE_ROOT}/algebra")
+set(oa_algebra_dbdir    "${PROJECT_SOURCE_DIR}/src/share/algebra")
+
+# bootsys is needed for compiling initdb.clisp -> initdb.fasl
+set(oa_bootsys "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}")
+
+# -- Scan algebra sources for constructors and file lists ------------------
+# This discovers all pamphlets and plain .spad files, extracts constructor
+# abbreviations, and builds the constructor-to-source mapping.  It replaces
+# the Autotools configure.ac logic that generates extract.mk, and extends
+# it to handle plain .spad files.  See OpenAxiomScanAlgebra.cmake for the
+# full strategy documentation.
+
+oa_scan_algebra_sources("${oa_algebra_srcdir}")
+
+# -- Build the catch-all layer for unassigned constructors -----------------
+# Must be called after oa_scan_algebra_sources() so that OA_ALGEBRA_CONSTRUCTORS
+# is populated.  See OpenAxiomAlgebraLayers.cmake for the catch-all strategy.
+
+oa_algebra_build_catchall()
+
+# -- Common SPAD compilation prefix ----------------------------------------
+# These flags are shared by every algebra compilation command (strap stages
+# and layer compilation).  Factoring them here avoids a 6-flag repetition
+# in oa_algebra_strap_stage() and oa_algebra_compile_layer().
+
+set(oa_spad_compile_prefix
+  ${OA_DRIVER}
+    --execpath=${oa_interpsys}
+    --system=${OA_STAGE_ROOT}
+    --initial-db=${oa_initdb_fasl}
+    --sysdb=${oa_algebra_dbdir}/
+    --system-algebra
+    --compile
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 1: Whole-file extraction (for initdb)
+# ---------------------------------------------------------------------------
+# Produce a complete .spad file for each entry in the SOURCES manifest.
+# These whole-file extracts are scanned by --build-initdb to build the
+# constructor database.
+#
+# Two source types are handled:
+#   - Pamphlets: extracted via hammer --tangle -> <name>.spad
+#   - Plain .spad: copied to the build tree as-is (configure_file COPYONLY)
+#
+# The output list (oa_all_spadfiles) is consumed by the initdb step.
+
+set(oa_all_spadfiles "")
+
+# -- Pamphlets: extract whole file via hammer --
+foreach(spad ${OA_ALGEBRA_PAMPHLET_BASES})
+  set(_pam "${oa_algebra_srcdir}/${spad}.spad.pamphlet")
+  set(_out "${oa_algebra_outsrc}/${spad}.spad")
+
+  add_custom_command(
+    OUTPUT "${_out}"
+    COMMAND $<TARGET_FILE:hammer>
+      --tangle
+      --output=${_out}
+      "${_pam}"
+    DEPENDS hammer "${_pam}"
+    COMMENT "[algebra] Extract ${spad}.spad (whole file from pamphlet)"
+    VERBATIM
+  )
+  list(APPEND oa_all_spadfiles "${_out}")
+endforeach()
+
+# -- Plain .spad: copy to the build tree --
+# Plain .spad files need no extraction.  We copy them to the same output
+# directory so that initdb scanning sees a uniform layout.
+foreach(spad ${OA_ALGEBRA_PLAIN_SPADFILES})
+  set(_src "${oa_algebra_srcdir}/${spad}.spad")
+  set(_out "${oa_algebra_outsrc}/${spad}.spad")
+
+  add_custom_command(
+    OUTPUT "${_out}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_src}" "${_out}"
+    DEPENDS "${_src}"
+    COMMENT "[algebra] Copy ${spad}.spad (plain file)"
+    VERBATIM
+  )
+  list(APPEND oa_all_spadfiles "${_out}")
+endforeach()
+
+add_custom_target(phase5-extract-wholefile
+  DEPENDS ${oa_all_spadfiles}
+  COMMENT "Extract/copy whole .spad files (for initdb)"
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 2: Per-constructor extraction (for compilation)
+# ---------------------------------------------------------------------------
+# Each constructor gets its own .spad file in the build directory.  The
+# SPAD compiler compiles one constructor at a time from these files.
+#
+# Two source types are handled:
+#   - Pamphlet constructors: extracted via hammer --tangle="<chunk>"
+#     For example, TYPE.spad is extracted from coerce.spad.pamphlet
+#     using --tangle="category TYPE Type".
+#   - Plain .spad constructors: the source file is already a valid .spad
+#     file, so we copy it to the build tree under the constructor's name.
+#     If the file contains multiple constructors, each gets its own copy
+#     (the compiler selects the right one by abbreviation).
+#
+# The source type for each constructor is recorded in OA_ALGEBRA_CTOR_SOURCE_<A>
+# by the scanner (see OpenAxiomScanAlgebra.cmake).
+
+set(oa_all_ctor_spadfiles "")
+file(MAKE_DIRECTORY "${oa_algebra_builddir}")
+
+foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
+  set(_out "${oa_algebra_builddir}/${ctor}.spad")
+  set(_source_type "${OA_ALGEBRA_CTOR_SOURCE_${ctor}}")
+
+  if(_source_type STREQUAL "pamphlet")
+    # Pamphlet constructor: extract via chunk name.
+    set(_pambase "${OA_ALGEBRA_CTOR_PAMPHLET_${ctor}}")
+    set(_chunk   "${OA_ALGEBRA_CTOR_CHUNK_${ctor}}")
+    set(_pam     "${oa_algebra_srcdir}/${_pambase}.spad.pamphlet")
+
+    add_custom_command(
+      OUTPUT "${_out}"
+      COMMAND $<TARGET_FILE:hammer>
+        --tangle=${_chunk}
+        --output=${_out}
+        "${_pam}"
+      DEPENDS hammer "${_pam}"
+      COMMENT "[algebra] Extract ${ctor}.spad from ${_pambase}.spad.pamphlet"
+      VERBATIM
+    )
+
+  elseif(_source_type STREQUAL "plain")
+    # Plain .spad constructor: copy the source file.
+    set(_sfbase "${OA_ALGEBRA_CTOR_SPADFILE_${ctor}}")
+    set(_src    "${oa_algebra_srcdir}/${_sfbase}.spad")
+
+    add_custom_command(
+      OUTPUT "${_out}"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_src}" "${_out}"
+      DEPENDS "${_src}"
+      COMMENT "[algebra] Copy ${ctor}.spad from ${_sfbase}.spad (plain)"
+      VERBATIM
+    )
+
+  else()
+    message(FATAL_ERROR
+      "Constructor ${ctor} has unknown source type '${_source_type}'. "
+      "Expected 'pamphlet' or 'plain'.")
+  endif()
+
+  list(APPEND oa_all_ctor_spadfiles "${_out}")
+endforeach()
+
+add_custom_target(phase5-extract
+  DEPENDS phase5-extract-wholefile ${oa_all_ctor_spadfiles}
+  COMMENT "Extract/copy all per-constructor .spad files"
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 3: Build initdb
+# ---------------------------------------------------------------------------
+# initdb is a constructor database built by scanning the whole-file .spad
+# extracts.  It maps constructor abbreviations to source files and is
+# required by every subsequent compilation step.
+#
+# Two stages: (a) scan .spad files -> initdb.clisp, (b) compile -> initdb.fasl
+
+set(oa_initdb_clisp "${oa_algebra_builddir}/initdb.clisp")
+set(oa_initdb_fasl  "${oa_algebra_builddir}/initdb.${OA_LISP_FASL_EXT}")
+
+add_custom_command(
+  OUTPUT "${oa_initdb_clisp}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${oa_algebra_builddir}"
+  COMMAND ${OA_DRIVER}
+    --execpath=${oa_interpsys}
+    --system=${OA_STAGE_ROOT}
+    --spad-srcdir=${oa_algebra_outsrc}
+    --output=${oa_initdb_clisp}
+    --build-initdb
+  WORKING_DIRECTORY "${oa_algebra_builddir}"
+  DEPENDS ${oa_interpsys} ${oa_all_spadfiles}
+  COMMENT "[algebra] Build initdb (scan whole .spad files)"
+  VERBATIM
+)
+
+add_custom_command(
+  OUTPUT "${oa_initdb_fasl}"
+  COMMAND ${OA_DRIVER}
+    --execpath=${oa_bootsys}
+    --syslib=${OA_STAGE_ROOT}/lib
+    --compile
+    --output=${oa_initdb_fasl}
+    --load-directory=${PROJECT_BINARY_DIR}/phase4/interp
+    "${oa_initdb_clisp}"
+  WORKING_DIRECTORY "${oa_algebra_builddir}"
+  DEPENDS "${oa_initdb_clisp}" "${oa_bootsys}"
+  COMMENT "[algebra] Compile initdb.clisp -> initdb.${OA_LISP_FASL_EXT}"
+  VERBATIM
+)
+
+add_custom_target(phase5-initdb
+  DEPENDS "${oa_initdb_fasl}"
+  COMMENT "Build the initial algebra constructor database"
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 4: Algebra bootstrap (strap-0, strap-1, strap-2)
+# ---------------------------------------------------------------------------
+# Three progressive bootstrap stages compile categories and domains using
+# the per-constructor .spad files.  Each constructor gets its own
+# compilation invocation, exactly as in the Autotools build:
+#
+#   strap-0: --bootstrap (compile for exports only, skip defaults)
+#   strap-1: --strap=strap-0 (recompile with strap-0 artifacts)
+#   strap-2: --strap=strap-1 (recompile with strap-1 artifacts)
+#
+# The BOOTSTRAP command compiles a single per-constructor .spad file and
+# produces a single FASL in the strap directory.
+
+# Helper: oa_algebra_strap_deps -- compute the dependency for a strap stage.
+#
+# Stage 0 depends on initdb+interpsys; stage N>0 depends on the previous
+# strap stage's stamp file.
+
+function(oa_algebra_strap_deps stage outvar)
+  if(stage EQUAL 0)
+    set(${outvar} "${oa_initdb_fasl}" "${oa_interpsys}" PARENT_SCOPE)
+  else()
+    math(EXPR _prev "${stage} - 1")
+    set(${outvar} "${oa_algebra_builddir}/strap-${_prev}.stamp" PARENT_SCOPE)
+  endif()
+endfunction()
+
+# Helper function: compile one strap stage.
+# Iterates over all constructors found by the scanner.
+#
+# Usage: oa_algebra_strap_stage(<stage> <flags...>)
+#   <stage>: 0, 1, or 2
+#   <flags>: additional flags (e.g. "--bootstrap" or "--strap=strap-0")
+
+function(oa_algebra_strap_stage stage)
+  set(_extra_flags ${ARGN})
+  set(_strapdir "${oa_algebra_builddir}/strap-${stage}")
+  set(_stamp   "${oa_algebra_builddir}/strap-${stage}.stamp")
+
+  set(_commands "")
+  list(APPEND _commands
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${_strapdir}"
+  )
+
+  # Compile each per-constructor .spad file through the bootstrap compiler.
+  foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
+    list(APPEND _commands
+      COMMAND ${oa_spad_compile_prefix}
+        --sysalg=${_strapdir}
+        ${_extra_flags}
+        --output=${_strapdir}/${ctor}.${OA_LISP_FASL_EXT}
+        "${oa_algebra_builddir}/${ctor}.spad"
+    )
+  endforeach()
+
+  list(APPEND _commands
+    COMMAND ${CMAKE_COMMAND} -E touch "${_stamp}"
+  )
+
+  # Previous stage dependency
+  oa_algebra_strap_deps(${stage} _deps)
+
+  add_custom_command(
+    OUTPUT "${_stamp}"
+    ${_commands}
+    WORKING_DIRECTORY "${oa_algebra_builddir}"
+    DEPENDS ${_deps} ${oa_all_ctor_spadfiles}
+    COMMENT "[algebra] Bootstrap strap-${stage}"
+    VERBATIM
+  )
+endfunction()
+
+# Stage 0: bootstrap (categories compiled for exports only)
+oa_algebra_strap_stage(0 --bootstrap)
+
+# Stage 1: recompile with strap-0 as the algebra base
+oa_algebra_strap_stage(1 --strap=${oa_algebra_builddir}/strap-0 --optimize=3)
+
+# Stage 2: recompile with strap-1 as the algebra base
+oa_algebra_strap_stage(2 --strap=${oa_algebra_builddir}/strap-1 --optimize=3)
+
+set(oa_strap_stamp "${oa_algebra_builddir}/strap-2.stamp")
+
+add_custom_target(phase5-bootstrap
+  DEPENDS "${oa_strap_stamp}"
+  COMMENT "Complete the three-stage algebra bootstrap"
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 5: Full algebra compilation in layers
+# ---------------------------------------------------------------------------
+# Each constructor gets its own add_custom_command producing a real FASL
+# output file.  Constructors within a layer can build in parallel; the
+# layer ordering is enforced by target-level dependencies:
+#
+#   algebra-layer-0  depends on  phase5-bootstrap
+#   algebra-layer-N  depends on  algebra-layer-(N-1)
+#
+# The number of layers is dynamic: 25 explicit hand-curated layers, plus
+# a catch-all layer if any constructors were not assigned to an explicit
+# layer (see oa_algebra_build_catchall in OpenAxiomAlgebraLayers.cmake).
+#
+# This replaces the Autotools stamp-file pattern with native CMake target
+# dependencies, giving Ninja full intra-layer parallelism while preserving
+# the inter-layer ordering constraint.
+#
+# The SPAD compiler processes a per-constructor .spad file and produces
+# <CTOR>.NRLIB/code.<FASLEXT>.  For category constructors with default
+# definitions, it may also produce <CTOR>-.NRLIB/code.<FASLEXT> (the
+# default package).  Whether a default package is generated is only
+# known at compile time, so BYPRODUCTS declares it as a possible output
+# without requiring it to exist.
+
+file(MAKE_DIRECTORY "${oa_algebra_outdir}")
+
+function(oa_algebra_compile_layer layer_idx)
+  # Previous layer target (layer 0 depends on phase5-bootstrap)
+  if(layer_idx EQUAL 0)
+    set(_prev_target phase5-bootstrap)
+  else()
+    math(EXPR _prev "${layer_idx} - 1")
+    set(_prev_target algebra-layer-${_prev})
+  endif()
+
+  set(_ctors ${oa_algebra_layer_${layer_idx}})
+  set(_layer_outputs "")
+
+  foreach(ctor ${_ctors})
+    set(_fasl "${oa_algebra_outdir}/${ctor}.${OA_LISP_FASL_EXT}")
+
+    # Compiling a category FOO also produces a default-package FOO-.
+    # Declare it as a BYPRODUCT so Ninja knows this command may create
+    # it.  For constructors in OA_ALGEBRA_DEFAULT_PACKAGES (known to
+    # produce a default package), the copy is mandatory -- the build
+    # fails if the FASL is missing, matching the Autotools behaviour.
+    # For all other constructors, CopyIfExists silently skips.
+    list(FIND OA_ALGEBRA_DEFAULT_PACKAGES "${ctor}" _defpkg_known)
+    if(NOT _defpkg_known EQUAL -1)
+      # Known default-package producer: mandatory copy (fails if missing).
+      set(_defpkg_cmd
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${oa_algebra_builddir}/${ctor}-.NRLIB/code.${OA_LISP_FASL_EXT}"
+          "${oa_algebra_outdir}/${ctor}-.${OA_LISP_FASL_EXT}")
+    else()
+      # Not a known producer: best-effort copy (silently skips if absent).
+      set(_defpkg_cmd
+        COMMAND ${CMAKE_COMMAND}
+          -Dsrc=${oa_algebra_builddir}/${ctor}-.NRLIB/code.${OA_LISP_FASL_EXT}
+          -Ddst=${oa_algebra_outdir}/${ctor}-.${OA_LISP_FASL_EXT}
+          -P ${PROJECT_SOURCE_DIR}/cmake/CopyIfExists.cmake)
+    endif()
+
+    add_custom_command(
+      OUTPUT "${_fasl}"
+      BYPRODUCTS "${oa_algebra_outdir}/${ctor}-.${OA_LISP_FASL_EXT}"
+      COMMAND ${oa_spad_compile_prefix}
+        --strap=${oa_algebra_builddir}/strap-2
+        --optimize=3
+        "${oa_algebra_builddir}/${ctor}.spad"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${oa_algebra_builddir}/${ctor}.NRLIB/code.${OA_LISP_FASL_EXT}"
+        "${_fasl}"
+      ${_defpkg_cmd}
+      WORKING_DIRECTORY "${oa_algebra_builddir}"
+      DEPENDS "${oa_algebra_builddir}/${ctor}.spad" ${_prev_target}
+      COMMENT "[algebra] Compile ${ctor} (layer ${layer_idx})"
+      VERBATIM
+    )
+    list(APPEND _layer_outputs "${_fasl}")
+  endforeach()
+
+  add_custom_target(algebra-layer-${layer_idx}
+    DEPENDS ${_layer_outputs}
+    COMMENT "[algebra] Layer ${layer_idx} complete"
+  )
+endfunction()
+
+foreach(layer_idx ${OA_ALGEBRA_LAYER_INDICES})
+  oa_algebra_compile_layer(${layer_idx})
+endforeach()
+
+math(EXPR _last_layer "${OA_ALGEBRA_NUM_LAYERS} - 1")
+
+add_custom_target(phase5-algebra
+  DEPENDS algebra-layer-${_last_layer}
+  COMMENT "Compile the full OpenAxiom algebra (${OA_ALGEBRA_NUM_LAYERS} layers)"
+)
+
+
+# -- Umbrella Phase 5 target --
+add_custom_target(phase5-algebra-substrate
+  DEPENDS phase5-algebra
+  COMMENT "Build the complete Phase 5: algebra substrate"
+)
+
+
 endif()  # OA_LISP_EXECUTABLE guard
 
-# -- F. Staging targets ----------------------------------------------------
 # stage-native-layout copies all Phase 1-2 artifacts (binaries, libraries,
 # headers) into OA_STAGE_ROOT -- an in-tree directory that mirrors the
 # final installation layout.  Later phases read from this staging tree.
