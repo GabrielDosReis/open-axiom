@@ -202,15 +202,12 @@ set(OA_STAGE_ROOT "${PROJECT_BINARY_DIR}/${OA_TARGET_TRIPLE}")
 set(OA_INSTALL_LAYOUT_ROOT "${CMAKE_INSTALL_LIBDIR}/open-axiom/${OA_TARGET_TRIPLE}/${PROJECT_VERSION}")
 
 # -- 5. External toolchain discovery --------------------------------------
-# Locate optional tools: the Lisp runtime (central to the bootstrap
-# chain, added in a later PR), Qt for the GUI, LLVM for native code
-# generation, and TeX for documentation.
+# Locate the Lisp runtime (central to the bootstrap chain), plus optional
+# tools: Qt for the GUI front-end, LLVM for native code generation, and
+# TeX for documentation.
 
 # Lisp runtime -- accepts either a bare name (looked up via find_program)
-# or an absolute path to the binary.  The full Lisp runtime detection
-# module (cmake/OpenAxiomLispRuntime.cmake) is added in a subsequent PR;
-# here we only locate the binary so that the configuration summary can
-# report its availability.
+# or an absolute path to the binary.
 if(IS_ABSOLUTE "${OA_WITH_LISP}" AND EXISTS "${OA_WITH_LISP}")
   set(OA_LISP_EXECUTABLE "${OA_WITH_LISP}")
 else()
@@ -223,12 +220,11 @@ find_program(LATEX_EXECUTABLE NAMES latex)
 find_program(MAKEINDEX_EXECUTABLE NAMES makeindex)
 find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config llvm-config-18 llvm-config-17)
 
-# Lisp runtime configuration -- safe defaults until the detection module
-# (cmake/OpenAxiomLispRuntime.cmake) is added in a subsequent PR.
-# OPENAXIOM_BASE_RTS must be a valid C++ enumerator from the Runtime
-# enum; OPENAXIOM_HOST_LISP_PRECISION must be a numeric literal.
-set(OPENAXIOM_BASE_RTS "Runtime::unknown")
-set(OPENAXIOM_HOST_LISP_PRECISION 64)
+# Configure the Lisp runtime -- this probes the binary (if found) and sets
+# flavor-specific variables for FASL extensions, FFI types, linking model,
+# etc.  See cmake/OpenAxiomLispRuntime.cmake for full documentation.
+include(OpenAxiomLispRuntime)
+oa_configure_lisp_runtime()
 
 # -- 6. Derived feature flags ---------------------------------------------
 # Combine user options with detection results to produce the final
@@ -305,20 +301,27 @@ endif()
 # -- 7. Configuration summary ---------------------------------------------
 
 message(STATUS "OpenAxiom CMake configuration summary:")
+message(STATUS "  Lisp runtime      : ${OA_WITH_LISP} (${OA_LISP_EXECUTABLE})")
+message(STATUS "  Lisp flavor       : ${OA_LISP_FLAVOR}")
+message(STATUS "  FASL/LNK ext      : ${OA_LISP_FASL_EXT} / ${OA_LISP_LNK_EXT}")
+message(STATUS "  delayed FFI       : ${oa_delay_ffi}")
 message(STATUS "  LLVM detected     : ${OPENAXIOM_HOST_HAS_LLVM}")
 message(STATUS "  X11 detected      : ${OA_HAVE_X11}")
 message(STATUS "  Qt detected       : ${OPENAXIOM_USE_GUI} (${OA_QT_VERSION})")
 message(STATUS "  SMAN enabled      : ${OPENAXIOM_USE_SMAN}")
 message(STATUS "  regex.h available : ${HAVE_REGEX_H}")
+message(STATUS "  pdf tools         : ${PDFLATEX_EXECUTABLE};${LATEX_EXECUTABLE};${MAKEINDEX_EXECUTABLE}")
 message(STATUS "  target triple     : ${OA_TARGET_TRIPLE}")
 message(STATUS "  stage root        : ${OA_STAGE_ROOT}")
 message(STATUS "  install root      : ${OA_INSTALL_LAYOUT_ROOT}")
 
 # -- 8. Generated headers and templates -----------------------------------
-# Generate the C/C++ config header (substituting HAVE_* probes).
+# Generate the C/C++ config header (substituting HAVE_* probes) and the
+# Lisp settings file (substituting Lisp runtime variables).
 
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/config")
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/include/open-axiom")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/share/open-axiom/cmake")
 
 # The C/C++ config header is generated twice:
 #   1. Under config/  -- consumed by src/CMakeLists.txt include paths.
@@ -333,6 +336,15 @@ configure_file(
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/openaxiom-c-macros.h.in"
   "${PROJECT_BINARY_DIR}/include/open-axiom/config"
+  @ONLY
+)
+
+# Lisp settings file -- captures the full Lisp runtime configuration so
+# that later CMake-based build phases (algebra, databases) can simply
+# include() this file instead of re-running detection.
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/openaxiom-lisp-settings.cmake.in"
+  "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
   @ONLY
 )
 

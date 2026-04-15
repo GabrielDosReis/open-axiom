@@ -2,8 +2,8 @@
 # src/CMakeLists.txt -- OpenAxiom source-tree targets
 # ===========================================================================
 # This file defines the native C/C++ libraries and executables that form
-# the foundation of the OpenAxiom build.  Later PRs add:
-#   - Lisp runtime compilation (Phase 3)
+# the foundation of the OpenAxiom build, plus the Lisp runtime compilation
+# (Phase 3).  Later PRs add:
 #   - Boot translator and interpreter chain (Phase 4)
 #   - Algebra substrate (Phase 5)
 #   - Optional subsystems and packaging (Phase 6)
@@ -14,7 +14,8 @@
 #   B. Helper: oa_apply_build_flags -- shared warning / profiling / debug opts
 #   C. Static libraries: open-axiom-core, OpenAxiom, spad
 #   D. Executables: hammer, open-axiom, oa-lisp
-#   E. Staging targets: stage-native-layout, phase1-native, phase2-native
+#   E. Phase 3: Lisp runtime compilation and image linking
+#   F. Staging targets: stage-native-layout, phase1-native, phase2-native
 # ===========================================================================
 
 
@@ -231,7 +232,152 @@ add_executable(oa-lisp rt/driver.cc)
 set_target_properties(oa-lisp PROPERTIES OUTPUT_NAME lisp)
 target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
 
-# -- E. Staging targets ----------------------------------------------------
+# -- E. Phase 3: Lisp compilation and base-image linking ------------------
+# The Phase 3 chain:
+#   1. Generate core.lisp from the .in template (configure_file)
+#   2. Compile core.lisp -> core.FASL  (+ core.o for ECL)
+#   3. Link the FASL into a standalone image: oa-base-lisp
+#   4. Stage everything under OA_STAGE_ROOT for later phases
+#
+# The LISP_CMD variable below avoids repeating the multi-part
+# `cmake -E env ...EXECUTABLE ...QUIET ...BATCH` invocation prefix.
+
+set(oa_lisp_build_dir "${PROJECT_BINARY_DIR}/phase3/lisp")
+set(oa_lisp_generated_core "${oa_lisp_build_dir}/core.lisp")
+set(oa_lisp_generated_fasl "${oa_lisp_build_dir}/core.${OA_LISP_FASL_EXT}")
+set(oa_lisp_generated_linkable "${oa_lisp_build_dir}/core.${OA_LISP_LNK_EXT}")
+set(oa_lisp_generated_image "${oa_lisp_build_dir}/oa-base-lisp${CMAKE_EXECUTABLE_SUFFIX}")
+
+file(MAKE_DIRECTORY "${oa_lisp_build_dir}")
+
+# Variables substituted into core.lisp.in by configure_file.
+# They bridge CMake-side knowledge (install paths, compiler identity,
+# target triple, optional features) into the Lisp source so that the
+# Lisp bootstrap code can locate native tools and honour build options.
+#
+# The variable names must match the @VAR@ placeholders in core.lisp.in
+# exactly -- some are inherited from the Autotools era (e.g. CXX, LDFLAGS,
+# SHREXT, LIBEXT) and cannot be renamed without updating the template.
+set(host "${OA_TARGET_TRIPLE}")
+set(build "${OA_TARGET_TRIPLE}")
+set(target "${OA_TARGET_TRIPLE}")
+set(CXX "${CMAKE_CXX_COMPILER}")
+set(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+set(open_axiom_installdir "${CMAKE_INSTALL_PREFIX}/${OA_INSTALL_LAYOUT_ROOT}")
+set(oa_keep_files "")
+set(oa_enable_profiling nil)
+if(OA_ENABLE_PROFILING)
+  set(oa_enable_profiling t)
+endif()
+set(oa_use_llvm no)
+if(OPENAXIOM_HOST_HAS_LLVM)
+  set(oa_use_llvm yes)
+endif()
+set(oa_editor "$ENV{EDITOR}")
+if(NOT oa_editor)
+  set(oa_editor "vi")
+endif()
+set(oa_shrlib_prefix "${CMAKE_SHARED_LIBRARY_PREFIX}")
+# SHREXT / LIBEXT: library extension with and without the leading dot.
+# Consumed by the Lisp loader when building shared objects at algebra time.
+set(SHREXT "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+string(REGEX REPLACE "^\\." "" LIBEXT "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+# Extra C runtime libraries needed on Windows (Winsock for sockio).
+set(oa_c_runtime_extra "")
+if(WIN32)
+  set(oa_c_runtime_extra "\"-lwsock32\"")
+endif()
+
+# -- Step 1: Generate core.lisp from the template --
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/lisp/core.lisp.in"
+  "${oa_lisp_generated_core}"
+  @ONLY
+)
+
+# Guard: only emit the Lisp build rules when a supported runtime was found.
+if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$")
+  # Common Lisp invocation prefix -- used by every custom command below.
+  # Wraps the binary in `cmake -E env` for flavor-specific environment
+  # variables (e.g. GCL_ANSI=t), followed by quiet/batch flags.
+  set(OA_LISP_CMD
+    ${CMAKE_COMMAND} -E env ${OA_LISP_ENV_VARS}
+    "${OA_LISP_EXECUTABLE}" ${OA_LISP_QUIET_ARGS} ${OA_LISP_BATCH_ARGS}
+  )
+
+  # -- Step 2: Compile core.lisp -> FASL (+ .o for ECL) --
+  if(OA_LISP_FLAVOR STREQUAL "ecl")
+    # ECL uses the "system-p" flag to produce a relocatable .o alongside
+    # the FASL; both are needed at the linking step.
+    add_custom_command(
+      OUTPUT "${oa_lisp_generated_fasl}" "${oa_lisp_generated_linkable}"
+      COMMAND ${OA_LISP_CMD}
+              ${OA_LISP_EVAL_FLAG} "(require (quote cmp))"
+              ${OA_LISP_EVAL_FLAG} "(compile-file \"core.lisp\" :system-p t)"
+              ${OA_LISP_EVAL_FLAG} "(c::build-fasl \"core.${OA_LISP_FASL_EXT}\" :lisp-files (quote (\"core.${OA_LISP_LNK_EXT}\")))"
+              ${OA_LISP_EVAL_FLAG} "(quit)"
+      WORKING_DIRECTORY "${oa_lisp_build_dir}"
+      DEPENDS "${oa_lisp_generated_core}" stage-native-layout
+      COMMENT "Compile the OpenAxiom core Lisp runtime with ECL"
+      VERBATIM
+    )
+    set(oa_base_lisp_objects "(\"core.${OA_LISP_LNK_EXT}\")")
+  else()
+    # Non-ECL flavors: standard compile-file -> single FASL output.
+    add_custom_command(
+      OUTPUT "${oa_lisp_generated_fasl}"
+      COMMAND ${OA_LISP_CMD}
+              ${OA_LISP_EVAL_FLAG} "(progn (compile-file \"core.lisp\") (quit))"
+      WORKING_DIRECTORY "${oa_lisp_build_dir}"
+      DEPENDS "${oa_lisp_generated_core}" stage-native-layout
+      COMMENT "Compile the OpenAxiom core Lisp runtime"
+      VERBATIM
+    )
+    set(oa_base_lisp_objects "nil")
+  endif()
+
+  # -- Step 3: Link the FASL into a standalone executable image --
+  add_custom_command(
+    OUTPUT "${oa_lisp_generated_image}"
+    COMMAND ${OA_LISP_CMD}
+            ${OA_LISP_EVAL_FLAG} "(load \"core\")"
+            ${OA_LISP_EVAL_FLAG} "(|AxiomCore|::|link| \"oa-base-lisp${CMAKE_EXECUTABLE_SUFFIX}\" (quote ${oa_base_lisp_objects}) \"|AxiomCore|::|topLevel|\")"
+    WORKING_DIRECTORY "${oa_lisp_build_dir}"
+    DEPENDS "${oa_lisp_generated_fasl}"
+    COMMENT "Link the Phase 3 OpenAxiom base Lisp image"
+    VERBATIM
+  )
+
+  # -- Step 4: Stage Lisp artifacts into the runtime layout --
+  add_custom_target(stage-lisp-runtime
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+      "${OA_STAGE_ROOT}/lisp"
+      "${OA_STAGE_ROOT}/share/open-axiom/cmake"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${oa_lisp_generated_core}"
+      "${OA_STAGE_ROOT}/lisp/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${oa_lisp_generated_fasl}"
+      "${OA_STAGE_ROOT}/lisp/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${oa_lisp_generated_image}"
+      "${OA_STAGE_ROOT}/bin/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
+      "${OA_STAGE_ROOT}/share/open-axiom/cmake/"
+    DEPENDS stage-native-layout "${oa_lisp_generated_image}"
+    COMMENT "Stage the Phase 3 Lisp runtime artifacts"
+  )
+
+  # Umbrella target -- the single name that CI and developers invoke.
+  add_custom_target(phase3-lisp-runtime
+    DEPENDS stage-lisp-runtime
+    COMMENT "Build and stage the Phase 3 Lisp runtime foundation"
+  )
+
+endif()  # OA_LISP_EXECUTABLE guard
+
+# -- F. Staging targets ----------------------------------------------------
 # stage-native-layout copies all Phase 1-2 artifacts (binaries, libraries,
 # headers) into OA_STAGE_ROOT -- an in-tree directory that mirrors the
 # final installation layout.  Later phases read from this staging tree.

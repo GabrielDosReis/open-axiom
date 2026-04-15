@@ -1,0 +1,53 @@
+# ===========================================================================
+# openaxiom-lisp-settings.cmake -- generated Lisp runtime configuration
+# ===========================================================================
+# This file is produced by configure_file() from the .in template.  It
+# captures every Lisp runtime variable that was detected at configure time
+# so that later CMake-based build phases (algebra compilation, database
+# generation, etc.) can simply include() it instead of re-running the
+# detection logic.
+#
+# Variables with @VAR@ placeholders are substituted by CMake at configure
+# time from values set in cmake/OpenAxiomLispRuntime.cmake.
+# ===========================================================================
+
+# -- Lisp binary and flavor identification --
+set(OA_LISP_EXECUTABLE "@OA_LISP_EXECUTABLE@")
+set(OA_LISP_FLAVOR "@OA_LISP_FLAVOR@")
+
+# -- File extensions --
+# FASL: compiled Lisp file extension (e.g. fasl, fas, o).
+# LNK:  linkable object extension -- same as FASL except for ECL where
+#       standard-linking produces native .o files.
+set(OA_LISP_FASL_EXT "@OA_LISP_FASL_EXT@")
+set(OA_LISP_LNK_EXT "@OA_LISP_LNK_EXT@")
+
+# -- Linking model flags --
+# OA_STANDARD_LINKING:  "yes" for ECL (Lisp -> C -> .o -> link).
+# OA_DELAY_FFI:         "yes" when FFI stubs resolve at image-load time
+#                       (SBCL, CLisp, Clozure).
+# OA_USE_DYNAMIC_LIB:   "yes" when the runtime supports shared libraries.
+set(OA_STANDARD_LINKING "@oa_standard_linking@")
+set(OA_DELAY_FFI "@oa_delay_ffi@")
+set(OA_USE_DYNAMIC_LIB "@oa_use_dynamic_lib@")
+
+# -- Invocation flags (space-separated) --
+set(OA_QUIET_FLAGS "@oa_quiet_flags@")
+set(OA_EVAL_FLAGS "@oa_eval_flags@")
+
+# -- Host precision (32 or 64) --
+set(OA_HOST_LISP_PRECISION "@OPENAXIOM_HOST_LISP_PRECISION@")
+
+# -- FFI type names --
+# Each Lisp spells fundamental C types differently in its FFI layer.
+# These are substituted into algebra / compiler Lisp sources.
+set(OA_FFI_VOID_TYPE "@void_type@")
+set(OA_FFI_CHAR_TYPE "@char_type@")
+set(OA_FFI_INT_TYPE "@int_type@")
+set(OA_FFI_FLOAT_TYPE "@float_type@")
+set(OA_FFI_DOUBLE_TYPE "@double_type@")
+set(OA_FFI_STRING_TYPE "@string_type@")
+set(OA_FFI_POINTER_TYPE "@pointer_type@")
+
+# -- Compiler optimisation options --
+set(OA_OPTIMIZE_OPTIONS "@oa_optimize_options@")
