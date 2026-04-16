@@ -58,7 +58,7 @@
 
 #include "cfuns.h"
 
-using fs = std::filesystem;
+using namespace std::filesystem;
 
 namespace OpenAxiom {
    // Make a copy of string data on free store.
