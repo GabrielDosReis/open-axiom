@@ -133,7 +133,7 @@ directoryp(char *path)
 {
    std::error_code ec { };
    auto result = fs::status(path, ec);
-   if (ec or not fs::known_status(result))
+   if (ec or not fs::status_known(result))
       return -1;
    return result.type() == fs::file_type::directory;
 }
