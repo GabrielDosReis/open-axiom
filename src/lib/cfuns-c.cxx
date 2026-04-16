@@ -58,7 +58,7 @@
 
 #include "cfuns.h"
 
-using namespace std::filesystem;
+namespace fs = std::filesystem;
 
 namespace OpenAxiom {
    // Make a copy of string data on free store.
@@ -74,7 +74,7 @@ addtopath(char *dir)
    if (not newpath.empty())
       newpath += OPENAXIOM_INTERNAL_PATH_SEPARATOR;
    newpath += dir;
-   return oa_setenv("PATH", copy_c_str(newpath), 1);
+   return oa_setenv("PATH", copy_c_str(newpath));
 }
 
 
