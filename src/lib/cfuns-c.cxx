@@ -36,6 +36,7 @@
 
 #include "openaxiom-c-macros.h"
 
+#include <filesystem>
 #include <errno.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -57,26 +58,7 @@
 
 #include "cfuns.h"
 
-/* Most versions of Windows don't have the POSIX functions getuid(),
-   geteuid(), getgid(), and getegid().  The following definitions are
-   approximations, to patch for the deficiencies of Windows
-   POSIX interface.  */
-
-#if !HAVE_DECL_GETUID
-#  define getuid() 0
-#endif
-
-#if !HAVE_DECL_GETGID
-#  define getgid() 0
-#endif
-
-#if !HAVE_DECL_GETEUID
-#  define geteuid() getuid()
-#endif
-
-#if !HAVE_DECL_GETEGID
-#  define getegid() getgid()
-#endif
+using fs = std::filesystem;
 
 namespace OpenAxiom {
    // Make a copy of string data on free store.
@@ -92,7 +74,7 @@ addtopath(char *dir)
    if (not newpath.empty())
       newpath += OPENAXIOM_INTERNAL_PATH_SEPARATOR;
    newpath += dir;
-   return setenv("PATH", copy_c_str(newpath), 1);
+   return oa_setenv("PATH", copy_c_str(newpath), 1);
 }
 
 
@@ -149,10 +131,11 @@ oa_dirname(const char* path)
 OPENAXIOM_C_EXPORT int
 directoryp(char *path)
 {
-    struct stat buf;
-    int code = stat(path, &buf);
-
-    return code == -1 ? -1 : S_ISDIR(buf.st_mode);
+   fs::error_code ec { };
+   auto result = fs::status(path, ec);
+   if (ec or not fs::known_status(result))
+      return -1;
+   return result.type() == fs::file_type::directory;
 }
 
 OPENAXIOM_C_EXPORT int 
@@ -201,8 +184,35 @@ make_path_from_file(char *s, char *t)
       allowed.  Otherwise, permission is defined.   */
 
 
+#if defined(_WIN32)
 /* Return 1 if the process has write access of file as explained above.
    Otherwise, return 0.  */
+
+static int inline int
+axiom_has_write_access(const char* path)
+{
+   auto attributes = GetFileAttributes(path);
+   if (attributes == INVALID_FILE_ATTRIBUTES)
+      return 0;
+   return (attributes & FILE_ATTRIBUTE_READONLY) ? 0 : 1;
+}
+
+OPENAXIOM_C_EXPORT int
+writeablep(const char* path)
+{
+   DWORD attributes = GetFileAttributes(path);
+   if (attributes == INVALID_FILE_ATTRIBUTES)
+   {
+      // The file does not exist, so check to see if the directory is writable.
+      auto dir = oa_dirname(path);
+      auto result = axiom_has_write_access(dir);
+      LocalFree(dir);
+      return result ? 2 : -1;
+   }
+   return (attributes & FILE_ATTRIBUTE_READONLY) ? 0 : 1;
+}
+
+#else
 
 static inline int
 axiom_has_write_access(const struct stat* file_info)
@@ -215,18 +225,18 @@ axiom_has_write_access(const struct stat* file_info)
    if (effetive_uid == file_info->st_uid)
       return (file_info->st_mode & S_IWUSR) ? 1 : 0;
 
-#ifdef S_IWGRP
+#  ifdef S_IWGRP
    if (getegid() == file_info->st_gid)
       return (file_info->st_mode & S_IWGRP) ? 1 : 0;
-#endif
+#  endif
 
-#ifdef S_IWOTH
+#  ifdef S_IWOTH
    return (file_info->st_mode & S_IWOTH) ? 1 : 0;
-#else
+#  else
    return 0;
-#endif   
+#  endif   
 }
-
+#endif // _WIN32
 
 /* Return
      -1 if the file designated by PATH is inexistent.
@@ -254,11 +264,7 @@ writeablep(const char *path)
             the MinGW/MSYS port appears to use MS' StrDup as the real
             worker.  Consequently, the guarantee that the the string can
             free'd no longer holds.  We have to use MS's LocalFree.  */
-#ifdef _WIN32
-       LocalFree(dir);
-#else
        free(dir);
-#endif
        return (code == 0) && axiom_has_write_access(&buf) ? 2 : -1;
     }
 
@@ -274,26 +280,28 @@ writeablep(const char *path)
 OPENAXIOM_C_EXPORT int
 readablep(const char *path)
 {
+#if defined(_WIN32)
+   return oa_access_file_for_read(path);
+#else
     struct stat buf;
-    int code;
-
-    code = stat(path, &buf);
+    int code = stat(path, &buf);
     if (code == -1)
         return -1;
 
     if (geteuid() == buf.st_uid) 
         return ((buf.st_mode & S_IREAD) != 0);
 
-#ifdef S_IRGRP    
+#  ifdef S_IRGRP    
      if (getegid() == buf.st_gid) 
         return ((buf.st_mode & S_IRGRP) != 0);
-#endif
+#  endif
 
-#ifdef S_IROTH
+#  ifdef S_IROTH
      return ((buf.st_mode & S_IROTH) != 0);
-#else
+#  else
      return 0;
-#endif
+#  endif
+#endif // _WIN32
 }
 
 
