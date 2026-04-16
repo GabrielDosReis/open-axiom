@@ -188,7 +188,7 @@ make_path_from_file(char *s, char *t)
 /* Return 1 if the process has write access of file as explained above.
    Otherwise, return 0.  */
 
-static int inline int
+static int inline
 axiom_has_write_access(const char* path)
 {
    auto attributes = GetFileAttributes(path);
@@ -236,7 +236,6 @@ axiom_has_write_access(const struct stat* file_info)
    return 0;
 #  endif   
 }
-#endif // _WIN32
 
 /* Return
      -1 if the file designated by PATH is inexistent.
@@ -271,6 +270,7 @@ writeablep(const char *path)
     return axiom_has_write_access(&buf);
 }
 
+#endif // _WIN32
 
 /* Return
      -1 if the file designated by PATH is inexistent.
@@ -497,7 +497,7 @@ oa_acquire_temporary_pathname() {
 #if _WIN32
    char buf[MAX_PATH];
    const char* tmpdir = oa_get_tmpdir();
-   auto n = GetTempFileName(tmpdir, "oa-", random() % SHRT_MAX, buf);
+   auto n = GetTempFileName(tmpdir, "oa-", 0, buf);
    /* tmpdir was malloc()ed when _WIN32.  */
    free(const_cast<char*>(tmpdir));
    if (n == 0) {
