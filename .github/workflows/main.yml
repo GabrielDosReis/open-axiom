@@ -24,7 +24,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt upgrade -y
           sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxt-dev libxpm-dev texlive
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100 --slave /usr/bin/g++ g++ /usr/bin/g++-15 --slave /usr/bin/gcov gcov /usr/bin/gcov-15
+          # sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100 --slave /usr/bin/g++ g++ /usr/bin/g++-15 --slave /usr/bin/gcov gcov /usr/bin/gcov-15
 
       - name: Configure & Build & Test
         run: |
