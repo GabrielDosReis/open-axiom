@@ -45,12 +45,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
-#include <unistd.h>
 
 
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
 #  include <windows.h>
 #else
+#  include <unistd.h>
 #  include <dirent.h>
 #  include <fcntl.h>
 #endif
@@ -101,7 +101,7 @@ addtopath(char *dir)
 static inline int
 openaxiom_is_path_separator(char c)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return c == '\\' || c == '/';
 #else
    return c == '/';
@@ -254,7 +254,7 @@ writeablep(const char *path)
             the MinGW/MSYS port appears to use MS' StrDup as the real
             worker.  Consequently, the guarantee that the the string can
             free'd no longer holds.  We have to use MS's LocalFree.  */
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
        LocalFree(dir);
 #else
        free(dir);
@@ -336,7 +336,7 @@ OPENAXIOM_C_EXPORT int
 std_stream_is_terminal(int fd)
 {
    assert(fd > -1 && fd < 3);
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    DWORD handle;
    switch (fd) {
    case 0: handle = STD_INPUT_HANDLE; break;
@@ -367,11 +367,11 @@ std_stream_is_terminal(int fd)
 OPENAXIOM_C_EXPORT int
 oa_chdir(const char* path)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return SetCurrentDirectory(path) ? 0 : -1;
 #else
    return chdir(path);
-#endif /* OPENAXIOM_MS_WINDOWS_HOST */
+#endif /* _WIN32 */
 }
 
 
@@ -392,7 +392,7 @@ oa_unlink(const char* path)
 {
    const char* curdir;
    int status = -1;
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    WIN32_FIND_DATA findData;
    HANDLE walkHandle;
 
@@ -476,7 +476,7 @@ oa_unlink(const char* path)
       status = -1;
    else
       status = 0;
-#endif /* OPENAXIOM_MS_WINDOWS_HOST */
+#endif /*_WIN32 */
 
   sortie:
    oa_chdir(curdir);
@@ -486,11 +486,11 @@ oa_unlink(const char* path)
 
 OPENAXIOM_C_EXPORT const char*
 oa_acquire_temporary_pathname() {
-#if OPENAXIOM_MS_WINDOWS_HOST
+#if _WIN32
    char buf[MAX_PATH];
    const char* tmpdir = oa_get_tmpdir();
    auto n = GetTempFileName(tmpdir, "oa-", random() % SHRT_MAX, buf);
-   /* tmpdir was malloc()ed when OPENAXIOM_MS_WINDOWS_HOST.  */
+   /* tmpdir was malloc()ed when _WIN32.  */
    free(const_cast<char*>(tmpdir));
    if (n == 0) {
       perror("oa_acquire_temporary_pathname");
@@ -516,7 +516,7 @@ oa_release_temporary_pathname(const char* s)
 OPENAXIOM_C_EXPORT int
 oa_rename(const char* old_path, const char* new_path)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return MoveFile(old_path, new_path) ? 0 : -1;
 #else
    return rename(old_path, new_path);
@@ -528,7 +528,7 @@ oa_rename(const char* old_path, const char* new_path)
 OPENAXIOM_C_EXPORT int
 oa_mkdir(const char* path)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return CreateDirectory(path, NULL) ? 0 : -1;
 #else
 #  define DIRECTORY_PERM ((S_IRWXU|S_IRWXG|S_IRWXO) & ~(S_IWGRP|S_IWOTH))
@@ -547,7 +547,7 @@ oa_system(const char* cmd)
 OPENAXIOM_C_EXPORT int 
 oa_getpid(void) 
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return GetCurrentProcessId();
 #else
    return getpid();
@@ -592,7 +592,7 @@ oa_strcat(const char* left, const char* right)
 OPENAXIOM_C_EXPORT char*
 oa_getenv(const char* var)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST   
+#ifdef _WIN32
 #define BUFSIZE 128
    char* buf = (char*) malloc(BUFSIZE);
    int len = GetEnvironmentVariable(var, buf, BUFSIZE);
@@ -619,7 +619,7 @@ oa_getenv(const char* var)
 OPENAXIOM_C_EXPORT int
 oa_setenv(const char* var, const char* val)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return SetEnvironmentVariable(var, val);
 #elif HAVE_DECL_SETENV
    return !setenv(var, val, true);
@@ -641,7 +641,7 @@ oa_getcwd(void)
 {
    size_t bufsz = 256;
    char* buf = (char*) malloc(bufsz);
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    DWORD n = GetCurrentDirectory(bufsz, buf);
    if (n == 0) {
       perror("oa_getcwd");
@@ -655,7 +655,7 @@ oa_getcwd(void)
       }
    }
    return buf;
-#else /* OPENAXIOM_MS_WINDOWS_HOST */
+#else /* _WIN32 */
    errno = 0;
    while (getcwd(buf,bufsz) == 0) {
       if (errno == ERANGE) {
@@ -675,7 +675,7 @@ oa_getcwd(void)
 OPENAXIOM_C_EXPORT int
 oa_access_file_for_read(const char* path)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
   return GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
 #else
    return access(path, R_OK);
@@ -686,7 +686,7 @@ oa_access_file_for_read(const char* path)
 OPENAXIOM_C_EXPORT const char*
 oa_get_tmpdir(void)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    char* buf;
    /* First, probe.  */
    int bufsz = GetTempPath(0, NULL);
@@ -715,7 +715,7 @@ oa_get_tmpdir(void)
 OPENAXIOM_C_EXPORT int
 oa_copy_file(const char* src, const char* dst)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    return CopyFile(src,dst, /* bFailIfExists = */ 0) ? 0 : -1;
 #else
 #define OA_BUFSZ 512
@@ -793,7 +793,7 @@ oa_allocate_process_argv(Process* proc, int argc)
 OPENAXIOM_C_EXPORT int
 oa_spawn(Process* proc, SpawnFlags flags)
 {
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
    const char* path = NULL;
    char* cmd_line = NULL;
    int curpos = strlen(proc->argv[0]);

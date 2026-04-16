@@ -34,14 +34,18 @@
 */
 
 #include "openaxiom-c-macros.h"
-#include <unistd.h>
+#if defined(_WIN32)
+#  include <Windows.h>
+#else
+#  include <unistd.h>
+#  include <sys/stat.h>
+#  include <sys/types.h>
+#  include <sys/wait.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
 #include "cfuns.h"
 #include "edible.h"

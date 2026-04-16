@@ -305,6 +305,7 @@ namespace OpenAxiom {
       // -- special operators
       using SpecialOperator = Value (*)(Evaluator*, const Sexpr::Syntax&);
       const NamedConstant<SpecialOperator> special_ops[] = {
+         { },
       };      
 
       static SpecialOperator

@@ -34,13 +34,17 @@
 */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <termios.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/time.h>
+#if defined(_WIN32)
+#  include <Windows.h>
+#else
+#  include <unistd.h>
+#  include <sys/stat.h>
+#  include <sys/time.h>
+#  include <termios.h>
+#endif
 #include <errno.h>
 #include <signal.h>
 #include <locale.h>
