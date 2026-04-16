@@ -49,7 +49,7 @@
 #ifdef HAVE_SYS_MMAN_H
 #  include <sys/mman.h>
 #endif
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
 #  include <windows.h>
 #endif
 #include <errno.h>
@@ -77,7 +77,7 @@ namespace OpenAxiom {
    namespace Memory {
       // Return storage page allocation unit in byte count.
       size_t page_size() {
-#if defined(OPENAXIOM_MS_WINDOWS_HOST)
+#if defined(_WIN32)
          SYSTEM_INFO si = { };
          GetSystemInfo(&si);
          return si.dwPageSize;
@@ -93,7 +93,7 @@ namespace OpenAxiom {
       // storage from the host OS.  Return null on failure.
       static inline Pointer
       os_allocate_read_write_raw_memory(size_t nbytes) {
-#if defined(OPENAXIOM_MS_WINDOWS_HOST)
+#if defined(_WIN32)
          return VirtualAlloc(Pointer(), nbytes,
                              MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 #elif defined(HAVE_SYS_MMAN_H)
@@ -116,7 +116,7 @@ namespace OpenAxiom {
 
       void
       os_release_raw_memory(Pointer p, size_t n) {
-#if defined(OPENAXIOM_MS_WINDOWS_HOST)
+#if defined(_WIN32)
          VirtualFree(p, 0, MEM_RELEASE);
 #elif defined(HAVE_SYS_MMAN_H)
          munmap(p, n);
@@ -258,7 +258,7 @@ namespace OpenAxiom {
       // -----------------
       FileMapping::FileMapping(std::string path)
             : start(), extent() {
-#if defined(OPENAXIOM_MS_WINDOWS_HOST)
+#if defined(_WIN32)
          HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, 0,
                                   OPEN_EXISTING,
                                   FILE_ATTRIBUTE_NORMAL, 0);
@@ -290,7 +290,7 @@ namespace OpenAxiom {
          extent = s.st_size;
 #else
 #  error "Don't know how to map a file on this platform"         
-#endif  // OPENAXIOM_MS_WINDOWS_HOST
+#endif  // _WIN32
       }
 
       FileMapping::FileMapping(FileMapping&& f)
@@ -301,7 +301,7 @@ namespace OpenAxiom {
 
       FileMapping::~FileMapping() {
          if (start != nullptr) {
-#if defined(OPENAXIOM_MS_WINDOWS_HOST)
+#if defined(_WIN32)
             UnmapViewOfFile(start);
 #elif defined(HAVE_SYS_MMAN_H)
             munmap(start, extent);

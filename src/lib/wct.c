@@ -45,7 +45,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#if defined(_WIN32)
+#  include <Windows.h>
+#else
+#  include <unistd.h>
+#endif
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>

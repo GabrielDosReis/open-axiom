@@ -88,7 +88,7 @@ namespace OpenAxiom {
       const char* ldd_path = option_value(command, "--syslib");
       if (ldd_path == nullptr)
          ldd_path = oa_concatenate_string(sysdir, "/lib");
-#ifdef OPENAXIOM_MS_WINDOWS_HOST
+#ifdef _WIN32
       augment_variable("PATH", ldd_path);
 #else      
       augment_variable("LD_LIBRARY_PATH", ldd_path);

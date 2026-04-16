@@ -41,15 +41,15 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
-#include <sys/time.h>
 #include <string.h>
 #include <signal.h>
 #ifdef _WIN32
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
 #else
+#  include <unistd.h>
+#  include <sys/time.h>
 #  include <arpa/inet.h>
 #  include <netdb.h>
 #endif

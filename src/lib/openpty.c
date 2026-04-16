@@ -35,7 +35,11 @@
 
 #include "openaxiom-c-macros.h"
 #include <stdlib.h>
-#include <unistd.h>
+#if defined(_WIN32)
+#  include <Windows.h>
+#else
+#  include <unistd.h>
+#endif
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
