@@ -461,7 +461,7 @@ int
 execute_core(const Command* command, Driver driver)
 {
    char* execpath = (char*) executable_path(command, driver);
-#ifdef __WIN32__
+#ifdef _WIN32
    char* command_line;
    int cur = strlen(command->core.argv[0]);
    int command_line_length = 0;
@@ -527,7 +527,7 @@ execute_core(const Command* command, Driver driver)
    CloseHandle(procInfo.hProcess);
    return status;
                         
-#else  /* __WIN32__ */
+#else  /* _WIN32 */
    int i;
    Arguments args(args_count(command));
    /* GCL has this oddity that it wants to believe that argv[0] has
@@ -557,7 +557,7 @@ execute_core(const Command* command, Driver driver)
    execv(execpath, args.data());
    perror(execpath);
    return -1;
-#endif /* __WIN32__ */
+#endif /* _WIN32 */
 }
 
 }

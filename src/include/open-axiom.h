@@ -47,7 +47,7 @@
 #endif
 
 /* Cope with MS-platform oddities.  */
-#ifdef __WIN32__
+#ifdef _WIN32
 #  ifdef  DLL_EXPORT
 #    define OPENAXIOM_EXPORT  __declspec(dllexport)
 #  elif defined(DLL_IMPORT)
@@ -56,7 +56,7 @@
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
 #  endif
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 #ifndef OPENAXIOM_EXPORT
 #  define OPENAXIOM_EXPORT  /* nothing */
 #endif /* OPENAXIOM_EXPORT */
@@ -65,7 +65,7 @@
 
 #include <stdint.h>
 
-#if defined(__WIN32__)
+#if defined(_WIN32)
 #  include <windows.h>
 #endif
 #if defined(HAVE_UNISTD_H)
@@ -84,7 +84,7 @@ namespace OpenAxiom {
    typedef uint8_t Byte;
 
    // An opaque datatype
-#ifdef __WIN32__
+#ifdef _WIN32
    typedef HANDLE Handle;
 #else
    typedef void* Handle;
@@ -129,7 +129,7 @@ namespace OpenAxiom {
    }
 
 /* Internal field separator character.  */
-#if defined(__WIN32__)
+#if defined(_WIN32)
 #  define openaxiom_ifs ';'
 #else
 #  define openaxiom_ifs ':'
@@ -149,7 +149,7 @@ namespace OpenAxiom {
    static inline void
    openaxiom_sleep(int n)
    {
-#if defined(__WIN32__)
+#if defined(_WIN32)
       Sleep(n * 1000);
 #else
       sleep(n);

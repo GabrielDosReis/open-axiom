@@ -90,7 +90,7 @@ static void
 closeCoverFile()
 {
     fclose(coverFile);
-#ifndef __WIN32__		/* FIXME! */
+#ifndef _WIN32		/* FIXME! */
     utimes("coverex.ht",latest_date);
 #endif
 }

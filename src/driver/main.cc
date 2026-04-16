@@ -152,12 +152,12 @@ main(int argc, char* argv[])
       abort();
    }
 
-#ifdef __WIN32__
+#ifdef _WIN32
    /* Should not happen on MS platforms.  */
    abort();
-#else  /* __WIN32__ */
+#else  /* _WIN32 */
    execv(make_path_for(command.root_dir, driver), argv);
    perror(strerror(errno));
    return -1;
-#endif /* __WIN32__ */
+#endif /* _WIN32 */
 }
