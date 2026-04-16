@@ -46,7 +46,7 @@
 #include <sys/time.h>
 #include <string.h>
 #include <signal.h>
-#ifdef __WIN32__
+#ifdef _WIN32
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
 #else
@@ -105,7 +105,7 @@ int spad_server_number = -1;
    This is needed only for MS platforms.  */
 static int openaxiom_socket_module_loaded = 0;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 /* Windows require some handshaking with the WinSock DLL before
    we can even think about talking about sockets. */
 
@@ -122,7 +122,7 @@ static void
 openaxiom_load_socket_module()
 {
   if (!openaxiom_socket_module_loaded) {
-#ifdef __WIN32__
+#ifdef _WIN32
    WSADATA wsaData;
 
    /* Request version 2.0 of WinSock DLL. */
@@ -152,7 +152,7 @@ oa_inet_pton(const char* addr, int prot, Byte* bytes)
    openaxiom_load_socket_module();
    switch (prot) {
    case 4: {
-#ifdef __WIN32__
+#ifdef _WIN32
       unsigned long inet_val = inet_addr(addr);
       if (inet_val == INADDR_NONE || inet_val == INADDR_ANY)
          return -1;
@@ -206,7 +206,7 @@ openaxiom_socket_stream_link(int family)
 static inline int
 openaxiom_socket_is_invalid(openaxiom_socket sock)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    return sock == INVALID_SOCKET;
 #else
    return sock < 0;
@@ -224,7 +224,7 @@ is_invalid_socket(const openaxiom_sio* s)
 static inline int
 is_valid_socket(const openaxiom_sio* s)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    return s->socket != INVALID_SOCKET;
 #else
    return s->socket > 0;
@@ -241,7 +241,7 @@ is_valid_socket(const openaxiom_sio* s)
 OPENAXIOM_C_EXPORT void
 oa_close_socket(openaxiom_socket s)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    shutdown(s, SD_BOTH);
    closesocket(s);
 #else
@@ -261,7 +261,7 @@ oa_close_socket(openaxiom_socket s)
 OPENAXIOM_C_EXPORT openaxiom_filedesc
 oa_open_local_client_stream_socket(const char* path)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 #  define NAMED_PIPE_PREFIX "\\\\.\\pipe"
    char* pipename;
    HANDLE handle;
@@ -308,7 +308,7 @@ oa_open_local_client_stream_socket(const char* path)
 OPENAXIOM_C_EXPORT int
 oa_filedesc_read(openaxiom_filedesc desc, Byte* buf, int size)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    DWORD count = -1;
    if (ReadFile(/* hFile */ desc,
                 /* lpBuffer */ buf,
@@ -325,7 +325,7 @@ oa_filedesc_read(openaxiom_filedesc desc, Byte* buf, int size)
 OPENAXIOM_C_EXPORT int
 oa_filedesc_write(openaxiom_filedesc desc, const Byte* buf, int size)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    DWORD count = -1;
    if (WriteFile(/* hFile */ desc,
                  /* lpBuffer */ buf,
@@ -342,7 +342,7 @@ oa_filedesc_write(openaxiom_filedesc desc, const Byte* buf, int size)
 OPENAXIOM_C_EXPORT int
 oa_filedesc_close(openaxiom_filedesc desc)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    return CloseHandle(desc) ? 0 : -1;
 #else
    return close(desc);
@@ -428,7 +428,7 @@ oa_socket_write_byte(openaxiom_socket sock, Byte byte)
 static inline int
 openaxiom_syscall_was_cancelled()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    return WSAGetLastError() == WSAEINTR;
 #else
    return errno == EINTR;
@@ -440,7 +440,7 @@ openaxiom_syscall_was_cancelled()
 static inline int
 openaxiom_connection_refused()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
    return WSAGetLastError() == WSAECONNREFUSED;
 #else
    return errno == ECONNREFUSED;
