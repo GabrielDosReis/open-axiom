@@ -131,7 +131,7 @@ oa_dirname(const char* path)
 OPENAXIOM_C_EXPORT int
 directoryp(char *path)
 {
-   fs::error_code ec { };
+   std::error_code ec { };
    auto result = fs::status(path, ec);
    if (ec or not fs::known_status(result))
       return -1;
