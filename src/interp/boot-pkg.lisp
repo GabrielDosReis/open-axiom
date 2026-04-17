@@ -100,6 +100,22 @@
     (decode-float u)
     (cons (* s f) e)))
 
+;; Compatibility layer for SBCL's removal of `scale-exponent`.
+#+ :sbcl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	(let ((scale-fun (find-symbol "SCALE-EXPONENT" "SB-IMPL"))
+				(exponent-fun (find-symbol "FLONUM-EXPONENT" "SB-IMPL")))
+			(cond
+				(scale-fun
+					;; SBCL < 2.6.2: scale-exponent returns (values scaled-float exponent)
+					(defun boot::oa-scale-exponent (x) (funcall scale-fun x)))
+				(exponent-fun
+					;; SBCL >= 2.6.2: `flonum-exponent` returns just the exponent
+					(defun boot::oa-scale-exponent (x)
+						(let ((e (funcall exponent-fun x)))
+							(values (/ x (expt (float 10 x) (1- e))) e))))
+				(t (error "Neither SCALE-EXPONENT nor FLONUM-EXPONENT found in SB-IMPL")))))
+
 ;; Format a DoubleFloat value in a reasonable way.  Similar code
 ;; has been submitted for inclusion in SBCL.  If and when
 ;; that version is integrated, we should remove it from here.
@@ -132,7 +148,7 @@
 	       (dfloat-format-exp (stream number)
 		 (declare (type double-float number))
 		 (multiple-value-bind (num expt)
-		   (sb-impl::scale-exponent number)
+		   (oa-scale-exponent number)
 		   (let* ((expt (1- expt))
 			  (estr (sb-format::decimal-string (abs expt))))
 		     (multiple-value-bind (fstr flen lpoint tpoint)
@@ -149,7 +165,7 @@
 	      (when (minusp number)
 		(setq number (- number))
 		(write-char #\- stream))
-	      (multiple-value-bind (ignore n) (sb-impl::scale-exponent number)
+	      (multiple-value-bind (ignore n) (oa-scale-exponent number)
 	      (declare (ignore ignore))
 	      (let* ((q (length
 			 (nth-value 1 (sb-impl::flonum-to-digits number))))
