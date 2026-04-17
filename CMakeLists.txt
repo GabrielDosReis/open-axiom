@@ -113,8 +113,13 @@ check_include_file("X11/Intrinsic.h" HAVE_X11_INTRINSIC_H)
 check_include_file("X11/xpm.h" HAVE_X11_XPM_H)
 
 # -- Symbol / function availability --
-check_symbol_exists(AF_LOCAL "sys/socket.h" HAVE_AF_LOCAL)
-check_symbol_exists(AF_UNIX "sys/socket.h" HAVE_AF_UNIX)
+if(WIN32)
+  # Windows 10 version 1803+ supports AF_UNIX sockets.
+  set(HAVE_AF_UNIX 1)
+else()
+  check_symbol_exists(AF_LOCAL "sys/socket.h" HAVE_AF_LOCAL)
+  check_symbol_exists(AF_UNIX "sys/socket.h" HAVE_AF_UNIX)
+endif()
 check_symbol_exists(fork "unistd.h" HAVE_DECL_FORK)
 check_symbol_exists(getegid "unistd.h" HAVE_DECL_GETEGID)
 check_symbol_exists(geteuid "unistd.h" HAVE_DECL_GETEUID)

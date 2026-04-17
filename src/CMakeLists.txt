@@ -14,7 +14,7 @@
 #   A. Common include paths and blanket LANGUAGE CXX
 #   B. Helper: oa_apply_build_flags -- shared warning / profiling / debug opts
 #   C. Static libraries: open-axiom-core, OpenAxiom, spad
-#   D. Executables: hammer, open-axiom, oa-lisp
+#   D. Executables: hammer, open-axiom, lisp
 #   E. Phase 3: Lisp runtime compilation and image linking
 #   F. Staging targets: stage-native-layout, phase1-native, phase2-native
 #   G. Phase 4: Boot translator bootstrap and interpreter chain
@@ -231,9 +231,8 @@ target_link_libraries(hammer PRIVATE OpenAxiom open-axiom-core)
 add_executable(open-axiom driver/main.cc)
 target_link_libraries(open-axiom PRIVATE OpenAxiom open-axiom-core)
 
-# oa-lisp -- thin C++ driver that launches the Lisp image.  Installed as
-# "lisp" inside the versioned layout so it does not collide with system
-# Lisp binaries.
+# oa-lisp -- thin C++ driver that launches the Lisp image.  Built as
+# "lisp" (noinst_PROGRAMS in Autotools); not installed.
 add_executable(oa-lisp rt/driver.cc)
 set_target_properties(oa-lisp PROPERTIES OUTPUT_NAME lisp)
 target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
@@ -2042,17 +2041,15 @@ add_custom_target(phase2-native
 # invoke it directly.  All other binaries, libraries, and headers live
 # under the versioned layout root so multiple versions can coexist.
 #
-# User-facing executables (bin/): open-axiom, clef, viewAlone, sman, asq
-# Internal executables (lib/):    hammer, oa-lisp, viewman, view2D, view3D,
-#                                 session, spadclient, hypertex, spadbuf,
-#                                 htadd, ex2ht, hthits, htsearch
+# System PATH (bindir):           open-axiom (the driver)
+# User-facing tools (bin/):       clef, asq, sman, viewAlone
+# Internal executables (lib/):    session, spadclient, viewman, view2D, view3D,
+#                                 hypertex, spadbuf, htadd, ex2ht, hthits,
+#                                 htsearch
+# Build-only (not installed):     hammer, lisp
 
 install(TARGETS open-axiom
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(TARGETS hammer oa-lisp
-  RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
 )
 
 # Libraries + their FILE_SET headers are installed together.
