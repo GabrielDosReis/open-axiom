@@ -151,6 +151,52 @@ if(UTIL_LIBRARY)
   target_link_libraries(open-axiom-core PUBLIC ${UTIL_LIBRARY})
 endif()
 
+# Winsock -- needed for sockio-c on Windows.
+if(WIN32)
+  target_link_libraries(open-axiom-core PUBLIC wsock32 ws2_32)
+endif()
+
+# -- Shared variant of open-axiom-core (for delayed-FFI Lisps) --
+# SBCL, Clozure CL, and CLISP use dlopen/LoadLibrary to load the C
+# runtime at image startup (the "delayed FFI" strategy).  They expect
+# a shared library -- open-axiom-core.dll/.so -- in the staging tree.
+if(oa_use_dynamic_lib STREQUAL "yes")
+  add_library(open-axiom-core-shared SHARED
+    lib/bsdsignal.cxx
+    lib/cfuns-c.cxx
+    lib/sockio-c.cxx
+    utils/storage.cxx
+    io/std-streams.cxx
+    io/InputFragment.cxx
+    syntax/token.cxx
+    syntax/sexpr.cxx
+    syntax/Parser.cxx
+  )
+  set_target_properties(open-axiom-core-shared PROPERTIES
+    OUTPUT_NAME open-axiom-core
+    ARCHIVE_OUTPUT_NAME open-axiom-core-import
+  )
+  target_include_directories(open-axiom-core-shared PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/include>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
+  target_compile_features(open-axiom-core-shared PUBLIC cxx_std_20)
+  oa_apply_build_flags(open-axiom-core-shared)
+  # The headers gate __declspec(dllexport) on DLL_EXPORT (see open-axiom.h).
+  # Libtool defines this automatically; replicate that here.
+  target_compile_definitions(open-axiom-core-shared PRIVATE DLL_EXPORT)
+  if(UNIX)
+    target_link_libraries(open-axiom-core-shared PUBLIC m)
+  endif()
+  if(CMAKE_DL_LIBS)
+    target_link_libraries(open-axiom-core-shared PUBLIC ${CMAKE_DL_LIBS})
+  endif()
+  if(WIN32)
+    target_link_libraries(open-axiom-core-shared PUBLIC wsock32 ws2_32)
+  endif()
+endif()
+
 # -- OpenAxiom: mid-level utility / VM / command-line library --
 # String pool, command-line parsing, filesystem helpers, and the runtime
 # VM / Lisp bridge / database layer.  OPENAXIOM_ROOT_DIRECTORY is baked
@@ -168,16 +214,21 @@ add_library(OpenAxiom STATIC
 # -- spad: legacy C sources (terminal / cursor / hashing) --
 # These files have .c extensions but are compiled as C++ (see the
 # blanket LANGUAGE CXX policy at the top of this file).
+# The terminal/pty sources are POSIX-only; exclude them on Windows.
 set(oa_spad_sources
-  lib/cursor.c
-  lib/edin.c
-  lib/fnct_key.c
-  lib/openpty.c
-  lib/prt.c
-  lib/wct.c
   lib/halloc.c
   lib/hash.c
 )
+if(NOT WIN32)
+  list(APPEND oa_spad_sources
+    lib/cursor.c
+    lib/edin.c
+    lib/fnct_key.c
+    lib/openpty.c
+    lib/prt.c
+    lib/wct.c
+  )
+endif()
 
 add_library(spad STATIC
   ${oa_spad_sources}
@@ -241,7 +292,7 @@ target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
 # The Phase 3 chain:
 #   1. Generate core.lisp from the .in template (configure_file)
 #   2. Compile core.lisp -> core.FASL  (+ core.o for ECL)
-#   3. Link the FASL into a standalone image: oa-base-lisp
+#   3. Link the FASL into a standalone image: base-lisp
 #   4. Stage everything under OA_STAGE_ROOT for later phases
 #
 # The LISP_CMD variable below avoids repeating the multi-part
@@ -251,7 +302,7 @@ set(oa_lisp_build_dir "${PROJECT_BINARY_DIR}/phase3/lisp")
 set(oa_lisp_generated_core "${oa_lisp_build_dir}/core.lisp")
 set(oa_lisp_generated_fasl "${oa_lisp_build_dir}/core.${OA_LISP_FASL_EXT}")
 set(oa_lisp_generated_linkable "${oa_lisp_build_dir}/core.${OA_LISP_LNK_EXT}")
-set(oa_lisp_generated_image "${oa_lisp_build_dir}/oa-base-lisp${CMAKE_EXECUTABLE_SUFFIX}")
+set(oa_lisp_generated_image "${oa_lisp_build_dir}/base-lisp${CMAKE_EXECUTABLE_SUFFIX}")
 
 file(MAKE_DIRECTORY "${oa_lisp_build_dir}")
 
@@ -342,11 +393,17 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
   endif()
 
   # -- Step 3: Link the FASL into a standalone executable image --
+  # The Lisp |..| bar-escape syntax contains pipe characters that cmd.exe
+  # interprets as shell pipes, so we write the link form to a file and
+  # --load it instead of passing it via --eval.
+  set(oa_lisp_link_script "${oa_lisp_build_dir}/link-base-lisp.lisp")
+  file(WRITE "${oa_lisp_link_script}"
+    "(load \"core\")\n(|AxiomCore|::|link| \"base-lisp${CMAKE_EXECUTABLE_SUFFIX}\" (quote ${oa_base_lisp_objects}) \"|AxiomCore|::|topLevel|\")\n")
+
   add_custom_command(
     OUTPUT "${oa_lisp_generated_image}"
     COMMAND ${OA_LISP_CMD}
-            ${OA_LISP_EVAL_FLAG} "(load \"core\")"
-            ${OA_LISP_EVAL_FLAG} "(|AxiomCore|::|link| \"oa-base-lisp${CMAKE_EXECUTABLE_SUFFIX}\" (quote ${oa_base_lisp_objects}) \"|AxiomCore|::|topLevel|\")"
+            ${OA_LISP_EVAL_FLAG} "(load \"link-base-lisp.lisp\")"
     WORKING_DIRECTORY "${oa_lisp_build_dir}"
     DEPENDS "${oa_lisp_generated_fasl}"
     COMMENT "Link the Phase 3 OpenAxiom base Lisp image"
@@ -366,7 +423,7 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
       "${OA_STAGE_ROOT}/lisp/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${oa_lisp_generated_image}"
-      "${OA_STAGE_ROOT}/bin/"
+      "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
       "${OA_STAGE_ROOT}/share/open-axiom/cmake/"
@@ -379,6 +436,7 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     DEPENDS stage-lisp-runtime
     COMMENT "Build and stage the Phase 3 Lisp runtime foundation"
   )
+
 
 
 # ===========================================================================
@@ -428,7 +486,7 @@ set(oa_interp_builddir "${PROJECT_BINARY_DIR}/phase4/interp")
 set(OA_DRIVER "$<TARGET_FILE:open-axiom>")
 
 # The base Lisp image from Phase 3 (installed into the staging tree).
-set(OA_LISPSYS "${OA_STAGE_ROOT}/bin/lisp")
+set(OA_LISPSYS "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}")
 
 # -- Boot module list and dependency order ---------------------------------
 # The Boot translator is composed of these 8 modules, listed in dependency
@@ -537,17 +595,29 @@ function(oa_boot_link_image stage fasl_list)
   set(outdir  "${oa_boot_builddir}/${stage}")
   set(image   "${outdir}/bootsys${CMAKE_EXECUTABLE_SUFFIX}")
 
+  # Write a command file to avoid cmd.exe mangling of Lisp |..| bar-escapes.
+  # Use file(GENERATE ...) so that generator expressions (e.g. OA_DRIVER)
+  # are resolved at generation time rather than configure time.
+  set(cmdfile "${outdir}/link-bootsys.cmdfile")
+  string(JOIN "\n" _cmd_content
+    "${OA_DRIVER}"
+    "--execpath=${OA_LISPSYS}"
+    "--make"
+    "--main=|AxiomCore|::|topLevel|"
+    "--system=${OA_STAGE_ROOT}"
+    "--prologue=(pushnew :open-axiom-boot *features*)"
+    "--output=${image}"
+    "--load-directory=${outdir}"
+    ${fasl_list}
+  )
+  file(GENERATE OUTPUT "${cmdfile}" CONTENT "${_cmd_content}\n")
+
   add_custom_command(
     OUTPUT "${image}"
-    COMMAND ${OA_DRIVER}
-      --execpath=${OA_LISPSYS}
-      --make
-      --main="|AxiomCore|::|topLevel|"
-      --system=${OA_STAGE_ROOT}
-      --prologue=(pushnew\ :open-axiom-boot\ *features*)
-      --output=${image}
-      --load-directory=${outdir}
-      ${fasl_list}
+    COMMAND ${CMAKE_COMMAND}
+      -DCMDFILE=${cmdfile}
+      -DWORKDIR=${outdir}
+      -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
     WORKING_DIRECTORY "${outdir}"
     DEPENDS ${fasl_list} stage-lisp-runtime
     COMMENT "[boot/${stage}] Link bootsys image"
@@ -836,7 +906,6 @@ oa_interp_compile(match       boot sys-macros)
 oa_interp_compile(format      boot sys-macros)
 oa_interp_compile(buildom     boot sys-macros c-util nruncomp)
 oa_interp_compile(setvars     boot sys-macros debug)
-oa_interp_compile(setvart     boot sys-macros)
 oa_interp_compile(fortcall    boot sys-macros)
 
 # -- Interpreter core --
@@ -878,6 +947,11 @@ oa_interp_compile(br-saturn   boot bc-util)
 oa_interp_compile(showimp     boot c-util nruncomp)
 oa_interp_compile(alql        boot br-search)
 oa_interp_compile(topics      boot sys-macros sys-utility)
+
+# setvart must be last: its top-level initializeSetVariables call reads
+# variables defined in many other modules (e.g. $plainRTspecialCharacters
+# from i-output).  Autotools places it last for the same reason.
+oa_interp_compile(setvart     boot sys-macros)
 
 # -- Interpreter FASL inventory (auto-accumulated) -------------------------
 # oa_interp_all_fasls was populated by the oa_interp_compile() calls
@@ -924,18 +998,29 @@ add_custom_command(
 # It is built by loading all compiled FASL modules into bootsys.
 set(oa_interpsys "${oa_interp_builddir}/interpsys${CMAKE_EXECUTABLE_SUFFIX}")
 
+# Write a command file to avoid cmd.exe mangling of Lisp |..| bar-escapes.
+# Use file(GENERATE ...) so that generator expressions are resolved.
+set(oa_interpsys_cmdfile "${oa_interp_builddir}/link-interpsys.cmdfile")
+string(JOIN "\n" _interpsys_cmd
+  "${OA_DRIVER}"
+  "--execpath=${OA_BOOTSYS}"
+  "--syslib=${OA_STAGE_ROOT}/lib"
+  "--system=${OA_STAGE_ROOT}/"
+  "--prologue=(pushnew :open-axiom-basic-system *features*)"
+  "--make"
+  "--output=${oa_interpsys}"
+  "--main=BOOT::|systemMain|"
+  "--load-directory=${oa_interp_builddir}"
+  ${oa_interp_objs}
+)
+file(GENERATE OUTPUT "${oa_interpsys_cmdfile}" CONTENT "${_interpsys_cmd}\n")
+
 add_custom_command(
   OUTPUT "${oa_interpsys}"
-  COMMAND ${OA_DRIVER}
-    --execpath=${OA_BOOTSYS}
-    --syslib=${OA_STAGE_ROOT}/lib
-    --system=${OA_STAGE_ROOT}/
-    --prologue=(pushnew\ :open-axiom-basic-system\ *features*)
-    --make
-    --output=${oa_interpsys}
-    --main="BOOT::|systemMain|"
-    --load-directory=${oa_interp_builddir}
-    ${oa_interp_objs}
+  COMMAND ${CMAKE_COMMAND}
+    -DCMDFILE=${oa_interpsys_cmdfile}
+    -DWORKDIR=${oa_interp_builddir}
+    -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
   WORKING_DIRECTORY "${oa_interp_builddir}"
   DEPENDS ${oa_interp_objs} ${OA_BOOTSYS} "${oa_msgs_staged}" ${oa_interp_ffi_staged}
   COMMENT "[interp] Link interpsys image"
@@ -943,17 +1028,9 @@ add_custom_command(
 )
 
 # -- Stage interpsys --
-add_custom_target(stage-interpsys
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${oa_interpsys}"
-    "${OA_STAGE_ROOT}/bin/interpsys${CMAKE_EXECUTABLE_SUFFIX}"
-  DEPENDS "${oa_interpsys}" stage-bootsys
-  COMMENT "Stage the interpreter (interpsys)"
-)
-
 add_custom_target(phase4-interpsys
-  DEPENDS stage-interpsys
-  COMMENT "Build and stage the Phase 4 interpreter (interpsys)"
+  DEPENDS "${oa_interpsys}" stage-bootsys
+  COMMENT "Build the Phase 4 interpreter (interpsys)"
 )
 
 # -- Umbrella Phase 4 target --
@@ -1971,6 +2048,9 @@ add_custom_target(phase6-optional
 #
 # Executables and libraries are staged via lists so adding a new target
 # only requires appending to the list -- no new COMMAND block needed.
+# Note: only artifacts needed by later build phases are staged here.
+# Executables like open-axiom (the driver) and hammer are used directly
+# from the build tree, matching Autotools behaviour.
 
 set(oa_stage_dirs
   "${OA_STAGE_ROOT}/bin"
@@ -1981,26 +2061,15 @@ set(oa_stage_dirs
   "${OA_STAGE_ROOT}/src/algebra"
 )
 
-# Targets staged into OA_STAGE_ROOT/bin/.
-set(oa_stage_bin_targets  open-axiom hammer oa-lisp)
-
 # Targets staged into OA_STAGE_ROOT/lib/.
 set(oa_stage_lib_targets  open-axiom-core OpenAxiom spad)
+if(oa_use_dynamic_lib STREQUAL "yes")
+  list(APPEND oa_stage_lib_targets open-axiom-core-shared)
+endif()
 
-# Build the COMMAND list programmatically.  CMake does not allow foreach
-# inside add_custom_target, so we construct the commands externally and
-# pass them via a helper script.  However, we can still use generator
-# expressions and list the COMMANDs directly -- the lists here serve as
-# the single source of truth and are referenced again by DEPENDS.
 add_custom_target(stage-native-layout
   # -- Create the directory skeleton --
   COMMAND ${CMAKE_COMMAND} -E make_directory ${oa_stage_dirs}
-  # -- Copy executables --
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "$<TARGET_FILE:open-axiom>"
-    "$<TARGET_FILE:hammer>"
-    "$<TARGET_FILE:oa-lisp>"
-    "${OA_STAGE_ROOT}/bin/"
   # -- Copy static libraries --
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "$<TARGET_FILE:open-axiom-core>"
@@ -2017,9 +2086,22 @@ add_custom_target(stage-native-layout
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${PROJECT_BINARY_DIR}/config/openaxiom-c-macros.h"
     "${OA_STAGE_ROOT}/include/open-axiom/config"
-  DEPENDS ${oa_stage_bin_targets} ${oa_stage_lib_targets}
+  DEPENDS open-axiom hammer oa-lisp ${oa_stage_lib_targets}
   COMMENT "Stage native artifacts into an OpenAxiom-style runtime layout"
 )
+
+# When delayed FFI is active, the shared library must also land in the
+# staging lib/ directory so that the Lisp linker can load it.
+if(oa_use_dynamic_lib STREQUAL "yes")
+  add_custom_target(stage-shared-lib
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "$<TARGET_FILE:open-axiom-core-shared>"
+      "${OA_STAGE_ROOT}/lib/"
+    DEPENDS open-axiom-core-shared
+    COMMENT "Stage open-axiom-core shared library for delayed FFI"
+  )
+  add_dependencies(stage-native-layout stage-shared-lib)
+endif()
 
 # phase1-native: just compile the three executables (no staging).
 # Useful for quick compilation-only checks.
@@ -2051,6 +2133,9 @@ add_custom_target(phase2-native
 install(TARGETS open-axiom
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# hammer and lisp are build-only tools (noinst_PROGRAMS in Autotools)
+# and are not installed.
 
 # Libraries + their FILE_SET headers are installed together.
 # FILE_SET public_headers -> include/ (open-axiom.h + open-axiom/*)
@@ -2103,30 +2188,35 @@ install(FILES
 
 # -- Phase 6 install rules --
 
-# User-facing executables -> $PREFIX/bin/
+# The driver is the only executable installed to the system PATH.
+# Everything else goes under the OpenAxiom layout root, matching Autotools.
+
+# User-facing tools -> $OA_INSTALL_LAYOUT_ROOT/bin/
 install(TARGETS clef asq
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
 )
 
 if(OPENAXIOM_USE_SMAN)
   install(TARGETS sman
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  )
-  install(TARGETS session spadclient
     RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+  )
+  # session and spadclient are internal executables launched by sman.
+  install(TARGETS session spadclient
+    RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/lib
   )
 endif()
 
 if(OA_HAVE_X11)
   install(TARGETS viewAlone
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  )
-  install(TARGETS htadd ex2ht viewman view2D view3D hypertex spadbuf
     RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+  )
+  # Internal executables launched by sman/hypertex -> lib/
+  install(TARGETS viewman view2D view3D hypertex spadbuf htadd ex2ht
+    RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/lib
   )
   if(HAVE_REGEX_H)
     install(TARGETS hthits htsearch
-      RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
+      RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/lib
     )
   endif()
 endif()
