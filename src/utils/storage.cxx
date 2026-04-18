@@ -251,25 +251,29 @@ namespace OpenAxiom {
          block->available += n;
          return p;
       }
-      
 
       // -----------------
       // -- FileMapping --
       // -----------------
       FileMapping::FileMapping(std::string path)
-            : start(), extent() {
+      {
 #if defined(_WIN32)
-         HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, 0,
+         HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 
+                                  FILE_SHARE_READ, 0,
                                   OPEN_EXISTING,
                                   FILE_ATTRIBUTE_NORMAL, 0);
          if (file == INVALID_HANDLE_VALUE)
             filesystem_error("could not access file " + path);
+         extent = GetFileSize(file, 0);
+         if (extent == 0)
+         {
+            CloseHandle(file);
+            return;
+         }
          HANDLE mapping = CreateFileMapping(file, 0, PAGE_READONLY, 0, 0, 0);
          if (mapping == 0)
             filesystem_error("could not map file " + path);
-         start = static_cast<Byte*>
-            (MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
-         extent = GetFileSize(file, 0);
+         start = static_cast<Byte*>(MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
          CloseHandle(mapping);
          CloseHandle(file);
 #elif defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_MMAN_H) && defined(HAVE_FCNTL_H)
@@ -282,12 +286,16 @@ namespace OpenAxiom {
          int fd = open(path.c_str(), O_RDONLY);
          if (fd < 0)
             filesystem_error("could not open " + path);
-         start = static_cast<Byte*>
-            (mmap(Pointer(), s.st_size, PROT_READ, MAP_PRIVATE, fd, 0));
+         extent = s.st_size;
+         if (extent == 0)
+         {
+            close(fd);
+            return;
+         }
+         start = static_cast<Byte*>(mmap(Pointer(), s.st_size, PROT_READ, MAP_SHARED, fd, 0));
          close(fd);
          if (start == MAP_FAILED)
             filesystem_error("could not map file " + path);
-         extent = s.st_size;
 #else
 #  error "Don't know how to map a file on this platform"         
 #endif  // _WIN32

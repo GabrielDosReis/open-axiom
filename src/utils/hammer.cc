@@ -416,7 +416,8 @@ main(int argc, char* argv[]) {
       OpenAxiom::Memory::FileMapping file(input_path);
       std::ofstream os(output_path);
       auto what = reinterpret_cast<const char8_t*>(chunk);
-      os << resolve_chunk(what, Document(file));
+      if (not file.empty())
+         os << resolve_chunk(what, Document(file));
    }
    catch(const OpenAxiom::SystemError& e) {
       std::cerr << e.message() << std::endl;
