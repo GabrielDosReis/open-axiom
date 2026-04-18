@@ -65,6 +65,20 @@ jobs:
           pip install --user 'cmake>=3.31'
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Install Clozure CL
+        if: inputs.lisp == 'clozure'
+        run: |
+          # CCL is not packaged for Ubuntu 24.04; fetch from GitHub releases.
+          curl -L -o /tmp/ccl.tar.gz \
+            https://github.com/Clozure/ccl/releases/download/v1.13/ccl-1.13-linuxx86.tar.gz
+          sudo tar xf /tmp/ccl.tar.gz -C /usr/local
+          # Create a 'ccl' wrapper that sets CCL_DEFAULT_DIRECTORY and
+          # invokes the 64-bit kernel.
+          printf '#!/bin/sh\nexec /usr/local/ccl/lx86cl64 "$@"\n' | \
+            sudo tee /usr/local/bin/ccl > /dev/null
+          sudo chmod +x /usr/local/bin/ccl
+          ccl --version
+
       - name: Verify CMake version
         run: cmake --version
 
