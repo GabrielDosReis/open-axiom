@@ -419,7 +419,7 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
   )
 
   # -- Step 4: Stage Lisp artifacts into the runtime layout --
-  add_custom_target(stage-lisp-runtime
+  set(oa_stage_lisp_commands
     COMMAND ${CMAKE_COMMAND} -E make_directory
       "${OA_STAGE_ROOT}/lisp"
       "${OA_STAGE_ROOT}/share/open-axiom/cmake"
@@ -435,14 +435,11 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
       "${OA_STAGE_ROOT}/share/open-axiom/cmake/"
-    DEPENDS stage-native-layout "${oa_lisp_generated_image}"
-    COMMENT "Stage the Lisp runtime artifacts"
   )
 
   # ECL needs a linkset file and the linkable object in the staging tree.
   if(OA_LISP_FLAVOR STREQUAL "ecl")
-    add_custom_command(
-      TARGET stage-lisp-runtime POST_BUILD
+    list(APPEND oa_stage_lisp_commands
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${oa_lisp_generated_linkable}"
         "${OA_STAGE_ROOT}/lisp/"
@@ -450,10 +447,14 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
         -Dfile=${OA_STAGE_ROOT}/lisp/linkset
         -Dcontent=("core.${OA_LISP_LNK_EXT}")
         -P "${PROJECT_SOURCE_DIR}/cmake/WriteFile.cmake"
-      COMMENT "Generate ECL linkset for lisp runtime"
-      VERBATIM
     )
   endif()
+
+  add_custom_target(stage-lisp-runtime
+    ${oa_stage_lisp_commands}
+    DEPENDS stage-native-layout "${oa_lisp_generated_image}"
+    COMMENT "Stage the Lisp runtime artifacts"
+  )
 
   # Autotools equivalent: all-lisp
   # Artifacts: core.fasl (compiled Lisp bootstrap) and base-lisp (standalone
