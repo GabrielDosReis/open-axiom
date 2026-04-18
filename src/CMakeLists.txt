@@ -439,14 +439,16 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
 
   # ECL needs a linkset file and the linkable object in the staging tree.
   if(OA_LISP_FLAVOR STREQUAL "ecl")
+    # Generate the linkset at configure time -- the content is a Lisp list
+    # of strings naming the linkable object files (read by linkset-from).
+    file(GENERATE
+      OUTPUT "${OA_STAGE_ROOT}/lisp/linkset"
+      CONTENT "(\"core.${OA_LISP_LNK_EXT}\")\n"
+    )
     list(APPEND oa_stage_lisp_commands
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${oa_lisp_generated_linkable}"
         "${OA_STAGE_ROOT}/lisp/"
-      COMMAND ${CMAKE_COMMAND}
-        -Dfile=${OA_STAGE_ROOT}/lisp/linkset
-        -Dcontent=("core.${OA_LISP_LNK_EXT}")
-        -P "${PROJECT_SOURCE_DIR}/cmake/WriteFile.cmake"
     )
   endif()
 
@@ -748,16 +750,12 @@ if(OA_LISP_FLAVOR STREQUAL "ecl")
   endforeach()
   string(JOIN " " oa_boot_linkset_content ${oa_boot_lnk_list})
 
-  add_custom_command(
-    TARGET stage-bootsys POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/boot"
-    COMMAND ${CMAKE_COMMAND}
-      -Dfile=${OA_STAGE_ROOT}/boot/linkset
-      -Dcontent=(${oa_boot_linkset_content})
-      -P "${PROJECT_SOURCE_DIR}/cmake/WriteFile.cmake"
-    COMMENT "Generate ECL linkset for bootsys"
-    VERBATIM
+  # Generate the boot linkset at configure time as a Lisp list of strings.
+  file(GENERATE
+    OUTPUT "${OA_STAGE_ROOT}/boot/linkset"
+    CONTENT "(${oa_boot_linkset_content})\n"
   )
+
   foreach(mod ${oa_boot_modules})
     add_custom_command(
       TARGET stage-bootsys POST_BUILD
