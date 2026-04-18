@@ -2141,12 +2141,15 @@ add_custom_target(all-asq
 # -- J. clef: command-line editor ------------------------------------------
 # clef provides line-editing and cursor control for the terminal-based
 # OpenAxiom session.  Single source file, always built.
+# Requires POSIX pseudo-tty, fork(), exec(), so only available on Unix.
 
-set(oa_clef_sources clef/edible.c)
+if(NOT WIN32)
+  set(oa_clef_sources clef/edible.c)
 
-add_executable(clef ${oa_clef_sources})
-target_link_libraries(clef PRIVATE spad open-axiom-core)
-oa_apply_build_flags(clef)
+  add_executable(clef ${oa_clef_sources})
+  target_link_libraries(clef PRIVATE spad open-axiom-core)
+  oa_apply_build_flags(clef)
+endif()
 
 
 # -- K. Session manager (sman) --------------------------------------------
@@ -2448,7 +2451,10 @@ add_custom_target(all-doc
 # -- P. Umbrella targets ----------------------------------------------------
 
 # all-native: every native executable (core + optional).
-set(oa_all_native_targets open-axiom hammer oa-lisp clef asq)
+set(oa_all_native_targets open-axiom hammer oa-lisp asq)
+if(NOT WIN32)
+  list(APPEND oa_all_native_targets clef)
+endif()
 if(OPENAXIOM_USE_SMAN)
   list(APPEND oa_all_native_targets sman session spadclient)
 endif()
@@ -2684,7 +2690,11 @@ install(FILES
 # Everything else goes under the OpenAxiom layout root, matching Autotools.
 
 # User-facing tools -> $OA_INSTALL_LAYOUT_ROOT/bin/
-install(TARGETS clef asq
+set(oa_user_bin_targets asq)
+if(NOT WIN32)
+  list(APPEND oa_user_bin_targets clef)
+endif()
+install(TARGETS ${oa_user_bin_targets}
   RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
 )
 
