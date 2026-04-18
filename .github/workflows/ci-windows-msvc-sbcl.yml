@@ -1,0 +1,95 @@
+# Windows: MSVC (VS 2026 Insiders) + SBCL
+name: 'CI: Windows MSVC+SBCL'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Force LF line endings
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v4
+
+      - name: Install Visual Studio 2026 Insiders (C++ workload)
+        run: |
+          winget install --id Microsoft.VisualStudio.Community.Insiders -e `
+            --accept-source-agreements --accept-package-agreements `
+            --override "--quiet --wait --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended"
+
+      - name: Install SBCL via winget
+        run: |
+          winget install --id SBCL.SBCL -e `
+            --accept-source-agreements --accept-package-agreements
+          $sbclDir = "C:\Program Files\Steel Bank Common Lisp"
+          if (-not (Test-Path $sbclDir)) {
+            # Fallback: search Program Files for sbcl.exe
+            $sbclExe = Get-ChildItem -Path "${env:ProgramFiles}","${env:ProgramFiles(x86)}" `
+              -Filter sbcl.exe -Recurse -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+            if ($sbclExe) { $sbclDir = $sbclExe.DirectoryName }
+          }
+          if (Test-Path $sbclDir) {
+            "$sbclDir" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+            Write-Host "SBCL found at: $sbclDir"
+          } else {
+            Write-Error "SBCL install directory not found at $sbclDir"
+            exit 1
+          }
+
+      - name: Locate VS developer shell
+        id: vsdevshell
+        run: |
+          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installPath = & $vsWhere -prerelease -latest -property installationPath
+          if (-not $installPath) {
+            Write-Error "VS Insiders installation not found"
+            exit 1
+          }
+          $devShell = Join-Path $installPath "Common7\Tools\Launch-VsDevShell.ps1"
+          if (-not (Test-Path $devShell)) {
+            Write-Error "Launch-VsDevShell.ps1 not found at $devShell"
+            exit 1
+          }
+          "VSDEVSHELL=$devShell" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+          Write-Host "VS Insiders at: $installPath"
+
+      - name: Verify tools
+        run: |
+          & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
+          cl 2>&1 | Select-Object -First 1
+          sbcl --version
+          cmake --version
+
+      - name: Configure
+        run: |
+          & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_C_COMPILER=cl `
+            -DCMAKE_CXX_COMPILER=cl `
+            -DOA_WITH_LISP=sbcl `
+            -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
+
+      - name: Build all-native (all native executables)
+        run: |
+          & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
+          cmake --build build --target all-native --parallel 2
+
+      - name: Build all-interpsys (Lisp chain regression check)
+        run: |
+          & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
+          cmake --build build --target all-interpsys --parallel 2
+
+      - name: Verify interpsys image
+        run: |
+          $interpsys = Get-ChildItem -Path build -Recurse -Filter "interpsys.exe" |
+            Select-Object -First 1
+          if (-not $interpsys) { Write-Error "interpsys.exe not found"; exit 1 }
+          Write-Host "OK: $($interpsys.FullName) ($($interpsys.Length) bytes)"

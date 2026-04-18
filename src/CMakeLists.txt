@@ -2,10 +2,9 @@
 # src/CMakeLists.txt -- OpenAxiom source-tree targets
 # ===========================================================================
 # This file defines the native C/C++ libraries and executables that form
-# the foundation of the OpenAxiom build, plus the Lisp runtime compilation
-# (Phase 3), the boot translator and interpreter chain (Phase 4),
-# the algebra substrate (Phase 5),
-# and the Phase 6 databases, HyperDoc data, and optional executables.
+# the foundation of the OpenAxiom build, plus the Lisp runtime compilation,
+# the boot translator and interpreter chain, the algebra substrate,
+# and the databases, HyperDoc data, and optional executables.
 # This file also provides install rules, CMake export targets, and CPack
 # packaging configuration.
 #
@@ -15,11 +14,11 @@
 #   B. Helper: oa_apply_build_flags -- shared warning / profiling / debug opts
 #   C. Static libraries: open-axiom-core, OpenAxiom, spad
 #   D. Executables: hammer, open-axiom, lisp
-#   E. Phase 3: Lisp runtime compilation and image linking
-#   F. Staging targets: stage-native-layout, phase1-native, phase2-native
-#   G. Phase 4: Boot translator bootstrap and interpreter chain
-#   H. Phase 5: Algebra substrate
-#   P. Phase 6: Databases, HyperDoc data, and optional native executables
+#   E. Lisp runtime compilation and image linking
+#   F. Staging targets: stage-native-layout, all-lib, all-staging
+#   G. Boot translator bootstrap and interpreter chain
+#   H. Algebra substrate
+#   P. Databases, HyperDoc data, and optional native executables
 #   I. Install rules and CMake export targets
 #   Q. CPack packaging
 # ===========================================================================
@@ -175,6 +174,11 @@ if(oa_use_dynamic_lib STREQUAL "yes")
   set_target_properties(open-axiom-core-shared PROPERTIES
     OUTPUT_NAME open-axiom-core
     ARCHIVE_OUTPUT_NAME open-axiom-core-import
+    # Build directly into the staging tree so that downstream consumers
+    # (interpsys, algebra bootstrap) always see the up-to-date DLL.
+    RUNTIME_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
   )
   target_include_directories(open-axiom-core-shared PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/include>
@@ -251,6 +255,10 @@ foreach(lib ${oa_native_libs})
   target_include_directories(${lib} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
   )
+  # Build static libraries directly into the staging tree.
+  set_target_properties(${lib} PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
+  )
   target_compile_features(${lib} PUBLIC cxx_std_20)
   oa_apply_build_flags(${lib})
   if(OA_ENABLE_THREADS)
@@ -288,8 +296,8 @@ add_executable(oa-lisp rt/driver.cc)
 set_target_properties(oa-lisp PROPERTIES OUTPUT_NAME lisp)
 target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
 
-# -- E. Phase 3: Lisp compilation and base-image linking ------------------
-# The Phase 3 chain:
+# -- E. Lisp compilation and base-image linking ------------------------------
+# The Lisp chain:
 #   1. Generate core.lisp from the .in template (configure_file)
 #   2. Compile core.lisp -> core.FASL  (+ core.o for ECL)
 #   3. Link the FASL into a standalone image: base-lisp
@@ -406,12 +414,12 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
             ${OA_LISP_EVAL_FLAG} "(load \"link-base-lisp.lisp\")"
     WORKING_DIRECTORY "${oa_lisp_build_dir}"
     DEPENDS "${oa_lisp_generated_fasl}"
-    COMMENT "Link the Phase 3 OpenAxiom base Lisp image"
+    COMMENT "Link the OpenAxiom base Lisp image"
     VERBATIM
   )
 
   # -- Step 4: Stage Lisp artifacts into the runtime layout --
-  add_custom_target(stage-lisp-runtime
+  set(oa_stage_lisp_commands
     COMMAND ${CMAKE_COMMAND} -E make_directory
       "${OA_STAGE_ROOT}/lisp"
       "${OA_STAGE_ROOT}/share/open-axiom/cmake"
@@ -427,26 +435,49 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
       "${OA_STAGE_ROOT}/share/open-axiom/cmake/"
-    DEPENDS stage-native-layout "${oa_lisp_generated_image}"
-    COMMENT "Stage the Phase 3 Lisp runtime artifacts"
   )
 
-  # Umbrella target -- the single name that CI and developers invoke.
-  add_custom_target(phase3-lisp-runtime
+  # ECL needs a linkset file and the linkable object in the staging tree.
+  if(OA_LISP_FLAVOR STREQUAL "ecl")
+    # Generate the linkset at configure time -- the content is a Lisp list
+    # of strings naming the linkable object files (read by linkset-from).
+    file(GENERATE
+      OUTPUT "${OA_STAGE_ROOT}/lisp/linkset"
+      CONTENT "(\"core.${OA_LISP_LNK_EXT}\")\n"
+    )
+    list(APPEND oa_stage_lisp_commands
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${oa_lisp_generated_linkable}"
+        "${OA_STAGE_ROOT}/lisp/"
+    )
+  endif()
+
+  add_custom_target(stage-lisp-runtime
+    ${oa_stage_lisp_commands}
+    DEPENDS stage-native-layout "${oa_lisp_generated_image}"
+    COMMENT "Stage the Lisp runtime artifacts"
+  )
+
+  # Autotools equivalent: all-lisp
+  # Artifacts: core.fasl (compiled Lisp bootstrap) and base-lisp (standalone
+  #   Lisp image linked from core.fasl).  Both are staged into
+  #   OA_STAGE_ROOT/lib/ and OA_STAGE_ROOT/bin/ respectively.
+  # Depends on: stage-native-layout (native libs + headers in staging tree).
+  add_custom_target(all-lisp
     DEPENDS stage-lisp-runtime
-    COMMENT "Build and stage the Phase 3 Lisp runtime foundation"
+    COMMENT "Build core.fasl and the base-lisp image; stage into runtime layout"
   )
 
 
 
 # ===========================================================================
-# G. Phase 4: Boot translator bootstrap and interpreter chain
+# G. Boot translator bootstrap and interpreter chain
 # ===========================================================================
 #
 # The Boot translator (bootsys) is built through a three-stage bootstrap:
 #
 #   strap/   -- Compile cached .clisp files (checked into src/boot/strap/)
-#               with the base Lisp image from Phase 3.  This produces
+#               with the base Lisp image.  This produces
 #               strap/bootsys -- the initial, trusted Boot translator.
 #
 #   stage1/  -- Use strap/bootsys to translate the .boot source files into
@@ -485,7 +516,7 @@ set(oa_interp_builddir "${PROJECT_BINARY_DIR}/phase4/interp")
 # The open-axiom driver executable -- orchestrates all Lisp operations.
 set(OA_DRIVER "$<TARGET_FILE:open-axiom>")
 
-# The base Lisp image from Phase 3 (installed into the staging tree).
+# The base Lisp image (installed into the staging tree).
 set(OA_LISPSYS "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}")
 
 # -- Boot module list and dependency order ---------------------------------
@@ -693,12 +724,22 @@ oa_boot_build_stage(stage2 "" "${oa_stage1_bootsys}")
 
 
 # -- Stage the final bootsys into OA_STAGE_ROOT --
-add_custom_target(stage-bootsys
+# Use add_custom_command(OUTPUT ...) so that Ninja knows the build rule
+# that produces the staged bootsys file.  Interpreter modules depend on
+# this file path (OA_BOOTSYS) and need it resolvable in the dep graph.
+add_custom_command(
+  OUTPUT "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${oa_stage2_bootsys}"
     "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
   DEPENDS "${oa_stage2_bootsys}"
   COMMENT "Stage the final Boot translator (bootsys)"
+  VERBATIM
+)
+
+# Named target wrapping the staged file, for human use and ECL POST_BUILD.
+add_custom_target(stage-bootsys
+  DEPENDS "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
 )
 
 # ECL needs a linkset file listing the object files for bootsys.
@@ -709,16 +750,12 @@ if(OA_LISP_FLAVOR STREQUAL "ecl")
   endforeach()
   string(JOIN " " oa_boot_linkset_content ${oa_boot_lnk_list})
 
-  add_custom_command(
-    TARGET stage-bootsys POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/boot"
-    COMMAND ${CMAKE_COMMAND}
-      -Dfile=${OA_STAGE_ROOT}/boot/linkset
-      -Dcontent=(${oa_boot_linkset_content})
-      -P "${PROJECT_SOURCE_DIR}/cmake/WriteFile.cmake"
-    COMMENT "Generate ECL linkset for bootsys"
-    VERBATIM
+  # Generate the boot linkset at configure time as a Lisp list of strings.
+  file(GENERATE
+    OUTPUT "${OA_STAGE_ROOT}/boot/linkset"
+    CONTENT "(${oa_boot_linkset_content})\n"
   )
+
   foreach(mod ${oa_boot_modules})
     add_custom_command(
       TARGET stage-bootsys POST_BUILD
@@ -730,9 +767,15 @@ if(OA_LISP_FLAVOR STREQUAL "ecl")
   endforeach()
 endif()
 
-add_custom_target(phase4-boot
+# Autotools equivalent: all-boot
+# Artifacts: bootsys -- the Boot-to-Lisp translator.  Built via a three-stage
+#   bootstrap (strap -> stage1 -> stage2), each compiled with the base-lisp
+#   image from all-lisp.  The final stage2/bootsys is staged into
+#   OA_STAGE_ROOT/bin/.
+# Depends on: all-lisp (base-lisp image), oa-lisp (Lisp launcher).
+add_custom_target(all-boot
   DEPENDS stage-bootsys
-  COMMENT "Build the Phase 4 Boot translator (three-stage bootstrap)"
+  COMMENT "Three-stage bootstrap of the Boot translator (bootsys)"
 )
 
 
@@ -742,7 +785,7 @@ add_custom_target(phase4-boot
 # The interpreter is built by compiling ~100 .boot and .lisp files from
 # src/interp/ using bootsys, then linking them into a standalone image
 # called interpsys.  This image is the minimal OpenAxiom system needed
-# to compile algebra in Phase 5.
+# to compile algebra.
 #
 # The dependency graph below is transcribed from src/interp/Makefile.in.
 # Each entry records: <module>.<ext> depends on [<dep1> <dep2> ...].
@@ -976,8 +1019,13 @@ if(oa_delay_ffi STREQUAL "yes")
     VERBATIM
   )
   set(oa_interp_ffi_staged "${OA_STAGE_ROOT}/interp/sys-os.${OA_LISP_FASL_EXT}")
+  # The shared library is built directly into ${OA_STAGE_ROOT}/lib/ via
+  # output directory properties, so no copy is needed.  Record the path
+  # so that the interpsys link command declares a file dependency on it.
+  set(oa_staged_shared_lib "$<TARGET_FILE:open-axiom-core-shared>")
 else()
   set(oa_interp_ffi_staged)
+  set(oa_staged_shared_lib)
 endif()
 
 # -- Stage the messages file needed by interpsys --
@@ -1022,26 +1070,33 @@ add_custom_command(
     -DWORKDIR=${oa_interp_builddir}
     -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
   WORKING_DIRECTORY "${oa_interp_builddir}"
-  DEPENDS ${oa_interp_objs} ${OA_BOOTSYS} "${oa_msgs_staged}" ${oa_interp_ffi_staged}
+  DEPENDS ${oa_interp_objs} ${OA_BOOTSYS} "${oa_msgs_staged}"
+    ${oa_interp_ffi_staged} ${oa_staged_shared_lib}
   COMMENT "[interp] Link interpsys image"
   VERBATIM
 )
 
 # -- Stage interpsys --
-add_custom_target(phase4-interpsys
+# Autotools equivalent: all-interpsys
+# Artifacts: interpsys -- the minimal OpenAxiom interpreter image.  Built by
+#   compiling ~100 .boot and .lisp source files from src/interp/ using
+#   bootsys, then linking them into a standalone Lisp image.  interpsys is
+#   the tool that compiles SPAD algebra source files.
+# Depends on: all-boot (bootsys), stage-bootsys (bootsys in staging tree).
+add_custom_target(all-interpsys
   DEPENDS "${oa_interpsys}" stage-bootsys
-  COMMENT "Build the Phase 4 interpreter (interpsys)"
+  COMMENT "Compile ~100 interpreter modules and link the interpsys image"
 )
 
-# -- Umbrella Phase 4 target --
-add_custom_target(phase4-boot-interp
-  DEPENDS phase4-boot phase4-interpsys
-  COMMENT "Build the complete Phase 4: Boot translator + interpreter"
+# Umbrella: boot translator + interpreter.
+add_custom_target(all-boot-interp
+  DEPENDS all-boot all-interpsys
+  COMMENT "Build bootsys and interpsys (Boot translator + interpreter)"
 )
 
 
 
-# -- H. Phase 5: Algebra substrate -----------------------------------------
+# -- H. Algebra substrate ---------------------------------------------------
 # The algebra is the mathematical heart of OpenAxiom.  It is compiled from
 # SPAD source files (.spad) that are extracted from pamphlets (.spad.pamphlet)
 # by the hammer tool.  The build pipeline has five stages:
@@ -1093,6 +1148,10 @@ oa_scan_algebra_sources("${oa_algebra_srcdir}")
 # is populated.  See OpenAxiomAlgebraLayers.cmake for the catch-all strategy.
 
 oa_algebra_build_catchall()
+
+# -- Paths for initdb (needed by oa_spad_compile_prefix) -------------------
+set(oa_initdb_clisp "${oa_algebra_builddir}/initdb.clisp")
+set(oa_initdb_fasl  "${oa_algebra_builddir}/initdb.${OA_LISP_FASL_EXT}")
 
 # -- Common SPAD compilation prefix ----------------------------------------
 # These flags are shared by every algebra compilation command (strap stages
@@ -1160,9 +1219,13 @@ foreach(spad ${OA_ALGEBRA_PLAIN_SPADFILES})
   list(APPEND oa_all_spadfiles "${_out}")
 endforeach()
 
-add_custom_target(phase5-extract-wholefile
+# Autotools equivalent: part of 'all-algebra' (extract.mk)
+# Artifacts: one .spad file per source in ${OA_STAGE_ROOT}/src/algebra/.
+#   Pamphlet sources are extracted via `hammer --tangle`; plain .spad files
+#   are copied directly.  These are the "whole" files used by initdb.
+add_custom_target(all-extract-wholefile
   DEPENDS ${oa_all_spadfiles}
-  COMMENT "Extract/copy whole .spad files (for initdb)"
+  COMMENT "Extract/copy whole .spad source files into the staging algebra dir"
 )
 
 
@@ -1197,15 +1260,20 @@ foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
     set(_chunk   "${OA_ALGEBRA_CTOR_CHUNK_${ctor}}")
     set(_pam     "${oa_algebra_srcdir}/${_pambase}.spad.pamphlet")
 
+    # On Windows+Ninja, chunk names like "domain DROPT DrawOption"
+    # contain spaces.  With VERBATIM, CMake quotes the whole argument
+    # as "--tangle=domain DROPT DrawOption" which conflicts with the
+    # outer cmd /C "..." wrapping.  Without VERBATIM, we embed the
+    # quotes after the = so cmd.exe sees --tangle="domain ..." and
+    # strips only the outermost pair.
     add_custom_command(
       OUTPUT "${_out}"
       COMMAND $<TARGET_FILE:hammer>
-        --tangle=${_chunk}
+        "--tangle=\"${_chunk}\""
         --output=${_out}
         "${_pam}"
       DEPENDS hammer "${_pam}"
       COMMENT "[algebra] Extract ${ctor}.spad from ${_pambase}.spad.pamphlet"
-      VERBATIM
     )
 
   elseif(_source_type STREQUAL "plain")
@@ -1230,9 +1298,13 @@ foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
   list(APPEND oa_all_ctor_spadfiles "${_out}")
 endforeach()
 
-add_custom_target(phase5-extract
-  DEPENDS phase5-extract-wholefile ${oa_all_ctor_spadfiles}
-  COMMENT "Extract/copy all per-constructor .spad files"
+# Autotools equivalent: part of 'all-algebra' (extract.mk)
+# Artifacts: one .spad file per constructor in the build tree.  These are
+#   the per-constructor fragments consumed by the SPAD compiler during
+#   algebra bootstrap (all-algstrap) and layer compilation (all-algebra-layers).
+add_custom_target(all-extract
+  DEPENDS all-extract-wholefile ${oa_all_ctor_spadfiles}
+  COMMENT "Extract per-constructor .spad source files (pamphlet + plain)"
 )
 
 
@@ -1244,9 +1316,6 @@ add_custom_target(phase5-extract
 # required by every subsequent compilation step.
 #
 # Two stages: (a) scan .spad files -> initdb.clisp, (b) compile -> initdb.fasl
-
-set(oa_initdb_clisp "${oa_algebra_builddir}/initdb.clisp")
-set(oa_initdb_fasl  "${oa_algebra_builddir}/initdb.${OA_LISP_FASL_EXT}")
 
 add_custom_command(
   OUTPUT "${oa_initdb_clisp}"
@@ -1278,14 +1347,25 @@ add_custom_command(
   VERBATIM
 )
 
-add_custom_target(phase5-initdb
+# Autotools equivalent: all-initdb
+# Artifacts: initdb.${OA_LISP_FASL_EXT} -- a compiled Lisp file containing
+#   the initial constructor database.  This file is loaded by interpsys
+#   before any algebra compilation and tells the interpreter which
+#   constructors exist and what operations they export.
+# Depends on: interpsys (to compile), bootsys (for execution), extracted
+#   whole .spad files (scanned for constructor metadata).
+add_custom_target(all-initdb
   DEPENDS "${oa_initdb_fasl}"
-  COMMENT "Build the initial algebra constructor database"
+  COMMENT "Build initdb.fasl -- the initial algebra constructor database"
 )
 
 
 # ---------------------------------------------------------------------------
 # Step 4: Algebra bootstrap (strap-0, strap-1, strap-2)
+# ---------------------------------------------------------------------------
+# Bootstrap constructor lists -- extracted from Makefile.am strap-0/1/2.
+include(OpenAxiomBootstrapOrder)
+
 # ---------------------------------------------------------------------------
 # Three progressive bootstrap stages compile categories and domains using
 # the per-constructor .spad files.  Each constructor gets its own
@@ -1313,7 +1393,7 @@ function(oa_algebra_strap_deps stage outvar)
 endfunction()
 
 # Helper function: compile one strap stage.
-# Iterates over all constructors found by the scanner.
+# Iterates over the constructors for that stage as defined in Makefile.am.
 #
 # Usage: oa_algebra_strap_stage(<stage> <flags...>)
 #   <stage>: 0, 1, or 2
@@ -1330,7 +1410,8 @@ function(oa_algebra_strap_stage stage)
   )
 
   # Compile each per-constructor .spad file through the bootstrap compiler.
-  foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
+  # The list comes from oa_algebra_strap_<N> (OpenAxiomBootstrapOrder.cmake).
+  foreach(ctor ${oa_algebra_strap_${stage}})
     list(APPEND _commands
       COMMAND ${oa_spad_compile_prefix}
         --sysalg=${_strapdir}
@@ -1368,9 +1449,17 @@ oa_algebra_strap_stage(2 --strap=${oa_algebra_builddir}/strap-1 --optimize=3)
 
 set(oa_strap_stamp "${oa_algebra_builddir}/strap-2.stamp")
 
-add_custom_target(phase5-bootstrap
+# Autotools equivalent: all-algstrap
+# Artifacts: strap-0/, strap-1/, strap-2/ directories, each containing ~200-400
+#   compiled .${OA_LISP_FASL_EXT} files.  The three stages progressively
+#   refine category/domain exports until the algebra is self-consistent.
+#   Stage 0 compiles with --bootstrap (category exports only).
+#   Stage 1 recompiles against strap-0 with full optimization.
+#   Stage 2 recompiles against strap-1 with full optimization.
+# Depends on: all-interpsys, all-extract (per-constructor .spad files).
+add_custom_target(all-algstrap
   DEPENDS "${oa_strap_stamp}"
-  COMMENT "Complete the three-stage algebra bootstrap"
+  COMMENT "Three-stage algebra bootstrap (strap-0 -> strap-1 -> strap-2)"
 )
 
 
@@ -1381,7 +1470,7 @@ add_custom_target(phase5-bootstrap
 # output file.  Constructors within a layer can build in parallel; the
 # layer ordering is enforced by target-level dependencies:
 #
-#   algebra-layer-0  depends on  phase5-bootstrap
+#   algebra-layer-0  depends on  all-algstrap
 #   algebra-layer-N  depends on  algebra-layer-(N-1)
 #
 # The number of layers is dynamic: 25 explicit hand-curated layers, plus
@@ -1402,9 +1491,9 @@ add_custom_target(phase5-bootstrap
 file(MAKE_DIRECTORY "${oa_algebra_outdir}")
 
 function(oa_algebra_compile_layer layer_idx)
-  # Previous layer target (layer 0 depends on phase5-bootstrap)
+  # Previous layer target (layer 0 depends on all-algstrap)
   if(layer_idx EQUAL 0)
-    set(_prev_target phase5-bootstrap)
+    set(_prev_target all-algstrap)
   else()
     math(EXPR _prev "${layer_idx} - 1")
     set(_prev_target algebra-layer-${_prev})
@@ -1469,23 +1558,29 @@ endforeach()
 
 math(EXPR _last_layer "${OA_ALGEBRA_NUM_LAYERS} - 1")
 
-add_custom_target(phase5-algebra
+# Autotools equivalent: all-algebra (algebra compilation portion)
+# Artifacts: one .${OA_LISP_FASL_EXT} per constructor, organized in layers.
+#   Constructors within the same layer compile in parallel; inter-layer
+#   dependencies enforce ordering (layer N depends on layer N-1).
+#   Layer 0 depends on all-algstrap (the bootstrap result).
+add_custom_target(all-algebra-layers
   DEPENDS algebra-layer-${_last_layer}
   COMMENT "Compile the full OpenAxiom algebra (${OA_ALGEBRA_NUM_LAYERS} layers)"
 )
 
-
-# -- Umbrella Phase 5 target --
-add_custom_target(phase5-algebra-substrate
-  DEPENDS phase5-algebra
-  COMMENT "Build the complete Phase 5: algebra substrate"
+# Autotools equivalent: all-algebra
+# Umbrella target for the entire algebra substrate.  Depends on
+# all-algebra-layers and (eventually) all-share and all-hyper-pre.
+add_custom_target(all-algebra
+  DEPENDS all-algebra-layers
+  COMMENT "Build the complete OpenAxiom algebra (bootstrap + all layers)"
 )
 
 
 # ===========================================================================
-# Phase 6a: Database generation and HyperDoc data staging
+# Database generation and HyperDoc data staging
 # ===========================================================================
-# These targets require interpsys (from Phase 4) and belong inside the
+# These targets require interpsys and belong inside the
 # Lisp guard.  Database generation builds the .daase files consumed by
 # the interpreter at runtime; HyperDoc data staging copies pages,
 # bitmaps, and viewports, then builds ht.db via the htadd tool.
@@ -1536,14 +1631,163 @@ add_custom_command(
     glosskey.text glossdef.text
     "${OA_STAGE_ROOT}/doc/"
   WORKING_DIRECTORY "${oa_algebra_builddir}"
-  DEPENDS phase5-algebra phase6-static-files "${oa_interpsys}"
-  COMMENT "[phase6] Build algebra databases (.daase files)"
+  DEPENDS all-algebra-layers all-static-files "${oa_interpsys}"
+  COMMENT "[databases] Build algebra databases (.daase files)"
   VERBATIM
 )
 
-add_custom_target(phase6-databases
+# Autotools equivalent: all-databases
+# Artifacts: interp.daase, browse.daase, categor.daase, operation.daase,
+#   compress.daase, plus USERS.DAASE/index.KAF, DEPENDENTS.DAASE/index.KAF,
+#   libdb.text, comdb.text, glosskey.text, glossdef.text.
+#   These are the indexed databases that the interpreter queries at runtime
+#   for constructor information, operation signatures, and category
+#   relationships.  Built by running interpsys --build-databases.
+# Depends on: all-algebra-layers, all-static-files, interpsys.
+add_custom_target(all-databases
   DEPENDS ${oa_database_targets}
-  COMMENT "Build the algebra database files"
+  COMMENT "Build .daase algebra databases and glossary indices"
+)
+
+# ---------------------------------------------------------------------------
+# Step 7: Build AXIOMsys (the complete interpreter image)
+# ---------------------------------------------------------------------------
+# AXIOMsys is the final, installable OpenAxiom interpreter image.  Unlike
+# interpsys (the minimal image used during the build), AXIOMsys includes:
+#   - All algebra (via --sysalg pointing to the compiled algebra directory)
+#   - exposed.lsp (which constructors are visible to users by default)
+#   - initdb (the constructor database initialization object)
+#   - makeint.lisp (build timestamp and image-linking code)
+# The link command is nearly identical to interpsys but with:
+#   --prologue="(pushnew :open-axiom-algebra-system *features*)"
+#   --sysalg=<algebra dir>
+#   plus exposed.fasl, initdb.fasl, and makeint.fasl as extra objects.
+
+# -- 7a. Tangle exposed.lsp from pamphlet --
+set(oa_exposed_lsp "${oa_algebra_builddir}/exposed.lsp")
+set(oa_exposed_fasl "${oa_algebra_outdir}/exposed.${OA_LISP_FASL_EXT}")
+
+add_custom_command(
+  OUTPUT "${oa_exposed_lsp}"
+  COMMAND $<TARGET_FILE:hammer>
+    --tangle
+    --output=${oa_exposed_lsp}
+    "${PROJECT_SOURCE_DIR}/src/algebra/exposed.lsp.pamphlet"
+  DEPENDS hammer "${PROJECT_SOURCE_DIR}/src/algebra/exposed.lsp.pamphlet"
+  COMMENT "[axiomsys] Tangle exposed.lsp from pamphlet"
+  VERBATIM
+)
+
+# -- 7b. Compile exposed.lsp -> exposed.fasl in the algebra staging dir --
+# exposed.lsp depends on the boot-pkg module (defines the BOOT package).
+add_custom_command(
+  OUTPUT "${oa_exposed_fasl}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${oa_algebra_outdir}"
+  COMMAND ${OA_DRIVER}
+    --execpath=${OA_BOOTSYS}
+    --syslib=${OA_STAGE_ROOT}/lib
+    --compile
+    --output=${oa_exposed_fasl}
+    --load-directory=${oa_interp_builddir}
+    "${oa_exposed_lsp}"
+  WORKING_DIRECTORY "${oa_algebra_builddir}"
+  DEPENDS "${oa_exposed_lsp}" ${OA_BOOTSYS}
+    "${oa_interp_builddir}/boot-pkg.${OA_LISP_FASL_EXT}"
+  COMMENT "[axiomsys] Compile exposed.lsp -> exposed.${OA_LISP_FASL_EXT}"
+  VERBATIM
+)
+
+# -- 7c. Generate makeint.lisp (build timestamp and image-link triggers) --
+set(oa_makeint_lisp "${oa_interp_builddir}/makeint.lisp")
+set(oa_makeint_fasl "${oa_interp_builddir}/makeint.${OA_LISP_FASL_EXT}")
+set(oa_timestamp_file "${OA_STAGE_ROOT}/timestamp")
+
+# The content mirrors what Autotools generates in src/interp/Makefile.in.
+# |$StandardLinking| is true for ECL (which links via C objects instead of
+# Lisp images).  |%basicSystemIsComplete| is true once interpsys is built.
+# When neither is true, (build-interpsys) re-links the image and
+# (|clearClams|) flushes the memoization caches.
+file(WRITE "${oa_makeint_lisp}"
+  "(import-module \"util\")\n"
+  "(in-package \"BOOT\")\n"
+  "(defconstant timestamp \"${oa_timestamp_file}\")\n"
+  "(setq *build-version* \"OpenAxiom ${PROJECT_VERSION}\")\n"
+  "(yearweek)\n"
+  "(unless (or |$StandardLinking| (|%basicSystemIsComplete|))"
+  " (build-interpsys) (|clearClams|))\n"
+)
+
+# -- 7d. Compile makeint.lisp -> makeint.fasl --
+add_custom_command(
+  OUTPUT "${oa_makeint_fasl}"
+  COMMAND ${OA_DRIVER}
+    --execpath=${OA_BOOTSYS}
+    --syslib=${OA_STAGE_ROOT}/lib
+    --compile
+    --output=${oa_makeint_fasl}
+    --load-directory=${oa_interp_builddir}
+    "${oa_makeint_lisp}"
+  WORKING_DIRECTORY "${oa_interp_builddir}"
+  DEPENDS "${oa_makeint_lisp}" ${OA_BOOTSYS}
+  COMMENT "[axiomsys] Compile makeint.lisp -> makeint.${OA_LISP_FASL_EXT}"
+  VERBATIM
+)
+
+# -- 7e. Link AXIOMsys --
+set(oa_axiomsys "${OA_STAGE_ROOT}/bin/AXIOMsys${CMAKE_EXECUTABLE_SUFFIX}")
+set(oa_axiomsys_cmdfile "${oa_interp_builddir}/link-axiomsys.cmdfile")
+
+string(JOIN "\n" _axiomsys_cmd
+  "${OA_DRIVER}"
+  "--execpath=${OA_BOOTSYS}"
+  "--syslib=${OA_STAGE_ROOT}/lib"
+  "--system=${OA_STAGE_ROOT}/"
+  "--sysalg=${oa_algebra_outdir}/"
+  "--prologue=(pushnew :open-axiom-algebra-system *features*)"
+  "--make"
+  "--output=${oa_axiomsys}"
+  "--main=BOOT::|systemMain|"
+  "--load-directory=${oa_interp_builddir}"
+  ${oa_interp_objs}
+  "${oa_initdb_fasl}"
+  "${oa_makeint_fasl}"
+)
+file(GENERATE OUTPUT "${oa_axiomsys_cmdfile}" CONTENT "${_axiomsys_cmd}\n")
+
+add_custom_command(
+  OUTPUT "${oa_axiomsys}"
+  COMMAND ${CMAKE_COMMAND} -E touch "${oa_timestamp_file}"
+  COMMAND ${CMAKE_COMMAND}
+    -DCMDFILE=${oa_axiomsys_cmdfile}
+    -DWORKDIR=${oa_interp_builddir}
+    -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
+  WORKING_DIRECTORY "${oa_interp_builddir}"
+  DEPENDS
+    ${oa_interp_objs}
+    ${OA_BOOTSYS}
+    "${oa_msgs_staged}"
+    ${oa_interp_ffi_staged}
+    ${oa_staged_shared_lib}
+    "${oa_initdb_fasl}"
+    "${oa_makeint_fasl}"
+    "${oa_exposed_fasl}"
+    ${oa_database_targets}
+  COMMENT "[axiomsys] Link AXIOMsys (complete interpreter with all algebra)"
+  VERBATIM
+)
+
+# Autotools equivalent: all-axiomsys
+# Artifacts: AXIOMsys -- the complete, installable OpenAxiom interpreter
+#   image with all algebra constructors loaded.  This is the final system
+#   image that end-users run.  Distinguished from interpsys by the
+#   :open-axiom-algebra-system feature flag and --sysalg pointing to the
+#   compiled algebra.
+# Depends on: all-databases (databases must exist before linking),
+#   all-algebra-layers (algebra .fasl files), interpsys modules (same OBJS),
+#   exposed.fasl (constructor visibility), makeint.fasl (build timestamp).
+add_custom_target(all-axiomsys
+  DEPENDS "${oa_axiomsys}"
+  COMMENT "Link AXIOMsys -- the complete OpenAxiom image with all algebra"
 )
 
 # -- Stage static files needed at runtime --
@@ -1551,7 +1795,11 @@ add_custom_target(phase6-databases
 # the databases; gloss.text in the doc directory (needed by
 # --build-databases for glossary cross-references).
 
-add_custom_target(phase6-static-files
+# Autotools equivalent: part of all-share
+# Artifacts: summary, copyright, topics.data, gloss.text staged into the
+#   runtime tree.  These are static text files read by the interpreter at
+#   startup and by --build-databases for glossary cross-references.
+add_custom_target(all-static-files
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${PROJECT_SOURCE_DIR}/src/etc/summary"
     "${OA_STAGE_ROOT}/"
@@ -1565,7 +1813,7 @@ add_custom_target(phase6-static-files
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${PROJECT_SOURCE_DIR}/src/doc/gloss.text"
     "${OA_STAGE_ROOT}/doc/"
-  COMMENT "[phase6] Stage static runtime files"
+  COMMENT "[static-files] Stage static runtime files"
 )
 
 # -- HyperDoc data staging (post-algebra, needs htadd which requires X11) --
@@ -1575,6 +1823,29 @@ add_custom_target(phase6-static-files
 
 if(OA_HAVE_X11)
   set(oa_hyper_srcdir "${PROJECT_SOURCE_DIR}/src/hyper")
+
+  # Autotools equivalent: all-hyper-pre
+  # Artifacts: util.ht staged into the HyperDoc pages directory.  In Autotools
+  #   this also built the htadd binary; in CMake htadd is compiled as a native
+  #   target independently.  util.ht is a utility HyperDoc page needed by the
+  #   algebra compilation process (referenced by some .spad constructors).
+  set(oa_hyper_util_ht "${OA_STAGE_ROOT}/share/hypertex/pages/util.ht")
+  add_custom_command(
+    OUTPUT "${oa_hyper_util_ht}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+      "${OA_STAGE_ROOT}/share/hypertex/pages"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${oa_hyper_srcdir}/pages/util.ht"
+      "${oa_hyper_util_ht}"
+    DEPENDS "${oa_hyper_srcdir}/pages/util.ht"
+    COMMENT "[hypertex] Stage util.ht (pre-algebra HyperDoc page)"
+    VERBATIM
+  )
+  add_custom_target(all-hyper-pre
+    DEPENDS htadd "${oa_hyper_util_ht}"
+    COMMENT "Build htadd and stage util.ht for pre-algebra HyperDoc support"
+  )
+
   set(oa_hyper_staged_db "${OA_STAGE_ROOT}/share/hypertex/pages/ht.db")
 
   add_custom_command(
@@ -1591,25 +1862,31 @@ if(OA_HAVE_X11)
     COMMAND $<TARGET_FILE:htadd> -s
       "${OA_STAGE_ROOT}/share/hypertex/pages/"
     WORKING_DIRECTORY "${OA_STAGE_ROOT}/share/hypertex/pages"
-    DEPENDS htadd phase5-algebra
-    COMMENT "[phase6] Stage HyperDoc pages/bitmaps and build ht.db"
+    DEPENDS htadd all-algebra-layers all-doc
+    COMMENT "[hypertex] Stage HyperDoc pages/bitmaps and build ht.db"
     VERBATIM
   )
 
-  add_custom_target(phase6-hypertex-data
+  # Autotools equivalent: all-hyper-post
+  # Artifacts: ht.db (HyperDoc page index), staged .ht/.pht pages and
+  #   bitmap images.  htadd scans all .ht/.pht files to produce ht.db,
+  #   which HyperDoc uses to look up pages by name.
+  # Depends on: htadd (native tool, built in all-native), all-algebra-layers.
+  add_custom_target(all-hyper-post
     DEPENDS "${oa_hyper_staged_db}"
-    COMMENT "Stage HyperDoc data and build page index"
+    COMMENT "Stage HyperDoc pages/bitmaps and build the ht.db page index"
   )
 
-  # -- Viewport data staging --
-  # Viewports are pre-rendered 2D/3D graph snapshots used by HyperDoc.
-  add_custom_target(phase6-viewports
+  # Autotools equivalent: part of all-share
+  # Artifacts: pre-rendered 2D/3D graph snapshots in share/viewports/.
+  #   HyperDoc embeds these in documentation pages.
+  add_custom_target(all-viewports
     COMMAND ${CMAKE_COMMAND} -E make_directory
     "${OA_STAGE_ROOT}/share/viewports"
   COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${oa_hyper_srcdir}/viewports"
     "${OA_STAGE_ROOT}/share/viewports"
-  COMMENT "[phase6] Stage HyperDoc viewports"
+  COMMENT "[viewports] Stage HyperDoc viewports"
 )
 
   # -- PS files from Gdraws (graph PostScript resources) --
@@ -1632,51 +1909,186 @@ if(OA_HAVE_X11)
         --output=${_out}
         "${oa_gdraws_srcdir}/psFiles.pamphlet"
       DEPENDS hammer "${oa_gdraws_srcdir}/psFiles.pamphlet"
-      COMMENT "[phase6] Extract ${ps}.ps from psFiles.pamphlet"
+      COMMENT "[graph] Extract ${ps}.ps from psFiles.pamphlet"
       VERBATIM
     )
     list(APPEND oa_ps_outputs "${_out}")
   endforeach()
 
-  add_custom_target(phase6-graph-ps
+  # Autotools equivalent: part of all-share / all-graph
+  # Artifacts: .ps (PostScript) files extracted from psFiles.pamphlet.
+  #   The 2D/3D graph programs (view2D, view3D) load these at runtime
+  #   for rendering mathematical graphs to PostScript output.
+  add_custom_target(all-graph-ps
     DEPENDS ${oa_ps_outputs}
-    COMMENT "Extract graph PostScript resources"
+    COMMENT "Extract graph PostScript resources from psFiles.pamphlet"
   )
 
-  # -- Umbrella Phase 6 target (Lisp-dependent parts) --
-  set(oa_phase6_lisp_deps phase6-databases phase6-static-files
-    phase6-hypertex-data phase6-viewports phase6-graph-ps)
+  # -- Umbrella data target (Lisp-dependent parts) --
+  set(oa_all_data_deps all-databases all-static-files
+    all-hyper-post all-viewports all-graph-ps)
 endif()  # OA_HAVE_X11 (hypertex data, viewports, graph-ps)
 
 if(NOT OA_HAVE_X11)
-  set(oa_phase6_lisp_deps phase6-databases phase6-static-files)
+  set(oa_all_data_deps all-databases all-static-files)
 endif()
 
-add_custom_target(phase6-data
-  DEPENDS ${oa_phase6_lisp_deps}
-  COMMENT "Build all Phase 6 data targets (databases, HyperDoc, resources)"
+# Autotools equivalent: combination of all-share + all-databases
+# Umbrella target for all data artifacts needed at runtime:
+# databases, static files, and (if X11) HyperDoc pages, viewports,
+# and PostScript graph resources.
+add_custom_target(all-data
+  DEPENDS ${oa_all_data_deps}
+  COMMENT "Build all runtime data (databases, HyperDoc, graph resources)"
+)
+
+# ---------------------------------------------------------------------------
+# Step 8: Stage .input example/test files
+# ---------------------------------------------------------------------------
+# Each .input file is an OpenAxiom script (example, demo, or test case).
+# Most live in .input.pamphlet files and must be tangled via hammer.
+# The tangled/copied files are staged into OA_STAGE_ROOT/input/.
+
+set(oa_input_srcdir "${PROJECT_SOURCE_DIR}/src/input")
+set(oa_input_outdir "${OA_STAGE_ROOT}/input")
+set(oa_all_input_files)
+
+# Glob for pamphlets -- each produces one .input file.
+file(GLOB oa_input_pamphlets "${oa_input_srcdir}/*.input.pamphlet")
+foreach(pamphlet ${oa_input_pamphlets})
+  get_filename_component(_base "${pamphlet}" NAME)            # e.g. "bug123.input.pamphlet"
+  string(REPLACE ".pamphlet" "" _input_name "${_base}")       # e.g. "bug123.input"
+  set(_out "${oa_input_outdir}/${_input_name}")
+
+  add_custom_command(
+    OUTPUT "${_out}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${oa_input_outdir}"
+    COMMAND $<TARGET_FILE:hammer>
+      --tangle
+      --output=${_out}
+      "${pamphlet}"
+    DEPENDS hammer "${pamphlet}"
+    COMMENT "[input] Tangle ${_input_name} from pamphlet"
+    VERBATIM
+  )
+  list(APPEND oa_all_input_files "${_out}")
+endforeach()
+
+# Also copy any plain .input files that are not pamphlets.
+file(GLOB oa_input_plain "${oa_input_srcdir}/*.input")
+foreach(plain_input ${oa_input_plain})
+  get_filename_component(_name "${plain_input}" NAME)
+  set(_out "${oa_input_outdir}/${_name}")
+
+  add_custom_command(
+    OUTPUT "${_out}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${oa_input_outdir}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${plain_input}" "${_out}"
+    DEPENDS "${plain_input}"
+    COMMENT "[input] Copy ${_name}"
+    VERBATIM
+  )
+  list(APPEND oa_all_input_files "${_out}")
+endforeach()
+
+# Autotools equivalent: all-input
+# Artifacts: ~526 .input files tangled from pamphlets (plus any plain .input
+#   files) into OA_STAGE_ROOT/input/.  These are example scripts, demos, and
+#   regression tests.  Does NOT require a Lisp runtime (only hammer).
+# Depends on: hammer (for tangling pamphlets from noweb source).
+add_custom_target(all-input
+  DEPENDS ${oa_all_input_files}
+  COMMENT "Tangle and stage all .input example/test scripts (~526 files)"
+)
+
+# ---------------------------------------------------------------------------
+# Step 9: Regression test suite (all-check)
+# ---------------------------------------------------------------------------
+# Runs each .input file through AXIOMsys --test, producing .output files.
+# Maps to CMake's ctest infrastructure via add_test().
+#
+# Autotools equivalent: all-check
+# Depends on: all-axiomsys (the complete image), all-input (test scripts).
+
+set(oa_test_outdir "${PROJECT_BINARY_DIR}/test-output")
+
+# Tests that require graphical display, NAG libraries, or are known-broken
+# are skipped by default.  They can be enabled via -DOPENAXIOM_TEST_SKIP
+# override or by setting environment variables.
+set(OPENAXIOM_TEST_SKIP_PATTERNS
+  # Graphical tests (need X11 display)
+  "draw" "graphics" "grpbug"
+  # NAG library tests
+  "nag"
+  CACHE STRING "Patterns of .input files to skip in all-check"
+)
+
+foreach(input_file ${oa_all_input_files})
+  get_filename_component(_name "${input_file}" NAME_WE)   # e.g. "bug123"
+
+  # Check skip patterns
+  set(_skip FALSE)
+  foreach(pat ${OPENAXIOM_TEST_SKIP_PATTERNS})
+    if(_name MATCHES "${pat}")
+      set(_skip TRUE)
+      break()
+    endif()
+  endforeach()
+  if(_skip)
+    continue()
+  endif()
+
+  add_test(
+    NAME "input/${_name}"
+    COMMAND ${OA_DRIVER}
+      --execpath=${oa_axiomsys}
+      --system=${OA_STAGE_ROOT}
+      --sysalg=${oa_algebra_outdir}/
+      --test
+      "${input_file}"
+    WORKING_DIRECTORY "${oa_test_outdir}"
+  )
+  set_tests_properties("input/${_name}" PROPERTIES
+    TIMEOUT 300
+    LABELS "input"
+  )
+endforeach()
+
+# Convenience target: run all tests via ctest.
+# cmake --build build --target all-check
+# This is equivalent to: cd build && ctest -L input
+add_custom_target(all-check
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${oa_test_outdir}"
+  COMMAND ${CMAKE_CTEST_COMMAND}
+    --test-dir "${PROJECT_BINARY_DIR}"
+    --label-regex "input"
+    --output-on-failure
+  DEPENDS all-axiomsys all-input
+  COMMENT "Run the OpenAxiom regression test suite (~500 .input scripts)"
 )
 
 else()
   # Placeholders so that `cmake --build . --target <name>` always exists,
   # even when no supported Lisp runtime was found.
-  set(oa_lisp_phase_targets
-    phase3-lisp-runtime
-    phase4-boot phase4-interpsys phase4-boot-interp
-    phase5-extract phase5-initdb phase5-bootstrap
-    phase5-algebra phase5-algebra-substrate
-    phase6-databases phase6-data
+  set(oa_lisp_targets
+    all-lisp
+    all-boot all-interpsys all-boot-interp
+    all-extract all-initdb all-algstrap
+    all-algebra-layers all-algebra
+    all-databases all-axiomsys
+    all-data all-input all-check
   )
-  foreach(tgt ${oa_lisp_phase_targets})
+  foreach(tgt ${oa_lisp_targets})
     add_custom_target(${tgt}
       COMMAND ${CMAKE_COMMAND} -E echo
         "${tgt} unavailable (no supported Lisp runtime configured)"
     )
   endforeach()
-endif()  # OA_LISP_EXECUTABLE guard (covers Phase 3 + Phase 4 + Phase 5 + Phase 6 data)
+endif()  # OA_LISP_EXECUTABLE guard
 
 # ===========================================================================
-# Phase 6b: Optional native executables
+# Optional native executables
 # ===========================================================================
 # These targets are pure C/C++ and do not require a Lisp runtime.  They
 # are guarded by feature flags (OA_HAVE_X11, OPENAXIOM_USE_SMAN,
@@ -1700,7 +2112,7 @@ add_custom_command(
     --output=${oa_asq_c}
     "${PROJECT_SOURCE_DIR}/src/etc/asq.c.pamphlet"
   DEPENDS hammer "${PROJECT_SOURCE_DIR}/src/etc/asq.c.pamphlet"
-  COMMENT "[phase6] Extract asq.c from pamphlet"
+  COMMENT "[asq] Extract asq.c from pamphlet"
   VERBATIM
 )
 
@@ -1709,15 +2121,34 @@ add_executable(asq "${oa_asq_c}")
 set_source_files_properties("${oa_asq_c}" PROPERTIES LANGUAGE CXX)
 target_link_libraries(asq PRIVATE spad open-axiom-core)
 
+# Autotools equivalent: all-asq
+# Artifacts: the asq executable (built above) plus databases, summary, and
+#   copyright.  In Autotools, `all-asq` was the umbrella in src/etc/ that
+#   gated everything from that directory.  Here it depends on asq (the
+#   executable), all-databases, and all-static-files (summary/copyright).
+# Note: asq itself is a pure C++ target with no Lisp dependency, but
+#   the databases it queries require the full algebra build.
+set(oa_all_asq_deps asq)
+if(OA_LISP_EXECUTABLE)
+  list(APPEND oa_all_asq_deps all-databases all-static-files)
+endif()
+add_custom_target(all-asq
+  DEPENDS ${oa_all_asq_deps}
+  COMMENT "Build asq and its runtime data (databases, summary, copyright)"
+)
+
 # -- J. clef: command-line editor ------------------------------------------
 # clef provides line-editing and cursor control for the terminal-based
 # OpenAxiom session.  Single source file, always built.
+# Requires POSIX pseudo-tty, fork(), exec(), so only available on Unix.
 
-set(oa_clef_sources clef/edible.c)
+if(NOT WIN32)
+  set(oa_clef_sources clef/edible.c)
 
-add_executable(clef ${oa_clef_sources})
-target_link_libraries(clef PRIVATE spad open-axiom-core)
-oa_apply_build_flags(clef)
+  add_executable(clef ${oa_clef_sources})
+  target_link_libraries(clef PRIVATE spad open-axiom-core)
+  oa_apply_build_flags(clef)
+endif()
 
 
 # -- K. Session manager (sman) --------------------------------------------
@@ -1873,7 +2304,7 @@ endif()  # OA_HAVE_X11 (graphics subsystem)
 # tools depend on X11 at compile time (via pixmap.h in hyper.h).
 # hthits and htsearch additionally require regex.h.
 #
-# htadd is needed by the Phase 6a data staging (ht.db generation).
+# htadd is needed by the data staging (ht.db generation).
 #
 # libm propagates transitively from open-axiom-core (PUBLIC), so it is
 # not repeated on individual targets.
@@ -1984,7 +2415,11 @@ endif()
 # the message catalog, and the TeX style file into the runtime layout.
 # They are unconditional (no Lisp or X11 dependency).
 
-add_custom_target(phase6-docs
+# Autotools equivalent: all-doc + all-share
+# Artifacts: help files, glossary (gloss.text), message catalogs (co-eng.msgs),
+#   command.list, and TeX style file (open-axiom.sty).  All staged into
+#   OA_STAGE_ROOT.  These are unconditional (no Lisp or X11 dependency).
+add_custom_target(all-doc
   # Help files
   COMMAND ${CMAKE_COMMAND} -E make_directory "${OA_STAGE_ROOT}/doc/help"
   COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -2008,39 +2443,117 @@ add_custom_target(phase6-docs
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${PROJECT_SOURCE_DIR}/src/share/tex/open-axiom.sty"
     "${OA_STAGE_ROOT}/tex/"
-  COMMENT "[phase6] Stage documentation and shared resources"
+  COMMENT "[doc] Stage documentation and shared resources"
 )
 
 
-# -- P. Umbrella Phase 6 targets -------------------------------------------
+# -- P. Umbrella targets ----------------------------------------------------
 
-# phase6-native: every native executable (core + optional).
-set(oa_phase6_native_targets open-axiom hammer oa-lisp clef asq)
+# all-native: every native executable (core + optional).
+set(oa_all_native_targets open-axiom hammer oa-lisp asq)
+if(NOT WIN32)
+  list(APPEND oa_all_native_targets clef)
+endif()
 if(OPENAXIOM_USE_SMAN)
-  list(APPEND oa_phase6_native_targets sman session spadclient)
+  list(APPEND oa_all_native_targets sman session spadclient)
 endif()
 if(OA_HAVE_X11)
-  list(APPEND oa_phase6_native_targets htadd ex2ht viewman view2D view3D viewAlone hypertex spadbuf)
+  list(APPEND oa_all_native_targets htadd ex2ht viewman view2D view3D viewAlone hypertex spadbuf)
 endif()
 if(OA_HAVE_X11 AND HAVE_REGEX_H)
-  list(APPEND oa_phase6_native_targets hthits htsearch)
+  list(APPEND oa_all_native_targets hthits htsearch)
 endif()
 if(OPENAXIOM_USE_GUI)
-  list(APPEND oa_phase6_native_targets open-axiom-gui)
+  list(APPEND oa_all_native_targets open-axiom-gui)
 endif()
 
-add_custom_target(phase6-native
-  DEPENDS ${oa_phase6_native_targets}
-  COMMENT "Build all native executables"
+# Autotools equivalent: combination of all-lib + all-clef + all-sman + all-graph + all-hyper + all-gui
+# Umbrella target for every native (C/C++) executable in the project.
+# Conditionally includes: sman/session/spadclient (if AF_UNIX sockets),
+#   htadd/ex2ht/viewman/view2D/view3D/viewAlone/hypertex/spadbuf (if X11),
+#   hthits/htsearch (if X11 + regex.h), open-axiom-gui (if Qt).
+add_custom_target(all-native
+  DEPENDS ${oa_all_native_targets}
+  COMMENT "Build all native C/C++ executables (core + optional subsystems)"
 )
 
-# phase6-optional: everything in Phase 6 (native + docs + data if Lisp available).
-set(oa_phase6_all_deps phase6-native phase6-docs)
-add_custom_target(phase6-optional
-  DEPENDS ${oa_phase6_all_deps}
-  COMMENT "Build all Phase 6 optional subsystems"
+# all-optional: everything optional (native + docs + data if Lisp available).
+set(oa_all_optional_deps all-native all-doc)
+# Umbrella target: all native executables + documentation.
+# This is the default target for CI builds that don't need the Lisp chain.
+add_custom_target(all-optional
+  DEPENDS ${oa_all_optional_deps}
+  COMMENT "Build all native executables and documentation (no Lisp chain)"
 )
 
+# -- Component-level convenience targets ------------------------------------
+# These match the Autotools all-<component> granularity so developers can
+# build individual subsystems by name.
+
+# Autotools equivalent: all-clef
+# Artifacts: clef -- the command-line editor providing readline-like input
+#   editing for the OpenAxiom terminal interface.
+add_custom_target(all-clef
+  DEPENDS clef
+  COMMENT "Build the command-line editor (clef)"
+)
+
+# Autotools equivalent: all-sman
+# Artifacts: sman (session manager), session (session process),
+#   spadclient (socket client for IDE integration).
+#   Conditional on OPENAXIOM_USE_SMAN (requires AF_UNIX socket support).
+if(OPENAXIOM_USE_SMAN)
+  add_custom_target(all-sman
+    DEPENDS sman session spadclient
+    COMMENT "Build the session manager suite (sman, session, spadclient)"
+  )
+endif()
+
+# Autotools equivalent: all-graph
+# Artifacts: viewman (viewport manager), view2D (2D renderer), view3D (3D
+#   renderer), viewAlone (standalone viewer).  All require X11.
+if(OA_HAVE_X11)
+  add_custom_target(all-graph
+    DEPENDS viewman view2D view3D viewAlone
+    COMMENT "Build the X11 graphics subsystem (viewman, view2D, view3D, viewAlone)"
+  )
+
+  # Autotools equivalent: all-hyper
+  # Artifacts: htadd (page DB builder), ex2ht (example converter),
+  #   hypertex (hypertext viewer), spadbuf (buffer tool).
+  #   hthits/htsearch require regex.h in addition to X11.
+  set(oa_hyper_targets htadd ex2ht hypertex spadbuf)
+  if(HAVE_REGEX_H)
+    list(APPEND oa_hyper_targets hthits htsearch)
+  endif()
+  add_custom_target(all-hyper
+    DEPENDS ${oa_hyper_targets}
+    COMMENT "Build all HyperDoc tools (htadd, ex2ht, hypertex, spadbuf, ...)"
+  )
+endif()
+
+# Autotools equivalent: all-gui
+# Artifacts: open-axiom-gui (Qt-based graphical frontend).
+if(OPENAXIOM_USE_GUI)
+  add_custom_target(all-gui
+    DEPENDS open-axiom-gui
+    COMMENT "Build the Qt graphical frontend (open-axiom-gui)"
+  )
+endif()
+
+# all-src: aggregate of all source-derived targets.
+# Autotools equivalent: all-src (top-level source build).
+# Depends on all-native + all-doc + all-input unconditionally, plus all
+# Lisp-derived targets (interpreter, algebra, AXIOMsys, data) when a Lisp
+# runtime is available.
+set(oa_all_src_deps all-native all-doc all-input)
+if(OA_LISP_EXECUTABLE)
+  list(APPEND oa_all_src_deps all-interpsys all-algebra all-axiomsys all-data)
+endif()
+add_custom_target(all-src
+  DEPENDS ${oa_all_src_deps}
+  COMMENT "Build everything under src/ (native + docs + inputs + Lisp chain + data)"
+)
 
 
 # headers) into OA_STAGE_ROOT -- an in-tree directory that mirrors the
@@ -2061,7 +2574,8 @@ set(oa_stage_dirs
   "${OA_STAGE_ROOT}/src/algebra"
 )
 
-# Targets staged into OA_STAGE_ROOT/lib/.
+# Libraries are built directly into ${OA_STAGE_ROOT}/lib/ via output-
+# directory properties, so no copy step is needed for them.
 set(oa_stage_lib_targets  open-axiom-core OpenAxiom spad)
 if(oa_use_dynamic_lib STREQUAL "yes")
   list(APPEND oa_stage_lib_targets open-axiom-core-shared)
@@ -2070,12 +2584,6 @@ endif()
 add_custom_target(stage-native-layout
   # -- Create the directory skeleton --
   COMMAND ${CMAKE_COMMAND} -E make_directory ${oa_stage_dirs}
-  # -- Copy static libraries --
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "$<TARGET_FILE:open-axiom-core>"
-    "$<TARGET_FILE:OpenAxiom>"
-    "$<TARGET_FILE:spad>"
-    "${OA_STAGE_ROOT}/lib/"
   # -- Copy headers --
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${PROJECT_SOURCE_DIR}/src/include/open-axiom.h"
@@ -2090,32 +2598,21 @@ add_custom_target(stage-native-layout
   COMMENT "Stage native artifacts into an OpenAxiom-style runtime layout"
 )
 
-# When delayed FFI is active, the shared library must also land in the
-# staging lib/ directory so that the Lisp linker can load it.
-if(oa_use_dynamic_lib STREQUAL "yes")
-  add_custom_target(stage-shared-lib
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "$<TARGET_FILE:open-axiom-core-shared>"
-      "${OA_STAGE_ROOT}/lib/"
-    DEPENDS open-axiom-core-shared
-    COMMENT "Stage open-axiom-core shared library for delayed FFI"
-  )
-  add_dependencies(stage-native-layout stage-shared-lib)
-endif()
-
-# phase1-native: just compile the three executables (no staging).
-# Useful for quick compilation-only checks.
-add_custom_target(phase1-native
+# Quick compilation check: just build the three core executables.
+# Does NOT stage anything into OA_STAGE_ROOT.
+add_custom_target(all-lib
   DEPENDS open-axiom hammer oa-lisp
-  COMMENT "Build the initial native CMake scaffold targets"
+  COMMENT "Build core executables only (open-axiom, hammer, oa-lisp) -- no staging"
 )
 
-# phase2-native: build everything AND populate the staging tree.
-# This is the prerequisite for the Phase 3 Lisp chain because the Lisp
-# compiler expects the native tools to already be in OA_STAGE_ROOT.
-add_custom_target(phase2-native
+# Autotools equivalent: stamp-subdirs + all-lib (staging portion)
+# Build all core executables AND populate OA_STAGE_ROOT with a directory
+# skeleton, headers, and native artifacts.  This is the prerequisite for
+# the Lisp toolchain because oa-lisp and the staged libraries must exist
+# before SBCL can compile Lisp sources.
+add_custom_target(all-staging
   DEPENDS stage-native-layout
-  COMMENT "Build and stage the completed Phase 2 native layer"
+  COMMENT "Build core executables and stage into the runtime layout tree"
 )
 
 # -- I. Install rules ------------------------------------------------------
@@ -2186,13 +2683,17 @@ install(FILES
   DESTINATION ${OA_CMAKE_INSTALL_DIR}
 )
 
-# -- Phase 6 install rules --
+# -- Install rules for optional executables --
 
 # The driver is the only executable installed to the system PATH.
 # Everything else goes under the OpenAxiom layout root, matching Autotools.
 
 # User-facing tools -> $OA_INSTALL_LAYOUT_ROOT/bin/
-install(TARGETS clef asq
+set(oa_user_bin_targets asq)
+if(NOT WIN32)
+  list(APPEND oa_user_bin_targets clef)
+endif()
+install(TARGETS ${oa_user_bin_targets}
   RUNTIME DESTINATION ${OA_INSTALL_LAYOUT_ROOT}/bin
 )
 

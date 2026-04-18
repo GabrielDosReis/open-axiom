@@ -1,0 +1,115 @@
+# ===========================================================================
+# ci-linux-build.yml -- Reusable workflow for Linux CMake builds
+# ===========================================================================
+# Called by the per-platform CI workflows.  Accepts compiler and Lisp
+# configuration as inputs, builds all-native + all-interpsys, and
+# optionally runs install + export verification.
+
+name: Linux Build (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      cc:
+        required: true
+        type: string
+      cxx:
+        required: true
+        type: string
+      lisp:
+        required: true
+        type: string
+      lisp_executable:
+        required: false
+        type: string
+        default: ''
+      extra_cmake_flags:
+        required: false
+        type: string
+        default: ''
+      run_install_test:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+
+          # -- GCC 15 from Ubuntu Toolchain PPA (not in 24.04 default repos) --
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y gcc-15 g++-15
+
+          # -- Clang 22 from apt.llvm.org (22 is the qualification branch) --
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | \
+            sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc > /dev/null
+          echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-22 main" | \
+            sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get update
+          sudo apt-get install -y clang-22
+
+          # -- Other dependencies --
+          sudo apt-get install -y \
+            ninja-build sbcl ecl clisp gcl27 \
+            build-essential pkg-config \
+            libxt-dev libxpm-dev qtbase5-dev
+
+          # Ubuntu apt cmake is 3.28; we need >= 3.31.
+          pip install --user 'cmake>=3.31'
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify CMake version
+        run: cmake --version
+
+      - name: Configure
+        run: |
+          lisp_exe="${{ inputs.lisp_executable || inputs.lisp }}"
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_C_COMPILER=${{ inputs.cc }} \
+            -DCMAKE_CXX_COMPILER=${{ inputs.cxx }} \
+            -DOA_WITH_LISP=${{ inputs.lisp }} \
+            -DOA_LISP_EXECUTABLE="$(which $lisp_exe)" \
+            -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install" \
+            ${{ inputs.extra_cmake_flags }}
+
+      - name: Build all-native (all native executables)
+        run: cmake --build build --target all-native --parallel 2
+
+      - name: Build all-interpsys (Lisp chain through interpreter)
+        run: cmake --build build --target all-interpsys --parallel 2
+
+      - name: Verify interpsys image
+        run: |
+          interpsys=$(find build -name 'interpsys' -type f -print -quit)
+          test -n "$interpsys" && test -s "$interpsys"
+          echo "OK: interpsys found at $interpsys ($(stat -c%s "$interpsys") bytes)"
+
+      - name: Install
+        if: inputs.run_install_test
+        run: cmake --install build
+
+      - name: Verify install tree
+        if: inputs.run_install_test
+        run: |
+          test -x "${{ runner.temp }}/install/bin/open-axiom"
+          ls "${{ runner.temp }}"/install/lib/open-axiom/*/*/lib/libopen-axiom-core.a
+
+      - name: Verify CMake package export
+        if: inputs.run_install_test
+        run: |
+          mkdir -p /tmp/consumer
+          cat > /tmp/consumer/CMakeLists.txt <<'EOF'
+          cmake_minimum_required(VERSION 3.31)
+          project(consumer LANGUAGES CXX)
+          find_package(OpenAxiom REQUIRED)
+          EOF
+          oa_cmake_dir=$(dirname "$(find "${{ runner.temp }}/install" -name OpenAxiomConfig.cmake -print -quit)")
+          cmake -S /tmp/consumer -B /tmp/consumer/build \
+            -DOpenAxiom_DIR="$oa_cmake_dir"

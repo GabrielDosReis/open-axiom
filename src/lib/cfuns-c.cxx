@@ -504,6 +504,9 @@ oa_acquire_temporary_pathname() {
       perror("oa_acquire_temporary_pathname");
       exit(1);
    }
+   /* GetTempFileName creates a 0-byte file to reserve the name.
+      Remove it so the caller can use the path as a directory.  */
+   DeleteFile(buf);
    return strdup(buf);
 #elif HAVE_DECL_MKTEMP
    return mktemp(copy_c_str(std::string{ oa_get_tmpdir() } + "/oa-XXXXXX"));

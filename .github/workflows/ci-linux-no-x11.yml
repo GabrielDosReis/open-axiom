@@ -1,0 +1,48 @@
+# Linux: GCC 15 + SBCL, no X11 (OA_ENABLE_GRAPHICS=OFF)
+name: 'CI: Linux no-X11'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+jobs:
+  build:
+    uses: ./.github/workflows/ci-linux-build.yml
+    with:
+      cc: gcc-15
+      cxx: g++-15
+      lisp: sbcl
+      extra_cmake_flags: '-DOA_ENABLE_GRAPHICS=OFF'
+
+  verify-no-x11:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build sbcl gcc-15 g++-15 \
+            build-essential pkg-config
+          pip install --user 'cmake>=3.31'
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Configure (no X11)
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_C_COMPILER=gcc-15 \
+            -DCMAKE_CXX_COMPILER=g++-15 \
+            -DOA_ENABLE_GRAPHICS=OFF
+
+      - name: Verify X11 targets are absent
+        run: |
+          for t in viewman view2D view3D viewAlone htadd hypertex spadbuf; do
+            if ninja -C build -t query "$t" 2>/dev/null; then
+              echo "FAIL: $t should not exist with OA_ENABLE_GRAPHICS=OFF"
+              exit 1
+            fi
+          done
+          echo "OK: all X11-gated targets correctly absent"

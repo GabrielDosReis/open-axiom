@@ -1,0 +1,27 @@
+# Linux: GCC 15 + GCL (GCL_ANSI=t workaround; binary is gcl27)
+#
+# Disabled: GCL 2.7 cannot compile the Boot translator's DECLAIM FTYPE
+# forms that use (FUNCTION ...) as a parameter type specifier.  The three
+# failing declarations in utility.clisp are:
+#   |every?|   : (FTYPE (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) ...) ...) ...)
+#   |any?|     : same pattern
+#   |takeWhile|: same pattern
+# This is valid ANSI CL (CLHS 4.2.3) but GCL's PROCLAIM implementation
+# signals an error when (FUNCTION ...) appears nested inside an FTYPE
+# parameter list.  Re-enable once GCL is fixed or the Boot translator
+# emits a GCL-compatible workaround.
+#
+# name: 'CI: Linux GCC+GCL'
+# on:
+#   push:
+#     branches: [master, cmake-migration-proposal]
+#   pull_request:
+#     branches: [master]
+# jobs:
+#   build:
+#     uses: ./.github/workflows/ci-linux-build.yml
+#     with:
+#       cc: gcc-15
+#       cxx: g++-15
+#       lisp: gcl
+#       lisp_executable: gcl27
