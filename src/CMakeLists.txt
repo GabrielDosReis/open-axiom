@@ -439,6 +439,22 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     COMMENT "Stage the Lisp runtime artifacts"
   )
 
+  # ECL needs a linkset file and the linkable object in the staging tree.
+  if(OA_LISP_FLAVOR STREQUAL "ecl")
+    add_custom_command(
+      TARGET stage-lisp-runtime POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${oa_lisp_generated_linkable}"
+        "${OA_STAGE_ROOT}/lisp/"
+      COMMAND ${CMAKE_COMMAND}
+        -Dfile=${OA_STAGE_ROOT}/lisp/linkset
+        -Dcontent=("core.${OA_LISP_LNK_EXT}")
+        -P "${PROJECT_SOURCE_DIR}/cmake/WriteFile.cmake"
+      COMMENT "Generate ECL linkset for lisp runtime"
+      VERBATIM
+    )
+  endif()
+
   # Autotools equivalent: all-lisp
   # Artifacts: core.fasl (compiled Lisp bootstrap) and base-lisp (standalone
   #   Lisp image linked from core.fasl).  Both are staged into
