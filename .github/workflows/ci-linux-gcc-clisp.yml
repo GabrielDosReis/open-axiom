@@ -1,0 +1,14 @@
+# Linux: GCC 15 + CLisp (delayed FFI path)
+name: 'CI: Linux GCC+CLisp'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+jobs:
+  build:
+    uses: ./.github/workflows/ci-linux-build.yml
+    with:
+      cc: gcc-15
+      cxx: g++-15
+      lisp: clisp

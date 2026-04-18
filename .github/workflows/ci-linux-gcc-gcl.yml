@@ -1,0 +1,15 @@
+# Linux: GCC 14 + GCL (GCL_ANSI=t workaround; binary is gcl27)
+name: 'CI: Linux GCC+GCL'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+jobs:
+  build:
+    uses: ./.github/workflows/ci-linux-build.yml
+    with:
+      cc: gcc-15
+      cxx: g++-15
+      lisp: gcl
+      lisp_executable: gcl27

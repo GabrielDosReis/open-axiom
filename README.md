@@ -1,5 +1,17 @@
 This is OpenAxiom, the open scientific computation system.
 
+## Build Status
+
+| Platform | Compiler | Lisp | Status |
+|----------|----------|------|--------|
+| Linux | GCC 15 | SBCL | [![CI: Linux GCC+SBCL](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-sbcl.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-sbcl.yml) |
+| Linux | Clang 22 | SBCL | [![CI: Linux Clang+SBCL](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-clang-sbcl.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-clang-sbcl.yml) |
+| Linux | GCC 15 | ECL | [![CI: Linux GCC+ECL](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-ecl.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-ecl.yml) |
+| Linux | GCC 15 | CLisp | [![CI: Linux GCC+CLisp](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-clisp.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-clisp.yml) |
+| Linux | GCC 15 | GCL | [![CI: Linux GCC+GCL](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-gcl.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-gcc-gcl.yml) |
+| Linux | GCC 15 | SBCL (no X11) | [![CI: Linux no-X11](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-no-x11.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-linux-no-x11.yml) |
+| Windows | MSVC (VS Insiders) | SBCL | [![CI: Windows MSVC+SBCL](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-windows-msvc-sbcl.yml/badge.svg)](https://github.com/GabrielDosReis/open-axiom/actions/workflows/ci-windows-msvc-sbcl.yml) |
+
 OpenAxiom is a BSD-licensed free software for symbolic and algebraic
 computations. It offers an interactive environment, including  an
 expressive programming language, a compiler, a large set of libraries

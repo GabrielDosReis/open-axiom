@@ -1,0 +1,14 @@
+# Linux: Clang 22 + SBCL
+name: 'CI: Linux Clang+SBCL'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+jobs:
+  build:
+    uses: ./.github/workflows/ci-linux-build.yml
+    with:
+      cc: clang-22
+      cxx: clang++-22
+      lisp: sbcl
