@@ -705,12 +705,22 @@ oa_boot_build_stage(stage2 "" "${oa_stage1_bootsys}")
 
 
 # -- Stage the final bootsys into OA_STAGE_ROOT --
-add_custom_target(stage-bootsys
+# Use add_custom_command(OUTPUT ...) so that Ninja knows the build rule
+# that produces the staged bootsys file.  Interpreter modules depend on
+# this file path (OA_BOOTSYS) and need it resolvable in the dep graph.
+add_custom_command(
+  OUTPUT "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${oa_stage2_bootsys}"
     "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
   DEPENDS "${oa_stage2_bootsys}"
   COMMENT "Stage the final Boot translator (bootsys)"
+  VERBATIM
+)
+
+# Named target wrapping the staged file, for human use and ECL POST_BUILD.
+add_custom_target(stage-bootsys
+  DEPENDS "${OA_STAGE_ROOT}/bin/bootsys${CMAKE_EXECUTABLE_SUFFIX}"
 )
 
 # ECL needs a linkset file listing the object files for bootsys.
