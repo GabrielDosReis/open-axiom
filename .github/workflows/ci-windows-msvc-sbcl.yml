@@ -23,11 +23,19 @@ jobs:
 
       - name: Install SBCL via winget
         run: |
-          winget install --id SteelBankCommonLisp.SBCL -e `
+          winget install --id SBCL.SBCL -e `
             --accept-source-agreements --accept-package-agreements
           $sbclDir = "C:\Program Files\Steel Bank Common Lisp"
+          if (-not (Test-Path $sbclDir)) {
+            # Fallback: search Program Files for sbcl.exe
+            $sbclExe = Get-ChildItem -Path "${env:ProgramFiles}","${env:ProgramFiles(x86)}" `
+              -Filter sbcl.exe -Recurse -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+            if ($sbclExe) { $sbclDir = $sbclExe.DirectoryName }
+          }
           if (Test-Path $sbclDir) {
             "$sbclDir" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+            Write-Host "SBCL found at: $sbclDir"
           } else {
             Write-Error "SBCL install directory not found at $sbclDir"
             exit 1
