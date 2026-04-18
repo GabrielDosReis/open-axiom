@@ -15,7 +15,7 @@
 #   C. Static libraries: open-axiom-core, OpenAxiom, spad
 #   D. Executables: hammer, open-axiom, lisp
 #   E. Lisp runtime compilation and image linking
-#   F. Staging targets: stage-native-layout, all-lib, all-staging
+#   F. Build layout: stage-native-layout, all-lib, all-staging
 #   G. Boot translator bootstrap and interpreter chain
 #   H. Algebra substrate
 #   P. Databases, HyperDoc data, and optional native executables
@@ -158,7 +158,7 @@ endif()
 # -- Shared variant of open-axiom-core (for delayed-FFI Lisps) --
 # SBCL, Clozure CL, and CLISP use dlopen/LoadLibrary to load the C
 # runtime at image startup (the "delayed FFI" strategy).  They expect
-# a shared library -- open-axiom-core.dll/.so -- in the staging tree.
+# a shared library -- open-axiom-core.dll/.so -- in the build layout.
 if(oa_use_dynamic_lib STREQUAL "yes")
   add_library(open-axiom-core-shared SHARED
     lib/bsdsignal.cxx
@@ -174,7 +174,7 @@ if(oa_use_dynamic_lib STREQUAL "yes")
   set_target_properties(open-axiom-core-shared PROPERTIES
     OUTPUT_NAME open-axiom-core
     ARCHIVE_OUTPUT_NAME open-axiom-core-import
-    # Build directly into the staging tree so that downstream consumers
+    # Build directly into the build layout so that downstream consumers
     # (interpsys, algebra bootstrap) always see the up-to-date DLL.
     RUNTIME_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
@@ -255,7 +255,7 @@ foreach(lib ${oa_native_libs})
   target_include_directories(${lib} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
   )
-  # Build static libraries directly into the staging tree.
+  # Build static libraries directly into the build layout.
   set_target_properties(${lib} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${OA_STAGE_ROOT}/lib"
   )
@@ -301,12 +301,12 @@ target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
 #   1. Generate core.lisp from the .in template (configure_file)
 #   2. Compile core.lisp -> core.FASL  (+ core.o for ECL)
 #   3. Link the FASL into a standalone image: base-lisp
-#   4. Stage everything under OA_STAGE_ROOT for later phases
+#   4. Place artifacts into OA_STAGE_ROOT for later build steps
 #
 # The LISP_CMD variable below avoids repeating the multi-part
 # `cmake -E env ...EXECUTABLE ...QUIET ...BATCH` invocation prefix.
 
-set(oa_lisp_build_dir "${PROJECT_BINARY_DIR}/phase3/lisp")
+set(oa_lisp_build_dir "${PROJECT_BINARY_DIR}/lisp")
 set(oa_lisp_generated_core "${oa_lisp_build_dir}/core.lisp")
 set(oa_lisp_generated_fasl "${oa_lisp_build_dir}/core.${OA_LISP_FASL_EXT}")
 set(oa_lisp_generated_linkable "${oa_lisp_build_dir}/core.${OA_LISP_LNK_EXT}")
@@ -418,11 +418,12 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     VERBATIM
   )
 
-  # -- Step 4: Stage Lisp artifacts into the runtime layout --
+  # -- Step 4: Place Lisp artifacts into the runtime layout --
+  # Only artifacts consumed by later build steps belong here.
+  # Install-only files (cmake settings) are handled by install() rules.
   set(oa_stage_lisp_commands
     COMMAND ${CMAKE_COMMAND} -E make_directory
       "${OA_STAGE_ROOT}/lisp"
-      "${OA_STAGE_ROOT}/share/open-axiom/cmake"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${oa_lisp_generated_core}"
       "${OA_STAGE_ROOT}/lisp/"
@@ -432,12 +433,9 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${oa_lisp_generated_image}"
       "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_BINARY_DIR}/config/openaxiom-lisp-settings.cmake"
-      "${OA_STAGE_ROOT}/share/open-axiom/cmake/"
   )
 
-  # ECL needs a linkset file and the linkable object in the staging tree.
+  # ECL needs a linkset file and the linkable object in the build layout.
   if(OA_LISP_FLAVOR STREQUAL "ecl")
     # Generate the linkset at configure time -- the content is a Lisp list
     # of strings naming the linkable object files (read by linkset-from).
@@ -455,17 +453,17 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
   add_custom_target(stage-lisp-runtime
     ${oa_stage_lisp_commands}
     DEPENDS stage-native-layout "${oa_lisp_generated_image}"
-    COMMENT "Stage the Lisp runtime artifacts"
+    COMMENT "Place Lisp runtime artifacts into the build layout"
   )
 
   # Autotools equivalent: all-lisp
   # Artifacts: core.fasl (compiled Lisp bootstrap) and base-lisp (standalone
-  #   Lisp image linked from core.fasl).  Both are staged into
-  #   OA_STAGE_ROOT/lib/ and OA_STAGE_ROOT/bin/ respectively.
-  # Depends on: stage-native-layout (native libs + headers in staging tree).
+  #   Lisp image linked from core.fasl).  Both are placed into
+  #   OA_STAGE_ROOT/lisp/ and OA_STAGE_ROOT/bin/ respectively.
+  # Depends on: stage-native-layout (native libs must exist).
   add_custom_target(all-lisp
     DEPENDS stage-lisp-runtime
-    COMMENT "Build core.fasl and the base-lisp image; stage into runtime layout"
+    COMMENT "Build core.fasl and the base-lisp image"
   )
 
 
@@ -501,22 +499,22 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
 #   open-axiom --execpath=<lisp> --translate ...  Translate .boot -> .clisp
 #   open-axiom --execpath=<lisp> --make ...       Link FASLs into an image
 #
-# The open-axiom driver (built in Phase 1) is the orchestrator for all
-# Lisp-level operations -- it sets up the process environment, passes
-# flags to the underlying Lisp, and manages load paths.
+# The open-axiom driver is the orchestrator for all Lisp-level
+# operations -- it sets up the process environment, passes flags to
+# the underlying Lisp, and manages load paths.
 # ---------------------------------------------------------------------------
 
 # -- Paths -----------------------------------------------------------------
 
 set(oa_boot_srcdir  "${PROJECT_SOURCE_DIR}/src/boot")
-set(oa_boot_builddir "${PROJECT_BINARY_DIR}/phase4/boot")
+set(oa_boot_builddir "${PROJECT_BINARY_DIR}/boot")
 set(oa_interp_srcdir "${PROJECT_SOURCE_DIR}/src/interp")
-set(oa_interp_builddir "${PROJECT_BINARY_DIR}/phase4/interp")
+set(oa_interp_builddir "${PROJECT_BINARY_DIR}/interp")
 
 # The open-axiom driver executable -- orchestrates all Lisp operations.
 set(OA_DRIVER "$<TARGET_FILE:open-axiom>")
 
-# The base Lisp image (installed into the staging tree).
+# The base Lisp image (placed into the build layout by stage-lisp-runtime).
 set(OA_LISPSYS "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}")
 
 # -- Boot module list and dependency order ---------------------------------
@@ -723,7 +721,7 @@ oa_boot_build_stage(stage1 "" "${oa_strap_bootsys}")
 oa_boot_build_stage(stage2 "" "${oa_stage1_bootsys}")
 
 
-# -- Stage the final bootsys into OA_STAGE_ROOT --
+# -- Copy the final bootsys into OA_STAGE_ROOT --
 # Use add_custom_command(OUTPUT ...) so that Ninja knows the build rule
 # that produces the staged bootsys file.  Interpreter modules depend on
 # this file path (OA_BOOTSYS) and need it resolvable in the dep graph.
@@ -770,7 +768,7 @@ endif()
 # Autotools equivalent: all-boot
 # Artifacts: bootsys -- the Boot-to-Lisp translator.  Built via a three-stage
 #   bootstrap (strap -> stage1 -> stage2), each compiled with the base-lisp
-#   image from all-lisp.  The final stage2/bootsys is staged into
+#   image from all-lisp.  The final stage2/bootsys is copied into
 #   OA_STAGE_ROOT/bin/.
 # Depends on: all-lisp (base-lisp image), oa-lisp (Lisp launcher).
 add_custom_target(all-boot
@@ -780,7 +778,7 @@ add_custom_target(all-boot
 
 
 # ===========================================================================
-# Phase 4b: Interpreter (interpsys)
+# Interpreter (interpsys)
 # ===========================================================================
 # The interpreter is built by compiling ~100 .boot and .lisp files from
 # src/interp/ using bootsys, then linking them into a standalone image
@@ -1006,7 +1004,7 @@ set(oa_interp_objs ${oa_interp_all_fasls})
 # standard-linking Lisps include it directly in the object list (already
 # covered above since sys-os is in the list).
 if(oa_delay_ffi STREQUAL "yes")
-  # Copy the FFI module to the interp staging directory so the image
+  # Copy the FFI module to the interp build directory so the image
   # can find it at load time.
   add_custom_command(
     OUTPUT "${OA_STAGE_ROOT}/interp/sys-os.${OA_LISP_FASL_EXT}"
@@ -1082,7 +1080,7 @@ add_custom_command(
 #   compiling ~100 .boot and .lisp source files from src/interp/ using
 #   bootsys, then linking them into a standalone Lisp image.  interpsys is
 #   the tool that compiles SPAD algebra source files.
-# Depends on: all-boot (bootsys), stage-bootsys (bootsys in staging tree).
+# Depends on: all-boot (bootsys), stage-bootsys (bootsys in build layout).
 add_custom_target(all-interpsys
   DEPENDS "${oa_interpsys}" stage-bootsys
   COMMENT "Compile ~100 interpreter modules and link the interpsys image"
@@ -1126,7 +1124,7 @@ include(OpenAxiomScanAlgebra)
 # -- Paths -----------------------------------------------------------------
 
 set(oa_algebra_srcdir   "${PROJECT_SOURCE_DIR}/src/algebra")
-set(oa_algebra_builddir "${PROJECT_BINARY_DIR}/phase5/algebra")
+set(oa_algebra_builddir "${PROJECT_BINARY_DIR}/algebra")
 set(oa_algebra_outsrc   "${OA_STAGE_ROOT}/src/algebra")
 set(oa_algebra_outdir   "${OA_STAGE_ROOT}/algebra")
 set(oa_algebra_dbdir    "${PROJECT_SOURCE_DIR}/src/share/algebra")
@@ -1225,7 +1223,7 @@ endforeach()
 #   are copied directly.  These are the "whole" files used by initdb.
 add_custom_target(all-extract-wholefile
   DEPENDS ${oa_all_spadfiles}
-  COMMENT "Extract/copy whole .spad source files into the staging algebra dir"
+  COMMENT "Extract/copy whole .spad source files into the algebra build dir"
 )
 
 
@@ -1339,7 +1337,7 @@ add_custom_command(
     --syslib=${OA_STAGE_ROOT}/lib
     --compile
     --output=${oa_initdb_fasl}
-    --load-directory=${PROJECT_BINARY_DIR}/phase4/interp
+    --load-directory=${PROJECT_BINARY_DIR}/interp
     "${oa_initdb_clisp}"
   WORKING_DIRECTORY "${oa_algebra_builddir}"
   DEPENDS "${oa_initdb_clisp}" "${oa_bootsys}"
@@ -1578,11 +1576,11 @@ add_custom_target(all-algebra
 
 
 # ===========================================================================
-# Database generation and HyperDoc data staging
+# Database generation and HyperDoc data
 # ===========================================================================
 # These targets require interpsys and belong inside the
 # Lisp guard.  Database generation builds the .daase files consumed by
-# the interpreter at runtime; HyperDoc data staging copies pages,
+# the interpreter at runtime; HyperDoc data copies pages,
 # bitmaps, and viewports, then builds ht.db via the htadd tool.
 # ---------------------------------------------------------------------------
 
@@ -1678,7 +1676,7 @@ add_custom_command(
   VERBATIM
 )
 
-# -- 7b. Compile exposed.lsp -> exposed.fasl in the algebra staging dir --
+# -- 7b. Compile exposed.lsp -> exposed.fasl in the algebra build dir --
 # exposed.lsp depends on the boot-pkg module (defines the BOOT package).
 add_custom_command(
   OUTPUT "${oa_exposed_fasl}"
@@ -1816,8 +1814,8 @@ add_custom_target(all-static-files
   COMMENT "[static-files] Stage static runtime files"
 )
 
-# -- HyperDoc data staging (post-algebra, needs htadd which requires X11) --
-# Pages, bitmaps, and viewports are copied to the staging tree.  After
+# -- HyperDoc data (post-algebra, needs htadd which requires X11) --
+# Pages, bitmaps, and viewports are copied to the build layout.  After
 # copying, htadd builds ht.db (the HyperDoc page index) by scanning
 # all .ht and .pht files.
 
@@ -2102,8 +2100,8 @@ endif()  # OA_LISP_EXECUTABLE guard
 # asq.c is tangled from asq.c.pamphlet by hammer (pure C++ tool, no
 # Lisp dependency), then compiled as a normal executable.  It queries
 # the algebra databases.
-set(oa_asq_c "${PROJECT_BINARY_DIR}/phase6/asq.c")
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/phase6")
+set(oa_asq_c "${PROJECT_BINARY_DIR}/etc/asq.c")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/etc")
 
 add_custom_command(
   OUTPUT "${oa_asq_c}"
@@ -2304,7 +2302,7 @@ endif()  # OA_HAVE_X11 (graphics subsystem)
 # tools depend on X11 at compile time (via pixmap.h in hyper.h).
 # hthits and htsearch additionally require regex.h.
 #
-# htadd is needed by the data staging (ht.db generation).
+# htadd is needed by the ht.db generation step.
 #
 # libm propagates transitively from open-axiom-core (PUBLIC), so it is
 # not repeated on individual targets.
@@ -2410,14 +2408,14 @@ if(OPENAXIOM_USE_GUI)
 endif()
 
 
-# -- O. Documentation and shared resource staging --------------------------
-# These copy rules stage help files, the glossary, the command list,
+# -- O. Documentation and shared resources ---------------------------------
+# These copy rules place help files, the glossary, the command list,
 # the message catalog, and the TeX style file into the runtime layout.
 # They are unconditional (no Lisp or X11 dependency).
 
 # Autotools equivalent: all-doc + all-share
 # Artifacts: help files, glossary (gloss.text), message catalogs (co-eng.msgs),
-#   command.list, and TeX style file (open-axiom.sty).  All staged into
+#   command.list, and TeX style file (open-axiom.sty).  All placed into
 #   OA_STAGE_ROOT.  These are unconditional (no Lisp or X11 dependency).
 add_custom_target(all-doc
   # Help files
@@ -2556,46 +2554,27 @@ add_custom_target(all-src
 )
 
 
-# headers) into OA_STAGE_ROOT -- an in-tree directory that mirrors the
-# final installation layout.  Later phases read from this staging tree.
+# OA_STAGE_ROOT is an in-build-tree directory that mirrors the runtime
+# layout expected by the open-axiom driver (--system=).  Only artifacts
+# consumed by subsequent build steps are placed here.  Headers and cmake
+# settings are install-only and handled by the install() rules below.
 #
-# Executables and libraries are staged via lists so adding a new target
-# only requires appending to the list -- no new COMMAND block needed.
-# Note: only artifacts needed by later build phases are staged here.
-# Executables like open-axiom (the driver) and hammer are used directly
-# from the build tree, matching Autotools behaviour.
-
-set(oa_stage_dirs
-  "${OA_STAGE_ROOT}/bin"
-  "${OA_STAGE_ROOT}/lib"
-  "${OA_STAGE_ROOT}/include/open-axiom"
-  "${OA_STAGE_ROOT}/share"
-  "${OA_STAGE_ROOT}/doc/help"
-  "${OA_STAGE_ROOT}/src/algebra"
-)
-
 # Libraries are built directly into ${OA_STAGE_ROOT}/lib/ via output-
-# directory properties, so no copy step is needed for them.
+# directory properties, so no copy step is needed for them.  Executables
+# like open-axiom (the driver) and hammer are used directly from the
+# build tree, matching Autotools behaviour.
+
 set(oa_stage_lib_targets  open-axiom-core OpenAxiom spad)
 if(oa_use_dynamic_lib STREQUAL "yes")
   list(APPEND oa_stage_lib_targets open-axiom-core-shared)
 endif()
 
 add_custom_target(stage-native-layout
-  # -- Create the directory skeleton --
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${oa_stage_dirs}
-  # -- Copy headers --
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${PROJECT_SOURCE_DIR}/src/include/open-axiom.h"
-    "${OA_STAGE_ROOT}/include/"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${PROJECT_SOURCE_DIR}/src/include/open-axiom"
-    "${OA_STAGE_ROOT}/include/open-axiom"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${PROJECT_BINARY_DIR}/config/openaxiom-c-macros.h"
-    "${OA_STAGE_ROOT}/include/open-axiom/config"
+  COMMAND ${CMAKE_COMMAND} -E make_directory
+    "${OA_STAGE_ROOT}/bin"
+    "${OA_STAGE_ROOT}/lib"
   DEPENDS open-axiom hammer oa-lisp ${oa_stage_lib_targets}
-  COMMENT "Stage native artifacts into an OpenAxiom-style runtime layout"
+  COMMENT "Prepare the build layout for the Lisp toolchain"
 )
 
 # Quick compilation check: just build the three core executables.
@@ -2605,14 +2584,13 @@ add_custom_target(all-lib
   COMMENT "Build core executables only (open-axiom, hammer, oa-lisp) -- no staging"
 )
 
-# Autotools equivalent: stamp-subdirs + all-lib (staging portion)
-# Build all core executables AND populate OA_STAGE_ROOT with a directory
-# skeleton, headers, and native artifacts.  This is the prerequisite for
-# the Lisp toolchain because oa-lisp and the staged libraries must exist
-# before SBCL can compile Lisp sources.
+# Autotools equivalent: stamp-subdirs
+# Build all core executables and prepare the build layout.  This is the
+# prerequisite for the Lisp toolchain because oa-lisp and the libraries
+# must exist before SBCL can compile Lisp sources.
 add_custom_target(all-staging
   DEPENDS stage-native-layout
-  COMMENT "Build core executables and stage into the runtime layout tree"
+  COMMENT "Build core executables and prepare the build layout"
 )
 
 # -- I. Install rules ------------------------------------------------------
