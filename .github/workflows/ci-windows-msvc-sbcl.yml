@@ -74,6 +74,7 @@ jobs:
           cmake -S . -B build -G Ninja `
             -DCMAKE_C_COMPILER=cl `
             -DCMAKE_CXX_COMPILER=cl `
+            -DCMAKE_BUILD_TYPE=Debug `
             -DOA_WITH_LISP=sbcl `
             -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/install"
 
@@ -86,6 +87,11 @@ jobs:
         run: |
           & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
           cmake --build build --target all-interpsys --parallel 2
+
+      - name: Build all-algstrap (algebra bootstrap stages 0-2)
+        run: |
+          & $env:VSDEVSHELL -Arch amd64 -SkipAutomaticLocation
+          cmake --build build --target all-algstrap --parallel 2
 
       - name: Verify interpsys image
         run: |
