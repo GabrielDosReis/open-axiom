@@ -1258,21 +1258,34 @@ foreach(ctor ${OA_ALGEBRA_CONSTRUCTORS})
     set(_chunk   "${OA_ALGEBRA_CTOR_CHUNK_${ctor}}")
     set(_pam     "${oa_algebra_srcdir}/${_pambase}.spad.pamphlet")
 
-    # On Windows+Ninja, chunk names like "domain DROPT DrawOption"
-    # contain spaces.  With VERBATIM, CMake quotes the whole argument
-    # as "--tangle=domain DROPT DrawOption" which conflicts with the
-    # outer cmd /C "..." wrapping.  Without VERBATIM, we embed the
-    # quotes after the = so cmd.exe sees --tangle="domain ..." and
-    # strips only the outermost pair.
-    add_custom_command(
-      OUTPUT "${_out}"
-      COMMAND $<TARGET_FILE:hammer>
-        "--tangle=\"${_chunk}\""
-        --output=${_out}
-        "${_pam}"
-      DEPENDS hammer "${_pam}"
-      COMMENT "[algebra] Extract ${ctor}.spad from ${_pambase}.spad.pamphlet"
-    )
+    # Chunk names contain spaces, e.g. "domain DROPT DrawOption".
+    # On Windows+Ninja, VERBATIM causes CMake to quote the argument
+    # in a way that conflicts with cmd /C "..." wrapping.  We embed
+    # the quotes manually so cmd.exe sees --tangle="domain ...".
+    # On Unix, we must use VERBATIM so the shell receives the chunk
+    # name as a single argument without literal backslash escaping.
+    if(WIN32)
+      add_custom_command(
+        OUTPUT "${_out}"
+        COMMAND $<TARGET_FILE:hammer>
+          "--tangle=\"${_chunk}\""
+          --output=${_out}
+          "${_pam}"
+        DEPENDS hammer "${_pam}"
+        COMMENT "[algebra] Extract ${ctor}.spad from ${_pambase}.spad.pamphlet"
+      )
+    else()
+      add_custom_command(
+        OUTPUT "${_out}"
+        COMMAND $<TARGET_FILE:hammer>
+          "--tangle=${_chunk}"
+          --output=${_out}
+          "${_pam}"
+        DEPENDS hammer "${_pam}"
+        COMMENT "[algebra] Extract ${ctor}.spad from ${_pambase}.spad.pamphlet"
+        VERBATIM
+      )
+    endif()
 
   elseif(_source_type STREQUAL "plain")
     # Plain .spad constructor: copy the source file.
