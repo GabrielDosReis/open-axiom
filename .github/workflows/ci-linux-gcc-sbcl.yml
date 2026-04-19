@@ -13,3 +13,4 @@ jobs:
       cxx: g++-15
       lisp: sbcl
       run_install_test: true
+      build_algstrap: true

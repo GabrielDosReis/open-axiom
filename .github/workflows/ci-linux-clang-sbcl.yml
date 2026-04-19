@@ -12,3 +12,4 @@ jobs:
       cc: clang-22
       cxx: clang++-22
       lisp: sbcl
+      build_algstrap: true

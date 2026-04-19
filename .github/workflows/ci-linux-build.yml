@@ -31,6 +31,10 @@ on:
         required: false
         type: boolean
         default: false
+      build_algstrap:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -100,6 +104,7 @@ jobs:
         run: cmake --build build --target all-interpsys --parallel 2
 
       - name: Build all-algstrap (algebra bootstrap stages 0-2)
+        if: inputs.build_algstrap
         run: cmake --build build --target all-algstrap --parallel 2
 
       - name: Verify interpsys image
