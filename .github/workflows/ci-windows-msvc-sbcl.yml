@@ -20,14 +20,17 @@ jobs:
 
       - name: Install Visual Studio 2026 Insiders (C++ workload)
         run: |
-          winget install --id Microsoft.VisualStudio.Community.Insiders -e `
-            --accept-source-agreements --accept-package-agreements `
-            --override "--quiet --wait --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended"
+          $bootstrapper = "${{ runner.temp }}\vs_community.exe"
+          Invoke-WebRequest -Uri "https://aka.ms/vs/18/insiders/vs_community.exe" `
+            -OutFile $bootstrapper
+          Start-Process -Wait -FilePath $bootstrapper -ArgumentList `
+            "--quiet", "--wait", "--norestart", `
+            "--add", "Microsoft.VisualStudio.Workload.NativeDesktop", `
+            "--includeRecommended"
 
-      - name: Install SBCL via winget
+      - name: Install SBCL
         run: |
-          winget install --id SBCL.SBCL -e `
-            --accept-source-agreements --accept-package-agreements
+          choco install sbcl -y --no-progress
           $sbclDir = "C:\Program Files\Steel Bank Common Lisp"
           if (-not (Test-Path $sbclDir)) {
             # Fallback: search Program Files for sbcl.exe
@@ -50,7 +53,7 @@ jobs:
           $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
           $installPath = & $vsWhere -prerelease -latest -property installationPath
           if (-not $installPath) {
-            Write-Error "VS Insiders installation not found"
+            Write-Error "No Visual Studio installation found"
             exit 1
           }
           $devShell = Join-Path $installPath "Common7\Tools\Launch-VsDevShell.ps1"
@@ -59,7 +62,7 @@ jobs:
             exit 1
           }
           "VSDEVSHELL=$devShell" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
-          Write-Host "VS Insiders at: $installPath"
+          Write-Host "VS found at: $installPath"
 
       - name: Verify tools
         run: |
