@@ -13,3 +13,4 @@ jobs:
       cxx: g++-15
       lisp: clozure
       lisp_executable: ccl
+      build_algstrap: true

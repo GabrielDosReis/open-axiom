@@ -12,3 +12,4 @@ jobs:
       cc: gcc-15
       cxx: g++-15
       lisp: clisp
+      build_algstrap: true
