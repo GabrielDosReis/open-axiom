@@ -39,7 +39,12 @@ core_SOURCES = \
 	../io/InputFragment.cxx \
 	../syntax/token.cxx \
 	../syntax/sexpr.cxx \
-	../syntax/Parser.cxx
+	../syntax/boot-ast.cxx \
+	../syntax/boot-translator.cxx \
+	../syntax/lisp-value.cxx \
+	../syntax/Parser.cxx \
+	../syntax/syntax-print.cxx \
+	../syntax/syntax-tree.cxx
 
 terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
 
