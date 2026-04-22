@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2013-2022, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -34,15 +34,151 @@
 #ifndef OPENAXIOM_CHARSET_included
 #define OPENAXIOM_CHARSET_included
 
+#include <cstddef>
 #include <cstdint>
+#include <iosfwd>
+#include <string>
+#include <string_view>
 
 namespace OpenAxiom {
-   // Code point value of a UCS member.
+   // -- Code point value of a UCS member.
    using Codepoint = std::uint32_t;
 
-   // Unicode character type.
+   // -- Unicode character type.
    enum class Character : Codepoint {
       NUL = Codepoint{}          // The NUL character 
+   };
+
+   // -- Locale-independent ASCII character classification.
+   //    These operate on char8_t (UTF-8 code units) and do not
+   //    depend on LC_CTYPE.
+
+   constexpr bool ascii_blank(char8_t c)
+   {
+      return c == u8' ' or c == u8'\t';
+   }
+
+   constexpr bool ascii_space(char8_t c)
+   {
+      return c == u8' ' or c == u8'\t' or c == u8'\n' or c == u8'\r'
+         or c == u8'\f' or c == u8'\v';
+   }
+
+   constexpr bool ascii_digit(char8_t c)
+   {
+      return c >= u8'0' and c <= u8'9';
+   }
+
+   constexpr bool ascii_xdigit(char8_t c)
+   {
+      return ascii_digit(c)
+         or (c >= u8'a' and c <= u8'f')
+         or (c >= u8'A' and c <= u8'F');
+   }
+
+   constexpr bool ascii_alpha(char8_t c)
+   {
+      return (c >= u8'a' and c <= u8'z') or (c >= u8'A' and c <= u8'Z');
+   }
+
+   constexpr bool ascii_alnum(char8_t c)
+   {
+      return ascii_alpha(c) or ascii_digit(c);
+   }
+
+   constexpr bool ascii_lowercase(char8_t c)
+   {
+      return c >= u8'a' and c <= u8'z';
+   }
+
+   constexpr bool ascii_printable(char8_t c)
+   {
+      return c >= u8' ' and c <= u8'~';
+   }
+
+   // -- Common Lisp reader macro / syntax characters that require
+   // |bar| quoting in symbol output.
+   constexpr bool cl_special_char(char8_t c)
+   {
+      switch (c)
+      {
+      case u8'|': case u8' ': case u8'(': case u8')':
+      case u8'#': case u8'\'': case u8'"': case u8',':
+      case u8'`': case u8'\\': case u8';':
+         return true;
+      default:
+         return false;
+      }
+   }
+
+   // -- Common Lisp bar-quoting utilities.
+   //    Used when printing symbol names in CL S-expression format.
+
+   // -- Does a symbol name need |bar| quoting?
+   constexpr bool needs_bar_quoting(std::u8string_view name)
+   {
+      if (name.empty())
+         return true;
+      for (char8_t c : name)
+      {
+         if (ascii_lowercase(c) or cl_special_char(c))
+            return true;
+      }
+      return false;
+   }
+
+   // -- Print a symbol name inside |bars|, escaping | and \.
+   void print_bar_quoted(std::ostream& os, std::u8string_view name);
+
+   constexpr char8_t ascii_lower(char8_t c)
+   {
+      return (c >= u8'A' and c <= u8'Z')
+         ? static_cast<char8_t>(c + (u8'a' - u8'A'))
+         : c;
+   }
+
+   // -- Conversion helpers between char8_t and char domains.
+   //    UTF-8 code units have the same bit pattern as char on
+   //    all platforms OpenAxiom targets.
+   inline std::string_view as_chars(std::u8string_view s)
+   {
+      return { reinterpret_cast<const char*>(s.data()), s.size() };
+   }
+
+   inline std::u8string_view as_utf8(std::string_view s)
+   {
+      return { reinterpret_cast<const char8_t*>(s.data()), s.size() };
+   }
+
+   // -- Stream a UTF-8 string to a char-based ostream.
+   std::ostream& operator<<(std::ostream&, std::u8string_view);
+
+   // -- Non-owning view of a UTF-8 encoded byte buffer.
+   //    Strips an optional BOM and provides a std::u8string_view
+   //    for text processing.
+   struct Utf8SourceView {
+      explicit Utf8SourceView(const std::byte* data, std::size_t size)
+         : text { skip_bom(data, size),
+                  size - (skip_bom(data, size)
+                          - reinterpret_cast<const char8_t*>(data)) }
+      { }
+
+      std::u8string_view view() const { return text; }
+
+   private:
+      std::u8string_view text;
+
+      static const char8_t* skip_bom(const std::byte* data,
+                                     std::size_t size)
+      {
+         auto p = reinterpret_cast<const char8_t*>(data);
+         if (size >= 3
+             and p[0] == char8_t(0xEF)
+             and p[1] == char8_t(0xBB)
+             and p[2] == char8_t(0xBF))
+            return p + 3;
+         return p;
+      }
    };
 }
 

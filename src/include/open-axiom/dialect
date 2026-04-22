@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2013-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 namespace OpenAxiom {
-   // Languages for which we have parsers.
+   // -- Languages for which we have parsers.
    enum class Language : uint8_t {
       Spad = 0x1,               // Spad programming language
       Boot = 0x2,               // Boot programming language

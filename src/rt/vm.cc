@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2022, Gabriel Dos Reis.
+// -- Copyright (C) 2011-2022, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -57,7 +57,7 @@ namespace OpenAxiom {
       Environment::Environment() = default;
 
       Environment::~Environment() {
-         // Restore value of special variables bound in this environment.
+         // -- Restore value of special variables bound in this environment.
          const auto end = dynamic.rend();
          for (auto p = dynamic.rbegin(); p != end; ++p)
             p->symbol->value = p->value;

@@ -78,7 +78,7 @@ namespace OpenAxiom {
       Title = 4
    };
 
-   // Definition for connection status to the OpenAxiom server
+   // -- Definition for connection status to the OpenAxiom server
    enum class SpadStatus {
       Connected = 0,
       NotConnected = 1,

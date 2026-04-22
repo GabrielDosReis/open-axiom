@@ -51,7 +51,7 @@
 #include "pixmap.h"
 
 namespace OpenAxiom {
-   // Mapping of HT filepath to stream handle. 
+   // -- Mapping of HT filepath to stream handle. 
    using OpenHTFileTable = std::unordered_map<std::string_view, FILE*>;
 
    HyperCommand read_hyper_command(openaxiom_sio*);
@@ -272,7 +272,7 @@ extern GroupItem   *gTopOfGroupStack;
 extern HyperDocPage *gPageBeingParsed;
 
 
-// Kludge between the more correct 'array of unsigned char' incoming data,
+// -- Kludge between the more correct 'array of unsigned char' incoming data,
 // and the unprincipled 'pointer to char' parameters of several X11
 // functions below.
 template<int N>

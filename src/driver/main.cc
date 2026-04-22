@@ -50,7 +50,7 @@
 
 namespace OpenAxiom {
 
-   // Publish the system exec prefix for use by sub-processes.
+   // -- Publish the system exec prefix for use by sub-processes.
    static void
    publish_systemdir(const char* dir)
    {
@@ -96,7 +96,7 @@ namespace OpenAxiom {
       publish_systemdir(sysdir);
    }
 
-   // Print configuration info.
+   // -- Print configuration info.
    static int
    print_configuration_info(Command* command) {
       int i;

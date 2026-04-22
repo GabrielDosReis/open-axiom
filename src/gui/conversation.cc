@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013, Gabriel Dos Reis.
+// -- Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -41,7 +41,7 @@
 #include "debate.h"
 
 namespace OpenAxiom {
-   // Largest width and line spacing, in pixel, of the font metrics
+   // -- Largest width and line spacing, in pixel, of the font metrics
    // associated with `w'.
    static QSize font_units(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
@@ -51,7 +51,7 @@ namespace OpenAxiom {
       return { fm.width('W'), h };
    }
 
-   // Return true if the QString `s' is morally an empty string.
+   // -- Return true if the QString `s' is morally an empty string.
    // QT makes a difference between a null string and an empty string.
    // That distinction is largely pedantic and without difference
    // for most of our practical purposes.
@@ -60,14 +60,12 @@ namespace OpenAxiom {
       return s.isNull() or s.isEmpty();
    }
    
-   // Return a resonable margin for this frame.
+   // -- Return a resonable margin for this frame.
    static int our_margin(const QFrame* f) {
       return 2 + f->frameWidth();
    }
 
-   // --------------------
    // -- OutputTextArea --
-   // --------------------
    OutputTextArea::OutputTextArea(QWidget* p)
          : Base(p), cur(document()) {
       get_cursor().movePosition(QTextCursor::End);
@@ -76,14 +74,14 @@ namespace OpenAxiom {
       setFont(p->font());
       setViewportMargins(0, 0, 0, 0);
       setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-      // We do not want to see scroll bars.  Usually disallowing vertical
+      // -- We do not want to see scroll bars.  Usually disallowing vertical
       // scroll bars and allocating enough horizontal space is sufficient
       // to ensure that we don't see any horizontal scrollbar.
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
       setLineWidth(1);
    }
 
-   // This overriding implementation is so that we can control the
+   // -- This overriding implementation is so that we can control the
    // amount of vertical space in the read-only editor viewport allocated
    // for the display of output text.  In particular we do not want
    // scrollbars.
@@ -125,9 +123,7 @@ namespace OpenAxiom {
       return *this;
    }
 
-   // --------------
    // -- Question --
-   // --------------
    Question::Question(Exchange* e) : QLineEdit(e) {
       setBackgroundRole(QPalette::AlternateBase);
       setFrame(true);
@@ -145,27 +141,23 @@ namespace OpenAxiom {
       QLineEdit::enterEvent(e);
    }
 
-   // ------------
    // -- Answer --
-   // ------------
    Answer::Answer(Exchange* e) : OutputTextArea(e) {
       setFrameStyle(StyledPanel | Raised);
    }
 
-   // --------------
    // -- Exchange --
-   // --------------
    // Amount of pixel spacing between the query and reply areas.
    const int spacing = 2;
 
-   // Return a monospace font
+   // -- Return a monospace font
    static QFont monospace_font() {
       QFont f("Monaco", 11);
       f.setStyleHint(QFont::TypeWriter);
       return f;
    }
 
-   // The layout within an exchange is as follows:
+   // -- The layout within an exchange is as follows:
    //   -- input area (an editor) with its own decoation accounted for.
    //   -- an optional spacing
    //   -- an output area with its own decoration accounted for.
@@ -181,7 +173,7 @@ namespace OpenAxiom {
       return win->debate()->server();
    }
 
-   // Dress the query area with initial properties.
+   // -- Dress the query area with initial properties.
    static void
    prepare_query_widget(Conversation* conv, Exchange* e) {
       Question* q = e->question();
@@ -191,7 +183,7 @@ namespace OpenAxiom {
       q->setGeometry(m, m, conv->width() - 2 * m, q->height());
    }
 
-   // Dress the reply aread with initial properties.
+   // -- Dress the reply aread with initial properties.
    // Place the reply widget right below the frame containing
    // the query widget; make both of the same width, of course.
    static void
@@ -256,19 +248,15 @@ namespace OpenAxiom {
       }
    }
 
-   // ------------
    // -- Banner --
-   // ------------
    Banner::Banner(Conversation* conv) :  Base(conv) {
       setFrameStyle(StyledPanel | Raised);
       setBackgroundRole(QPalette::Base);
    }
 
-   // ------------------
    // -- Conversation --
-   // -------------------
    
-   // Default number of characters per question line.
+   // -- Default number of characters per question line.
    const int columns = 80;
    const int lines = 40;
 
@@ -278,7 +266,7 @@ namespace OpenAxiom {
       return QSize(columns * s.width(), lines * s.height());
    }
 
-   // Set a minimum preferred widget size, so no layout manager
+   // -- Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate* d)
          : QWidget(d),

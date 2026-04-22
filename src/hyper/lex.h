@@ -43,7 +43,7 @@
 #define Numerrors  2
 
 namespace OpenAxiom {
-  // Type of IO state stack.  Used to automate save/restore of IO states.
+  // -- Type of IO state stack.  Used to automate save/restore of IO states.
   struct IOStateManager {
     IOStateManager();
     IOStateManager(const IOStateManager&) = delete;

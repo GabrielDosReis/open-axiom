@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2011, Gabriel Dos Reis.
+// -- Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,13 @@
 
 // --% Author: Gabriel Dos Reis
 
-#include <string.h>
+#include <cstring>
 #include <open-axiom/string-pool>
 
 namespace OpenAxiom {
-   // ----------------
    // -- StringItem --
-   // ----------------
    bool
-   StringItem::equal(const Byte* str, size_t sz) const {
+   StringItem::equal(const char8_t* str, size_t sz) const {
       if (length != sz)
          return false;
       for (size_t i = 0; i < sz; ++i)
@@ -49,34 +47,32 @@ namespace OpenAxiom {
    }
 
 
-   // ----------------
    // -- StringPool --
-   // ----------------
    StringPool::StringPool()
          : BasicHashTable<StringItem>(109),
            strings(2 * Memory::page_size())
    { }
 
-   // Return a hash for the string starting from `str'
+   // -- Return a hash for the string starting from `str'
    // of length `sz'.
    static size_t
-   hash(const Byte* str, size_t sz) {
+   hash(const char8_t* str, size_t sz) {
       size_t h = 0;
       for(size_t i = 0; i < sz; ++i)
          h = str[i] + (h << 6) + (h << 16) - h;
       return h;
    }
 
-   const Byte*
-   StringPool::make_copy(const Byte* f, size_t sz) {
-      Byte* s = strings.allocate(sz + 1);
-      memcpy(s, f, sz);
-      s[sz] = '\0';
+   const char8_t*
+   StringPool::make_copy(const char8_t* f, size_t sz) {
+      char8_t* s = strings.allocate(sz + 1);
+      std::memcpy(s, f, sz);
+      s[sz] = u8'\0';
       return s;
    }
    
    StringPool::EntryType*
-   StringPool::intern(const Byte* src, size_t sz) {
+   StringPool::intern(const char8_t* src, size_t sz) {
       const size_t h = hash(src, sz);
       EntryType* e = hash_chain(h);
       if (sz == 0)
@@ -84,7 +80,7 @@ namespace OpenAxiom {
       for (; e->text != 0; e = e->chain) {
          if (e->hash == h and e->equal(src, sz))
             return e;
-         // If this is the last entry in this hash chain, allocate
+         // -- If this is the last entry in this hash chain, allocate
          // a new bucket to hold the information we want to store.
          if (e->chain == 0)
             e->chain = new_bucket();
@@ -97,6 +93,6 @@ namespace OpenAxiom {
 
    StringPool::EntryType*
    StringPool::intern(const char* s) {
-      return intern(reinterpret_cast<const Byte*>(s), strlen(s));
+      return intern(reinterpret_cast<const char8_t*>(s), std::strlen(s));
    }
 }

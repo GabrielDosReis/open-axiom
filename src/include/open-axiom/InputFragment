@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2014-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -36,41 +36,43 @@
 #ifndef OPENAXIOM_INPUTFRAGMENT_included
 #define OPENAXIOM_INPUTFRAGMENT_included
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <stack>
 
 namespace OpenAxiom {
-   // Datatypes for locating lines and columns.
+   namespace Lisp { enum class Value : std::uint64_t; }
+   // -- Datatypes for locating lines and columns.
    using LineNumber = std::size_t;
-   using ColumnIndex = uint16_t;
+   using ColumnIndex = std::uint16_t;
 
-   enum class LineKind : uint8_t {
+   enum class LineKind : std::uint8_t {
       Ordinary,                 // Ordinary input line
       Description,              // Documentation commentary lines.
       Meta,                     // Input to the attention of the reader
       Ignorable,                // Ignorable commentary line
    };
    
-   // A physical line is just raw text, coupled with location
+   // -- A physical line is just raw UTF-8 text, coupled with location
    // information such as line and indentation column.
-   struct Line : std::string {
+   struct Line : std::u8string {
       LineNumber number { };
       ColumnIndex indent { };
       LineKind kind { LineKind::Ordinary };
       
-      std::string sub_string(ColumnIndex s, ColumnIndex e) const {
-         return substr(s, e - s);
+      std::u8string sub_string(ColumnIndex s, ColumnIndex e) const {
+         return std::u8string(substr(s, e - s));
       }
    };
 
-   // Cursor into a fragment.
+   // -- Cursor into a fragment.
    // Note: We don't expect people to write large fragements
    //       either in length or in width.
    struct FragmentCursor {
-      uint16_t line;            // index of a line in a fragment
-      uint16_t column;          // column number at line.
+      std::uint16_t line;       // index of a line in a fragment
+      std::uint16_t column;     // column number at line.
 
       inline FragmentCursor& operator++() {
          ++column;
@@ -97,30 +99,30 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, FragmentCursor);
 
-   // A program fragment is a logical line, composed of possibly
+   // -- A program fragment is a logical line, composed of possibly
    // several physical lines subject to the off-side rule.  As a
    // special case, a line ending with the underbar character
    // continues to the next line with disregard to the off-side rule.
    struct Fragment : std::vector<Line> {
       explicit operator bool() const { return not empty(); }
-      // Holds if the last physical line ends with line continuation marker.
+      // -- Holds if the last physical line ends with line continuation marker.
       bool line_continuation() const {
-         return not empty() and back().back() == '_';
+         return not empty() and back().back() == u8'_';
       }
       using std::vector<Line>::operator[];
-      // Reference a line given by a position into this fragment.
+      // -- Reference a line given by a position into this fragment.
       const Line& operator()(const FragmentCursor& pos) const {
          return (*this)[pos.line];
       }
-      // Reference a character code unit at the position into this fragment.
-      uint8_t operator[](const FragmentCursor& pos) const {
+      // -- Reference a character at the position into this fragment.
+      char8_t operator[](const FragmentCursor& pos) const {
          return (*this)[pos.line][pos.column];
       }
-      // Advance the cursor position to the next character code unit.
-      uint8_t advance(FragmentCursor& pos) const {
+      // -- Advance the cursor position to the next character.
+      char8_t advance(FragmentCursor& pos) const {
          return (*this)[pos.line][pos.column++];
       }
-      // This predicate holds if this fragment covers the cursor position.
+      // -- This predicate holds if this fragment covers the cursor position.
       bool covering(const FragmentCursor& pos) const {
          return pos.column < (*this)[pos.line].size();
       }
@@ -128,7 +130,7 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, const Fragment&);
 
-   // A prose is the contents of an input source file organized as a
+   // -- A prose is the contents of an input source file organized as a
    // sequence of fragments.
    // Note: a prose is defined as movable, but not a copyable type.
    struct Prose : std::vector<Fragment> {
@@ -136,7 +138,15 @@ namespace OpenAxiom {
       Prose(Prose&&) = default;
    };
 
-   Prose read_source(std::istream&);
+   Prose read_source(std::u8string_view);
+
+   // -- Read source with reader directive evaluation.
+   //    Processes )if / )elseif / )else / )endif conditionals
+   //    by evaluating the condition as a Boot expression and
+   //    including/excluding lines accordingly.
+   //    The features parameter is a Lisp-style list of keyword
+   //    symbols (e.g. (:SBCL :COMMON-LISP ...)).
+   Prose read_source(std::u8string_view, Lisp::Value features);
 }
 
 #endif  // OPENAXIOM_INPUTFRAGMENT_included

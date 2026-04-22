@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013, Gabriel Dos Reis.
+// -- Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -76,7 +76,7 @@ namespace OpenAxiom {
 
       connect_server_io(this, debate);
       server()->launch();
-      // When invoked in a --role=server mode, OpenAxiom would
+      // -- When invoked in a --role=server mode, OpenAxiom would
       // wait to be pinged before displaying a prompt.  This is
       // an unfortunate result of a rather awkward hack.
       server()->input("");
@@ -87,7 +87,7 @@ namespace OpenAxiom {
    }
 
    void MainWindow::done(int s, QProcess::ExitStatus) {
-      // For the time being, shut done the whole application
+      // -- For the time being, shut done the whole application
       // if the interpreter quits.  FIXME.
       QApplication::exit(s);
    }

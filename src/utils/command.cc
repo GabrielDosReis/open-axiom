@@ -249,7 +249,7 @@ build_rts_options(Command* command, Driver driver)
    }
 }
 
-// Return a description of the driver to invokve by default.
+// -- Return a description of the driver to invokve by default.
 static Driver default_driver(bool explicit_no_gui) {
    if (OPENAXIOM_USE_SMAN)
       return Driver::sman;
@@ -310,7 +310,7 @@ static void print_usage(void) {
    print_line("Submit bug report to " PACKAGE_BUGREPORT);
 }
 
-   // Map a option to the driver that implement that action.
+   // -- Map a option to the driver that implement that action.
    struct DriverMap {
       const char* action;
       const Driver driver;
@@ -325,7 +325,7 @@ static void print_usage(void) {
       { "--make", Driver::linker },
    };
 
-   // Obtain the driver that implement a specific action requested
+   // -- Obtain the driver that implement a specific action requested
    // on command line.
    static Driver
    option_driver(const char* opt) {
@@ -381,7 +381,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
          else {
             /* Maybe option for the driver.  */
 	    if (argv[i][0] == '-') {
-               // this is awkward to handle here since it supposed
+               // -- this is awkward to handle here since it supposed
                // to go to Superman.  FIXME when sman is gone.
                if (strcmp(argv[i], "--no-gui") == 0)
                   explicit_no_gui = true;
@@ -437,7 +437,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
    return driver;
 }
 
-   // Return a pointer to the path to the program to execute, as
+   // -- Return a pointer to the path to the program to execute, as
    // specified by `command' and `driver'.
    static const char*
    executable_path(const Command* command, Driver driver) {
@@ -446,7 +446,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
          : make_path_for(command->root_dir, driver);
    }
 
-   // Return the total number of command-line arguments.
+   // -- Return the total number of command-line arguments.
    static int
    args_count(const Command* cmd) {
       return cmd->core.argc > 1

@@ -1,5 +1,5 @@
-// -*- C++ -*-
-// Copyright (C) 2014-2017, Gabriel Dos Reis.
+// -- -*- C++ -*-
+// Copyright (C) 2026, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -15,9 +15,9 @@
 //       the documentation and/or other materials provided with the
 //       distribution.
 //
-//     - Neither the name of OpenAxiom. nor the names of its contributors
-//       may be used to endorse or promote products derived from this
-//       software without specific prior written permission.
+//     - Neither the name of OpenAxiom, nor the names of its contributors may
+//       be used to endorse or promote products derived from this software
+//       without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -33,52 +33,38 @@
 
 // --% Author: Gabriel Dos Reis
 // --% Description:
+// --%   S-expression printer for syntax trees.  Walks a SyntaxForest
+// --%   and emits a parenthesized representation that mirrors the
+// --%   original Boot translator's %Ast structure names.
 
-#include <string.h>
+#ifndef OPENAXIOM_SYNTAX_PRINT_included
+#define OPENAXIOM_SYNTAX_PRINT_included
+
+#include <iosfwd>
 #include <string>
-#include <open-axiom/diagnostics>
-#include <open-axiom/Parser>
+#include <vector>
 
-namespace {
-   const char* path_basename(const char* begin, const char* end) {
-      while (end > begin and end[-1] != '/' and end[-1] != '\\')
-         --end;
-      return end;
-   }
+#include <open-axiom/SyntaxTree>
 
-   const char* path_type(const char* begin, const char* end) {
-      while (end > begin and end[-1] != '.')
-         --end;
-      return end;
-   }
+namespace OpenAxiom::Syntax {
 
-   int process_file(const char* path) {
-      auto end = path + strlen(path);
-      if (path == end) {
-         std::cerr << "error: empty input file path\n";
-         return -1;
-      }
-      
-      auto base = path_basename(path, end);
-      if (base == end) {
-         std::cerr << "error: invalid input file path\n";
-         return -1;
-      }
-      
-      auto type = path_type(base, end);
-      if (base == type) {
-         std::cerr << "error: input file base without basename\n";
-         return -1;
-      }
+    // -- Extract the source text of a token from its fragment.
+    std::u8string token_text(TokenIndex ti,
+                             const std::vector<Token>& toks,
+                             const Fragment& frag);
 
-      std::string output { base, type };
-      output += "out";
-      return OpenAxiom::boot_to_lisp(path, output.c_str());
-   }
+    // -- Print a token's text to a stream, with |bar| quoting
+    //    for identifiers that need it.
+    void print_token(std::ostream& os, TokenIndex ti,
+                     const std::vector<Token>& toks,
+                     const Fragment& frag);
+
+    // -- Print a syntax node as an S-expression.
+    void print_sexpr(std::ostream& os,
+                     NodeIndex node,
+                     const SyntaxForest& forest,
+                     const std::vector<Token>& toks,
+                     const Fragment& frag);
 }
 
-int main(int argc, char* argv[]) {
-   for (int i = 1; i < argc; ++i) {
-      process_file(argv[i]);
-   }
-}
+#endif  // OPENAXIOM_SYNTAX_PRINT_included

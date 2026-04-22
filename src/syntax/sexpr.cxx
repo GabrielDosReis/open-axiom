@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2013, Gabriel Dos Reis.
+// -- Copyright (C) 2010-2026, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -32,12 +32,11 @@
 
 // --% Author: Gabriel Dos Reis.
 
-#include <ctype.h>
-#include <string.h>
 #include <iostream>
 #include <iterator>
 #include <open-axiom/sexpr>
 #include <open-axiom/FileMapping>
+#include <open-axiom/Charset>
 #include <open-axiom/diagnostics>
 
 namespace OpenAxiom {
@@ -48,9 +47,10 @@ namespace OpenAxiom {
          auto column = std::to_string(s.cur - s.line);
          auto msg = "invalid character on line " + line +
             " and column " + column;
-         if (isprint(*s.cur))
-            throw Diagnostics::BasicError(msg + ": " + std::string(1, *s.cur));
-         throw Diagnostics::BasicError(msg + " with code " + std::to_string(*s.cur));
+         auto c = *s.cur;
+         if (ascii_printable(c))
+            throw Diagnostics::BasicError(msg + ": " + std::string(1, static_cast<char>(c)));
+         throw Diagnostics::BasicError(msg + " with code " + std::to_string(static_cast<int>(c)));
       }
       
       static void
@@ -58,32 +58,25 @@ namespace OpenAxiom {
          throw Diagnostics::BasicError(s);
       }
 
-      // Return true if character `c' introduces a blank.
+      // -- Return true if the character `c' introduces a delimiter.
       static bool
-      is_blank(char c) {
-         return c == ' ' or c == '\t' or c == '\v'
-            or c == '\n' or c == '\f' or c == '\r';
-      }
-      
-      // Return true if the character `c' introduces a delimiter.
-      static bool
-      is_delimiter(char c) {
-         return is_blank(c)
-            or c == '(' or c == ')' or c == '\''
-            or c == '`' or c == '#';
+      sexpr_delimiter(char8_t c) {
+         return ascii_space(c)
+            or c == u8'(' or c == u8')' or c == u8'\''
+            or c == u8'`' or c == u8'#';
       }
 
-      // Move the cursor past all consecutive blank characters, and
+      // -- Move the cursor past all consecutive blank characters, and
       // return true if there are more input characters to consider.
       static bool
       skip_blank(Reader::State& s) {
          for (bool done = false; s.cur < s.bytes.end and not done; )
             switch (*s.cur) {
-            case '\n':
+            case u8'\n':
                ++s.bytes.lineno;
                s.line = ++s.cur;
                break;
-            case ' ': case '\t': case '\v': case '\r': case '\f':
+            case u8' ': case u8'\t': case u8'\v': case u8'\r': case u8'\f':
                ++s.cur;
                break;
             default: done = true; break;
@@ -91,22 +84,22 @@ namespace OpenAxiom {
          return s.cur < s.bytes.end;
       }
 
-      // Move `cur' to end-of-line marker.
+      // -- Move `cur' to end-of-line marker.
       static void
       skip_to_eol(Reader::State& s) {
-         // FIXME: properly handle CR+LF.
-         while (s.cur < s.bytes.end and *s.cur != '\n')
+         // -- FIXME: properly handle CR+LF.
+         while (s.cur < s.bytes.end and *s.cur != u8'\n')
             ++s.cur;
       }
 
-      // Move `cur' one-past a non-esacaped character `c'.
+      // -- Move `cur' one-past a non-esacaped character `c'.
       // Return true if the character was seen.
       static bool
-      skip_to_nonescaped_char(Reader::State& s, char c) {
+      skip_to_nonescaped_char(Reader::State& s, char8_t c) {
          for (bool saw_escape = false; s.cur < s.bytes.end; ++s.cur)
             if (saw_escape)
                saw_escape = false;
-            else if (*s.cur == '\\')
+            else if (*s.cur == u8'\\')
                saw_escape = true;
             else if (*s.cur == c) {
                ++s.cur;
@@ -115,11 +108,11 @@ namespace OpenAxiom {
          return false;
       }
 
-      // Move the cursor past the closing quote of string literal.
+      // -- Move the cursor past the closing quote of string literal.
       // Return true if the closing quote was effectively seen.
       static inline bool
       skip_to_quote(Reader::State& s) {
-         return skip_to_nonescaped_char(s, '"');
+         return skip_to_nonescaped_char(s, u8'"');
       }
 
       template<typename Pred>
@@ -130,18 +123,18 @@ namespace OpenAxiom {
          return s.cur < s.bytes.end;
       }
 
-      // Return true if the character `c' be part of a non-absolute
+      // -- Return true if the character `c' be part of a non-absolute
       // identifier.
       static bool
-      identifier_part(Byte c) {
+      identifier_part(char8_t c) {
          switch (c) {
-         case '+': case '-': case '*': case '/': case '%': case '^':
-         case '~': case '@': case '$': case '&': case '=':
-         case '<': case '>': case '?': case '!': case '_':
-         case '[': case ']': case '{': case '}':
+         case u8'+': case u8'-': case u8'*': case u8'/': case u8'%': case u8'^':
+         case u8'~': case u8'@': case u8'$': case u8'&': case u8'=':
+         case u8'<': case u8'>': case u8'?': case u8'!': case u8'_':
+         case u8'[': case u8']': case u8'{': case u8'}':
             return true;
          default:
-            return isalnum(c);
+            return ascii_alnum(c);
          }
       }
 
@@ -258,12 +251,10 @@ namespace OpenAxiom {
          v.visit(*this);
       }
 
-      // ---------------
       // -- Allocator --
-      // ---------------
       Allocator::Allocator() { }
 
-      // This destructor is defined here so that it provides
+      // -- This destructor is defined here so that it provides
       // a single instantiation point for destructors of all
       // used templates floating around.
       Allocator::~Allocator() { }
@@ -352,19 +343,19 @@ namespace OpenAxiom {
          return vectors.make(elts);
       }
 
-      // The sequence of characters in [cur, last) consists
+      // -- The sequence of characters in [cur, last) consists
       // entirely of digits.  Return the corresponding natural value.
       static size_t
-      natural_value(const Byte* cur, const Byte* last) {
+      natural_value(const char8_t* cur, const char8_t* last) {
          size_t n = 0;
          for (; cur < last; ++cur)
-            // FIXME: check for overflow.
-            n = 10 * n + (*cur - '0');
+            // -- FIXME: check for overflow.
+            n = 10 * n + (*cur - u8'0');
          return n;
       }
 
       // -- Reader --
-      Reader::Reader(const Byte* f, const Byte* l)
+      Reader::Reader(const char8_t* f, const char8_t* l)
             : st{ { f, l, 1 }, f, f }
       { }
 
@@ -374,7 +365,7 @@ namespace OpenAxiom {
 
       static const Syntax* read_sexpr(Reader::State&);
 
-      // Parse a string literal
+      // -- Parse a string literal
       static const Syntax*
       read_string(Reader::State& s) {
          auto start = s.cur++;
@@ -384,22 +375,22 @@ namespace OpenAxiom {
          return s.alloc.make_string(t);
       }
 
-      // Parse an absolute identifier.
+      // -- Parse an absolute identifier.
       static const Syntax*
       read_absolute_symbol(Reader::State& s) {
          auto start = ++s.cur;
-         if (not skip_to_nonescaped_char(s, '|'))
+         if (not skip_to_nonescaped_char(s, u8'|'))
             syntax_error("missing closing bar sign for an absolute symbol");
          Lexeme t = { { start, s.cur - 1 }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::absolute, t);
       }
 
-      // Read an atom starting with digits.
+      // -- Read an atom starting with digits.
       static const Syntax*
       read_maybe_natural(Reader::State& s) {
          auto start = s.cur;
-         advance_while (s, isdigit);
-         if (s.cur >= s.bytes.end or is_delimiter(*s.cur)) {
+         advance_while (s, ascii_digit);
+         if (s.cur >= s.bytes.end or sexpr_delimiter(*s.cur)) {
             Lexeme t = { { start, s.cur }, s.bytes.lineno };
             return s.alloc.make_integer(t);
          }
@@ -408,7 +399,7 @@ namespace OpenAxiom {
          return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
-      // Read an identifier.
+      // -- Read an identifier.
       static const Syntax*
       read_identifier(Reader::State& s) {
          auto start = s.cur;
@@ -417,14 +408,14 @@ namespace OpenAxiom {
          return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
-      // Read an atom starting with a '+' or '-' sign; this
+      // -- Read an atom starting with a '+' or '-' sign; this
       // should be identifier, or a signed integer.
       static const Syntax*
       read_maybe_signed_number(Reader::State& s) {
          auto start = s.cur++;
-         if (s.cur < s.bytes.end and isdigit(*s.cur)) {
-            advance_while(s, isdigit);
-            if (s.cur >= s.bytes.end or is_delimiter(*s.cur)) {
+         if (s.cur < s.bytes.end and ascii_digit(*s.cur)) {
+            advance_while(s, ascii_digit);
+            if (s.cur >= s.bytes.end or sexpr_delimiter(*s.cur)) {
                Lexeme t = { { start, s.cur }, s.bytes.lineno };
                return s.alloc.make_integer(t);
             }
@@ -442,16 +433,16 @@ namespace OpenAxiom {
          return s.alloc.make_symbol(SymbolSyntax::keyword, t);
       }
 
-      // Read an atom.
+      // -- Read an atom.
       static const Syntax*
       read_atom(Reader::State& s) {
          switch (*s.cur) {
-         case '"': return read_string(s);
-         case ':': return read_keyword(s);
-         case '-': case '+': return read_maybe_signed_number(s);
+         case u8'"': return read_string(s);
+         case u8':': return read_keyword(s);
+         case u8'-': case u8'+': return read_maybe_signed_number(s);
 
-         case '0': case '1': case '2': case '3': case '4':
-         case '5': case '6': case '7': case '8': case '9':
+         case u8'0': case u8'1': case u8'2': case u8'3': case u8'4':
+         case u8'5': case u8'6': case u8'7': case u8'8': case u8'9':
             return read_maybe_natural(s);
 
          default:
@@ -463,7 +454,7 @@ namespace OpenAxiom {
          }
       }
 
-      // Parse a quote expression.
+      // -- Parse a quote expression.
       static const Syntax*
       read_quote(Reader::State& s) {
          ++s.cur;               // skip the quote character
@@ -473,7 +464,7 @@ namespace OpenAxiom {
          return s.alloc.make_quote(x);
       }
 
-      // Parse a backquote expression.
+      // -- Parse a backquote expression.
       static const Syntax*
       read_backquote(Reader::State& s) {
          ++s.cur;               // skip the backquote character
@@ -483,13 +474,13 @@ namespace OpenAxiom {
          return s.alloc.make_antiquote(x);
       }
 
-      // We've just seen "#(" indicating the start of a literal
+      // -- We've just seen "#(" indicating the start of a literal
       // vector.  Read the elements and return the corresponding form.
       static const Syntax*
       finish_literal_vector(Reader::State& s) {
          ++s.cur;               // Skip the open paren.
          std::vector<const Syntax*> elts { };
-         while (skip_blank(s) and *s.cur != ')') {
+         while (skip_blank(s) and *s.cur != u8')') {
             if (auto x = read_sexpr(s))
                elts.push_back(x);
             else
@@ -502,21 +493,21 @@ namespace OpenAxiom {
          return s.alloc.make_vector(elts);
       }
 
-      // We've just seen the sharp sign followed by a digit.  We assume
+      // -- We've just seen the sharp sign followed by a digit.  We assume
       // we are about to read an anchor or a back reference.
       static const Syntax*
       finish_anchor_or_reference(Reader::State& s) {
          auto start = s.cur;
-         advance_while(s, isdigit);
+         advance_while(s, ascii_digit);
          if (s.cur >= s.bytes.end)
             syntax_error("end-of-input after sharp-number sign");
-         const Byte c = *s.cur;
-         if (c != '#' and c != '=')
+         const char8_t c = *s.cur;
+         if (c != u8'#' and c != u8'=')
             syntax_error("syntax error after sharp-number-equal sign");
          Lexeme t = { { start, s.cur }, s.bytes.lineno };
          auto n = natural_value(start, s.cur);
          ++s.cur;
-         if (c == '#')
+         if (c == u8'#')
             return s.alloc.make_reference(n, t);
          auto x = read_sexpr(s);
          if (x == nullptr)
@@ -581,30 +572,30 @@ namespace OpenAxiom {
          if (++s.cur >= s.bytes.end)
             syntax_error("end-of-input reached after sharp sign");
          switch (*s.cur) {
-         case '(':  return finish_literal_vector(s);
-         case '\'': return finish_function(s);
-         case ':': return finish_uninterned_symbol(s);
-         case '.': return finish_readtime_eval(s);
-         case '\\': return finish_character(s);
-         case '+': return finish_include(s);
-         case '-': return finish_exclude(s);
+         case u8'(':  return finish_literal_vector(s);
+         case u8'\'': return finish_function(s);
+         case u8':': return finish_uninterned_symbol(s);
+         case u8'.': return finish_readtime_eval(s);
+         case u8'\\': return finish_character(s);
+         case u8'+': return finish_include(s);
+         case u8'-': return finish_exclude(s);
 
          default:
-            if (isdigit(*s.cur))
+            if (ascii_digit(*s.cur))
                return finish_anchor_or_reference(s);
             syntax_error("syntax error after sharp-sign");
          }
          return nullptr;
       }
 
-      // We have just seen a dot; read the tail and the closing parenthesis.
+      // -- We have just seen a dot; read the tail and the closing parenthesis.
       static const Syntax*
       finish_dotted_list(Reader::State& s, std::vector<const Syntax*>& elts) {
          ++s.cur;               // Skip dot sign.
          auto x = read_sexpr(s);
          if (x == nullptr)
             syntax_error("missing expression after dot sign");
-         if (not skip_blank(s) or *s.cur != ')')
+         if (not skip_blank(s) or *s.cur != u8')')
             syntax_error("missing closing parenthesis");
          ++s.cur;
          elts.push_back(x);
@@ -617,12 +608,12 @@ namespace OpenAxiom {
          std::vector<const Syntax*> elts { };
          while (skip_blank(s))
             switch (*s.cur) {
-            case '.':
+            case u8'.':
                if (elts.empty())
                   syntax_error("missing expression before dot sign.");
                return finish_dotted_list(s, elts);
 
-            case ')':
+            case u8')':
                ++s.cur;
                return s.alloc.make_list(elts);
 
@@ -641,12 +632,12 @@ namespace OpenAxiom {
       read_sexpr(Reader::State& s) {
          while (skip_blank(s))
             switch (*s.cur) {
-            case ';': skip_to_eol(s); break;
-            case '\'': return read_quote(s);
-            case '`': return read_backquote(s);
-            case '|': return read_absolute_symbol(s);
-            case '#': return read_sharp_et_al(s);
-            case '(': return read_pair(s);
+            case u8';': skip_to_eol(s); break;
+            case u8'\'': return read_quote(s);
+            case u8'`': return read_backquote(s);
+            case u8'|': return read_absolute_symbol(s);
+            case u8'#': return read_sharp_et_al(s);
+            case u8'(': return read_pair(s);
             default: return read_atom(s);
             }
          return nullptr;
@@ -657,11 +648,11 @@ namespace OpenAxiom {
          return read_sexpr(st);
       }
 
-      const Byte*
+      const char8_t*
       Reader::position(Ordinal p) {
          st.cur = st.bytes.start + p;
          st.line = st.cur;
-         // while (st.line > st.start and st.line[-1] != '\n')
+         // -- while (st.line > st.start and st.line[-1] != '\n')
          //    --st.line;
          return st.cur;
       }

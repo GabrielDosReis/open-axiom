@@ -1,5 +1,5 @@
-// -*- C++ -*-
-// Copyright (C) 2017, Gabriel Dos Reis.
+// -- -*- C++ -*-
+// Copyright (C) 2017-2026, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -31,49 +31,954 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// --% Author: Gabriel Dos Reis
+// --% Description:
+// --%   Abstract syntax tree representation for the Boot language.
+// --%   Each node is a lightweight struct referencing tokens by index.
+// --%   Trees are allocated in a SyntaxForest arena and referenced
+// --%   through compact 32-bit NodeIndex handles.
+
 #ifndef OPENAXIOM_SYNTAX_TREE_included
 #define OPENAXIOM_SYNTAX_TREE_included
 
-#include <stdint.h>
+#include <cstdint>
+#include <vector>
+
 #include <open-axiom/token>
+#include <open-axiom/storage>
 
-namespace OpenAxiom {
-   enum class SyntaxKind : uint8_t {
-      Module, Namespace, Import, Definition, Unparsed
-   };
-   
-   enum SyntaxTree : uint32_t { };
+namespace OpenAxiom::Syntax {
+    // -- NodeIndex: compact handle to a syntax tree node
+    // A NodeIndex packs a Kind tag (8 bits) and an index
+    // (24 bits) into the corresponding per-kind storage array.
+    // The sentinel value `none` represents the absence of a node.
+    enum class NodeIndex : std::uint32_t {
+        none = 0xFFFFFFFF  // sentinel: no node
+    };
 
-   constexpr SyntaxKind kind(SyntaxTree t) {
-      return SyntaxKind((uint32_t(t) & 0xFF000000) >> 24);
-   }
+    // -- Kind: discriminator for node types
+    // Each enumerator corresponds to one concrete syntax struct.
+    enum class Kind : std::uint8_t {
+        // -- Atoms --
+        Literal,            // integer, float, or string literal
+        Name,               // simple identifier
+        QualifiedName,      // module-qualified name (m::x)
+        // -- Module system --
+        Module,             // module declaration
+        Namespace,          // namespace directive
+        Import,             // import declaration
+        ImportSignature,    // import of a typed name from a module
+        // -- Definitions --
+        ConstantDef,        // constant definition (name == expr)
+        FunctionDef,        // function definition (name args == body)
+        MacroDef,           // macro definition (macro name args == body)
+        TypeAlias,          // type alias definition (name ==> type)
+        Signature,          // type signature (name : type)
+        // -- Expressions --
+        Apply,              // function application (f x)
+        InfixExpr,          // binary infix expression (x op y)
+        PrefixExpr,         // unary prefix expression (op x)
+        SuffixDot,          // dot suffix (x.)
+        Restrict,           // type restriction (x @ T)
+        Coerce,             // type coercion (x :: T)
+        Quote,              // quoted expression ('x)
+        Bracket,            // bracketed list construction [...]
+        Tuple,              // comma-separated expressions (a, b, c)
+        Sequence,           // semicolon-separated expressions
+        Pile,               // indentation-delimited expression sequence
+        // -- Types --
+        Mapping,            // function type (S -> T)
+        Forall,             // universally quantified type
+        // -- Control flow --
+        IfExpr,             // conditional (if p then a else b)
+        Return,             // return from function
+        Leave,              // leave from loop
+        Implies,            // guarded expression (p => x)
+        // -- Loops --
+        While,              // while-condition iterator
+        Until,              // until-condition iterator
+        ForIn,              // for-in iterator
+        SuchThat,           // filter (| predicate)
+        Iterators,          // composed iterator list
+        Cross,              // cross-product iterators
+        Repeat,             // repeat loop
+        // -- Pattern matching --
+        Is,                 // is-pattern test
+        Isnt,               // isnt-pattern test
+        EqualPattern,       // =expr in patterns
+        ColonAppend,        // :rest in list patterns
+        // -- Assignment & binding --
+        Assignment,         // mutation (x := y)
+        Lambda,             // lambda expression (x +-> body)
+        DefaultValue,       // optional default parameter value
+        KeyArg,             // keyword argument (key <- value)
+        // -- Segments --
+        BoundedSegment,     // bounded segment (a..b)
+        UnboundedSegment,   // unbounded segment (a..)
+        // -- Reduce --
+        Reduce,             // reduction (op/[...])
+        // -- Structural --
+        Structure,          // structure declaration
+        Record,             // record type definition
+        AccessorDef,        // record accessor definition
+        Case,               // case expression
+        // -- Exception handling --
+        Throw,              // throw expression
+        Catch,              // catch clause
+        Finally,            // finally clause
+        Try,                // try expression with handlers
+        // -- Scoping --
+        Where,              // where clause
+        Dynamic,            // local declaration
+        // -- Spad type system --
+        With,               // category definition
+        Add,                // domain implementation
+        Capsule,            // scoped definition block
+        Pretend,            // unsafe type assertion
+        Has,                // category membership test
+        Collect,            // list comprehension
+        Join,               // category join
+        // -- Spad declarations --
+        FreeDecl,           // free variable declaration
+        ExportDecl,         // explicit export declaration
+        // -- Embedded Lisp --
+        LispExpr,           // )lisp directive
+        // -- Fallback --
+        Unparsed,           // unparsed token range
+    };
 
-   constexpr uint32_t index(SyntaxTree t) {
-      return uint32_t(t) & 0x00FFFFFF;
-   }
+    // -- Extract the kind tag from a NodeIndex.
+    constexpr Kind kind(NodeIndex n)
+    {
+        return Kind((std::uint32_t(n) & 0xFF000000) >> 24);
+    }
 
-   struct ModuleSyntax {
-      TokenIndex keyword;
-      TokenIndex name;
-   };
+    // -- Extract the storage index from a NodeIndex.
+    constexpr std::uint32_t index(NodeIndex n)
+    {
+        return std::uint32_t(n) & 0x00FFFFFF;
+    }
 
-   struct NamespaceSyntax {
-      TokenIndex keyword;
-      TokenIndex name;
-   };
+    // -- Construct a NodeIndex from a kind and an index.
+    constexpr NodeIndex make_node(Kind k, std::uint32_t idx)
+    {
+        return NodeIndex((std::uint32_t(k) << 24) | (idx & 0x00FFFFFF));
+    }
 
-   struct ImportSyntax {
-      TokenIndex keyword;
-   };
+    // -- Test whether a NodeIndex designates an actual node.
+    constexpr bool valid(NodeIndex n)
+    {
+        return n != NodeIndex::none;
+    }
 
-   struct DefinitionSyntax {
-      TokenIndex keyword;
-   };
+    // -- NodeSpan: contiguous range of child nodes
+    // Represents a slice into a shared NodeIndex array, used for
+    // variable-length child lists (e.g. tuple elements, pile items,
+    // function parameters, catch clauses).
+    struct NodeSpan {
+        std::uint32_t offset;   // start index into the shared child array
+        std::uint32_t count;    // number of child nodes in this span
+    };
 
-   struct UnparsedSyntax {
-      TokenIndex first;
-      TokenIndex last;
-   };
+    // -- Concrete syntax node structs
+    // Each struct corresponds to one Kind enumerator.
+    // Fields reference tokens via TokenIndex and subtrees via
+    // NodeIndex.  Variable-length children use NodeSpan.
+
+    // ------- Atoms -------
+
+    // -- A literal constant: integer, floating-point, or string.
+    struct LiteralSyntax {
+        TokenIndex token;       // the literal token
+    };
+
+    // -- A simple identifier.
+    struct NameSyntax {
+        TokenIndex token;       // the identifier token
+    };
+
+    // -- A module-qualified name, e.g. `M::x`.
+    struct QualifiedNameSyntax {
+        NodeIndex qualifier;    // left-hand name (the module)
+        TokenIndex separator;   // the `::` token
+        NodeIndex name;         // right-hand name
+    };
+
+    // ------- Module system -------
+
+    // -- A module declaration: `module Name(exports) where interface`.
+    struct ModuleSyntax {
+        TokenIndex keyword;     // the `module` token
+        NodeIndex name;         // module name
+        NodeSpan exports;       // exported symbol list
+        NodeSpan interface;     // where-clause definitions
+    };
+
+    // -- A namespace directive: `namespace Name`.
+    struct NamespaceSyntax {
+        TokenIndex keyword;     // the `namespace` token
+        NodeIndex name;         // namespace name
+    };
+
+    // -- An import declaration: `import Name`.
+    struct ImportSyntax {
+        TokenIndex keyword;     // the `import` token
+        NodeIndex what;         // imported module or namespace expression
+    };
+
+    // -- An import of a typed name: `import sig for name in module`.
+    struct ImportSignatureSyntax {
+        TokenIndex keyword;     // the `import` token
+        NodeIndex signature;    // type signature being imported
+        NodeIndex name;         // name of the binding
+        NodeIndex provenance;   // source module (or NodeIndex::none)
+    };
+
+    // ------- Definitions -------
+
+    // -- A constant definition: `name == body`.
+    struct ConstantDefSyntax {
+        NodeIndex name;         // defined name
+        TokenIndex definer;     // the `==` token
+        NodeIndex body;         // right-hand-side expression
+    };
+
+    // -- A function definition: `name params == body`.
+    struct FunctionDefSyntax {
+        NodeIndex name;         // function name
+        NodeSpan parameters;    // formal parameter list
+        TokenIndex definer;     // the `==` token
+        NodeIndex body;         // function body expression
+    };
+
+    // -- A macro definition: `macro name params == body`.
+    struct MacroDefSyntax {
+        TokenIndex keyword;     // the `macro` token
+        NodeIndex name;         // macro name
+        NodeSpan parameters;    // formal parameter list
+        TokenIndex definer;     // the `==` token
+        NodeIndex body;         // macro body expression
+    };
+
+    // -- A type alias: `TypeName ==> Type`.
+    struct TypeAliasSyntax {
+        NodeIndex name;         // alias name (possibly with parameters)
+        TokenIndex definer;     // the `==>` token
+        NodeIndex type;         // target type expression
+    };
+
+    // -- A type signature: `name : type`.
+    struct SignatureSyntax {
+        NodeIndex name;         // signed name
+        TokenIndex colon;       // the `:` token
+        NodeIndex type;         // type expression
+    };
+
+    // ------- Expressions -------
+
+    // -- Function application: `f(args)` or juxtaposition `f x`.
+    struct ApplySyntax {
+        NodeIndex function;     // operator expression
+        NodeSpan arguments;     // argument list
+    };
+
+    // -- Binary infix expression: `lhs op rhs`.
+    struct InfixExprSyntax {
+        NodeIndex lhs;          // left operand
+        TokenIndex op;          // operator token
+        NodeIndex rhs;          // right operand
+    };
+
+    // -- Unary prefix expression: `op operand`.
+    struct PrefixExprSyntax {
+        TokenIndex op;          // operator token
+        NodeIndex operand;      // operand expression
+    };
+
+    // -- Dot suffix: `expr.`
+    struct SuffixDotSyntax {
+        NodeIndex operand;      // base expression
+        TokenIndex dot;         // the `.` token
+    };
+
+    // -- Type restriction: `expr @ type`.
+    struct RestrictSyntax {
+        NodeIndex expr;         // expression being restricted
+        TokenIndex at;          // the `@` token
+        NodeIndex type;         // target type
+    };
+
+    // -- Type coercion: `expr :: type`.
+    struct CoerceSyntax {
+        NodeIndex expr;         // expression being coerced
+        TokenIndex colon_colon; // the `::` token
+        NodeIndex type;         // target type
+    };
+
+    // -- Quoted expression: `'expr`.
+    struct QuoteSyntax {
+        TokenIndex apostrophe;  // the `'` token
+        NodeIndex expr;         // quoted expression
+    };
+
+    // -- Bracketed list construction: `[elements]`.
+    struct BracketSyntax {
+        TokenIndex open;        // the `[` token
+        NodeSpan elements;      // list of child expressions
+        TokenIndex close;       // the `]` token
+    };
+
+    // -- Comma-separated tuple: `a, b, c`.
+    struct TupleSyntax {
+        NodeSpan elements;      // tuple component expressions
+    };
+
+    // -- Semicolon-separated sequence: `a; b; c`.
+    struct SequenceSyntax {
+        NodeSpan statements;    // ordered statements
+    };
+
+    // -- Indentation-delimited pile of expressions.
+    struct PileSyntax {
+        NodeSpan items;         // pile-separated items
+    };
+
+    // ------- Types -------
+
+    // -- Function type: `(S1, S2) -> T` or `S -> T`.
+    struct MappingSyntax {
+        NodeSpan sources;       // source type(s)
+        TokenIndex arrow;       // the `->` token
+        NodeIndex target;       // return type
+    };
+
+    // -- Universally quantified type: `forall a . T`.
+    struct ForallSyntax {
+        TokenIndex keyword;     // the `forall` token
+        NodeSpan variables;     // quantified type variables
+        TokenIndex dot;         // the `.` separator
+        NodeIndex body;         // body type expression
+    };
+
+    // ------- Control flow -------
+
+    // -- Conditional: `if cond then consequent else alternate`.
+    struct IfExprSyntax {
+        TokenIndex keyword;     // the `if` token
+        NodeIndex condition;    // condition expression
+        NodeIndex consequent;   // then-branch
+        NodeIndex alternate;    // else-branch (NodeIndex::none if absent)
+    };
+
+    // -- Return from a function: `return expr`.
+    struct ReturnSyntax {
+        TokenIndex keyword;     // the `return` token
+        NodeIndex value;        // returned expression
+    };
+
+    // -- Leave from a loop: `leave expr`.
+    struct LeaveSyntax {
+        TokenIndex keyword;     // the `leave` token
+        NodeIndex value;        // value to leave with
+    };
+
+    // -- Guarded expression: `condition => body`.
+    struct ImpliesSyntax {
+        NodeIndex condition;    // guard expression
+        TokenIndex arrow;       // the `=>` token
+        NodeIndex body;         // consequent expression
+    };
+
+    // ------- Loops -------
+
+    // -- While-condition iterator: `while predicate`.
+    struct WhileSyntax {
+        TokenIndex keyword;     // the `while` token
+        NodeIndex condition;    // loop condition
+    };
+
+    // -- Until-condition iterator: `until predicate`.
+    struct UntilSyntax {
+        TokenIndex keyword;     // the `until` token
+        NodeIndex condition;    // termination condition
+    };
+
+    // -- For-in iterator: `for var in sequence [by step]`.
+    struct ForInSyntax {
+        TokenIndex keyword;     // the `for` token
+        NodeIndex variable;     // iteration variable
+        NodeIndex sequence;     // iterated collection or segment
+        NodeIndex step;         // step expression (NodeIndex::none if absent)
+    };
+
+    // -- Filter (such-that) iterator: `| predicate`.
+    struct SuchThatSyntax {
+        TokenIndex bar;         // the `|` token
+        NodeIndex predicate;    // filter expression
+    };
+
+    // -- Composed list of iterators.
+    struct IteratorsSyntax {
+        NodeSpan clauses;       // individual iterator nodes
+    };
+
+    // -- Cross-product iterators: `iters1 cross iters2`.
+    struct CrossSyntax {
+        NodeSpan factors;       // iterator groups to cross
+    };
+
+    // -- Repeat loop: `iterators repeat body`.
+    struct RepeatSyntax {
+        NodeIndex iterators;    // iterator composition
+        TokenIndex keyword;     // the `repeat` token
+        NodeIndex body;         // loop body expression
+    };
+
+    // ------- Pattern matching -------
+
+    // -- Pattern test: `expr is pattern`.
+    struct IsSyntax {
+        NodeIndex expr;         // expression to test
+        TokenIndex keyword;     // the `is` token
+        NodeIndex pattern;      // pattern to match
+    };
+
+    // -- Negative pattern test: `expr isnt pattern`.
+    struct IsntSyntax {
+        NodeIndex expr;         // expression to test
+        TokenIndex keyword;     // the `isnt` token
+        NodeIndex pattern;      // pattern to match
+    };
+
+    // -- Equality pattern in pattern context: `=expr`.
+    struct EqualPatternSyntax {
+        TokenIndex eq;          // the `=` token
+        NodeIndex expr;         // expression to compare against
+    };
+
+    // -- Colon-append in patterns or brackets: `[:rest]`.
+    struct ColonAppendSyntax {
+        NodeSpan head;          // leading elements before the colon
+        TokenIndex colon;       // the `:` token
+        NodeIndex rest;         // tail expression
+    };
+
+    // ------- Assignment & binding -------
+
+    // -- Assignment: `target := value`.
+    struct AssignmentSyntax {
+        NodeIndex target;       // left-hand side
+        TokenIndex colon_eq;    // the `:=` token
+        NodeIndex value;        // right-hand side expression
+    };
+
+    // -- Lambda expression: `params +-> body`.
+    struct LambdaSyntax {
+        NodeSpan parameters;    // formal parameter(s)
+        TokenIndex arrow;       // the `+->` token
+        NodeIndex body;         // body expression
+    };
+
+    // -- Default parameter value: `name := default`.
+    struct DefaultValueSyntax {
+        NodeIndex name;         // parameter name
+        TokenIndex definer;     // the `==` token
+        NodeIndex value;        // default expression
+    };
+
+    // -- Keyword argument: `key <- value`.
+    struct KeyArgSyntax {
+        NodeIndex key;          // keyword name
+        TokenIndex arrow;       // the `<-` token
+        NodeIndex value;        // argument value
+    };
+
+    // ------- Segments -------
+
+    // -- Bounded segment: `lo .. hi`.
+    struct BoundedSegmentSyntax {
+        NodeIndex lo;           // lower bound
+        TokenIndex dots;        // the `..` token
+        NodeIndex hi;           // upper bound
+    };
+
+    // -- Unbounded segment: `lo ..`
+    struct UnboundedSegmentSyntax {
+        NodeIndex lo;           // lower bound
+        TokenIndex dots;        // the `..` token
+    };
+
+    // ------- Reduce -------
+
+    // -- Reduction: `op / collection`.
+    struct ReduceSyntax {
+        NodeIndex op;           // reducing operator
+        TokenIndex slash;       // the `/` token
+        NodeIndex body;         // collection or construct being reduced
+    };
+
+    // ------- Structural -------
+
+    // -- Structure declaration: `structure Name == variants`.
+    struct StructureSyntax {
+        TokenIndex keyword;     // the `structure` token
+        NodeIndex name;         // type name with optional params
+        TokenIndex definer;     // the `==` token
+        NodeSpan variants;      // variant or record definitions
+    };
+
+    // -- Record definition: `Record(fields) with accessors`.
+    struct RecordSyntax {
+        TokenIndex keyword;     // the `Record` token (or name token)
+        NodeSpan fields;        // field signature list
+        NodeSpan accessors;     // accessor definitions
+    };
+
+    // -- Accessor definition: `name == (.field)`.
+    struct AccessorDefSyntax {
+        NodeIndex name;         // accessor name
+        TokenIndex definer;     // the `==` token
+        NodeIndex selector;     // field selection expression
+    };
+
+    // -- Case expression: `case expr of branches`.
+    struct CaseSyntax {
+        TokenIndex keyword;     // the `case` token
+        NodeIndex expr;         // discriminated expression
+        NodeSpan branches;      // case branches (Implies nodes)
+    };
+
+    // ------- Exception handling -------
+
+    // -- Throw expression: `throw expr`.
+    struct ThrowSyntax {
+        TokenIndex keyword;     // the `throw` token
+        NodeIndex expr;         // exception expression
+    };
+
+    // -- Catch clause: `catch(sig) => body`.
+    struct CatchSyntax {
+        TokenIndex keyword;     // the `catch` token
+        NodeIndex signature;    // exception variable signature
+        NodeIndex body;         // handler body expression
+    };
+
+    // -- Finally clause: `finally expr`.
+    struct FinallySyntax {
+        TokenIndex keyword;     // the `finally` token
+        NodeIndex body;         // cleanup expression
+    };
+
+    // -- Try expression: `try body catch ... finally ...`.
+    struct TrySyntax {
+        TokenIndex keyword;     // the `try` token
+        NodeIndex body;         // guarded expression
+        NodeSpan handlers;      // catch and finally clauses
+    };
+
+    // ------- Scoping -------
+
+    // -- Where clause: `body where definitions`.
+    struct WhereSyntax {
+        NodeIndex body;         // main expression
+        TokenIndex keyword;     // the `where` token
+        NodeSpan definitions;   // local definitions
+    };
+
+    // -- Dynamic (local) declaration: `local x`.
+    struct DynamicSyntax {
+        NodeIndex expr;         // locally-bound expression
+    };
+
+    // ------- Spad type system -------
+
+    // -- Category definition: `with { sig; sig; ... }`
+    // or infix: `T with { ... }`.
+    struct WithSyntax {
+        TokenIndex keyword;     // the 'with' token
+        NodeIndex body;         // pile/sequence of signatures
+    };
+
+    // -- Domain implementation: `T add { defs }`.
+    struct AddSyntax {
+        TokenIndex keyword;     // the 'add' token
+        NodeIndex body;         // capsule body
+    };
+
+    // -- Scoped definition block inside `add`.
+    struct CapsuleSyntax {
+        NodeSpan items;         // definition list
+    };
+
+    // -- Unsafe type assertion: `x pretend T`.
+    struct PretendSyntax {
+        NodeIndex expr;         // expression
+        TokenIndex keyword;     // the 'pretend' token
+        NodeIndex type;         // target type
+    };
+
+    // -- Category membership test: `D has Cat`.
+    struct HasSyntax {
+        NodeIndex expr;         // domain expression
+        TokenIndex keyword;     // the 'has' token
+        NodeIndex type;         // category/capability
+    };
+
+    // -- List comprehension: `[body for x in ...]`.
+    struct CollectSyntax {
+        NodeIndex body;         // element expression
+        NodeIndex iterators;    // iterator tree
+    };
+
+    // -- Category join: `Join(Cat1, Cat2, ...)`.
+    struct JoinSyntax {
+        TokenIndex keyword;     // the 'Join' identifier
+        NodeSpan arguments;     // joined categories
+    };
+
+    // ------- Spad declarations -------
+
+    // -- Free variable declaration: `free x`.
+    struct FreeDeclSyntax {
+        TokenIndex keyword;     // the 'free' token
+        NodeIndex expr;         // variable(s)
+    };
+
+    // -- Explicit export: `export sig`.
+    struct ExportDeclSyntax {
+        TokenIndex keyword;     // the 'export' token
+        NodeIndex signature;    // what is exported
+    };
+
+    // ------- Embedded Lisp -------
+
+    // -- Lisp escape: `)lisp code`.
+    struct LispExprSyntax {
+        TokenIndex token;       // the Lisp expression token
+    };
+
+    // ------- Fallback -------
+
+    // -- Unparsed token range, used as fallback for unrecognized input.
+    struct UnparsedSyntax {
+        TokenIndex first;       // first token in the range
+        TokenIndex last;        // last token in the range
+    };
+
+    // -- SyntaxForest: arena holding all syntax nodes
+    // All nodes are owned by a single SyntaxForest.  Nodes are
+    // allocated into per-kind vectors and referenced through
+    // NodeIndex handles.  Variable-length child lists share a
+    // single flat NodeIndex vector; each list is described by
+    // a NodeSpan (offset + count) into that vector.
+    struct SyntaxForest {
+        // -- Child list storage --
+
+        // -- Allocate a contiguous span of `count` child slots and
+        // return a NodeSpan referencing them.
+        NodeSpan allocate_span(std::uint32_t count);
+
+        // -- Access the i-th child within a span.
+        NodeIndex& child(NodeSpan span, std::uint32_t i);
+        const NodeIndex& child(NodeSpan span, std::uint32_t i) const;
+
+        // -- Node allocation --
+        // Each function allocates a node of the given kind in the
+        // corresponding vector and returns its NodeIndex handle.
+
+        NodeIndex make_literal(const LiteralSyntax&);
+        NodeIndex make_name(const NameSyntax&);
+        NodeIndex make_qualified_name(const QualifiedNameSyntax&);
+        NodeIndex make_module(const ModuleSyntax&);
+        NodeIndex make_namespace(const NamespaceSyntax&);
+        NodeIndex make_import(const ImportSyntax&);
+        NodeIndex make_import_signature(const ImportSignatureSyntax&);
+        NodeIndex make_constant_def(const ConstantDefSyntax&);
+        NodeIndex make_function_def(const FunctionDefSyntax&);
+        NodeIndex make_macro_def(const MacroDefSyntax&);
+        NodeIndex make_type_alias(const TypeAliasSyntax&);
+        NodeIndex make_signature(const SignatureSyntax&);
+        NodeIndex make_apply(const ApplySyntax&);
+        NodeIndex make_infix(const InfixExprSyntax&);
+        NodeIndex make_prefix(const PrefixExprSyntax&);
+        NodeIndex make_suffix_dot(const SuffixDotSyntax&);
+        NodeIndex make_restrict(const RestrictSyntax&);
+        NodeIndex make_coerce(const CoerceSyntax&);
+        NodeIndex make_quote(const QuoteSyntax&);
+        NodeIndex make_bracket(const BracketSyntax&);
+        NodeIndex make_tuple(const TupleSyntax&);
+        NodeIndex make_sequence(const SequenceSyntax&);
+        NodeIndex make_pile(const PileSyntax&);
+        NodeIndex make_mapping(const MappingSyntax&);
+        NodeIndex make_forall(const ForallSyntax&);
+        NodeIndex make_if(const IfExprSyntax&);
+        NodeIndex make_return(const ReturnSyntax&);
+        NodeIndex make_leave(const LeaveSyntax&);
+        NodeIndex make_implies(const ImpliesSyntax&);
+        NodeIndex make_while(const WhileSyntax&);
+        NodeIndex make_until(const UntilSyntax&);
+        NodeIndex make_for_in(const ForInSyntax&);
+        NodeIndex make_such_that(const SuchThatSyntax&);
+        NodeIndex make_iterators(const IteratorsSyntax&);
+        NodeIndex make_cross(const CrossSyntax&);
+        NodeIndex make_repeat(const RepeatSyntax&);
+        NodeIndex make_is(const IsSyntax&);
+        NodeIndex make_isnt(const IsntSyntax&);
+        NodeIndex make_equal_pattern(const EqualPatternSyntax&);
+        NodeIndex make_colon_append(const ColonAppendSyntax&);
+        NodeIndex make_assignment(const AssignmentSyntax&);
+        NodeIndex make_lambda(const LambdaSyntax&);
+        NodeIndex make_default_value(const DefaultValueSyntax&);
+        NodeIndex make_key_arg(const KeyArgSyntax&);
+        NodeIndex make_bounded_segment(const BoundedSegmentSyntax&);
+        NodeIndex make_unbounded_segment(const UnboundedSegmentSyntax&);
+        NodeIndex make_reduce(const ReduceSyntax&);
+        NodeIndex make_structure(const StructureSyntax&);
+        NodeIndex make_record(const RecordSyntax&);
+        NodeIndex make_accessor_def(const AccessorDefSyntax&);
+        NodeIndex make_case(const CaseSyntax&);
+        NodeIndex make_throw(const ThrowSyntax&);
+        NodeIndex make_catch(const CatchSyntax&);
+        NodeIndex make_finally(const FinallySyntax&);
+        NodeIndex make_try(const TrySyntax&);
+        NodeIndex make_where(const WhereSyntax&);
+        NodeIndex make_dynamic(const DynamicSyntax&);
+        NodeIndex make_with(const WithSyntax&);
+        NodeIndex make_add(const AddSyntax&);
+        NodeIndex make_capsule(const CapsuleSyntax&);
+        NodeIndex make_pretend(const PretendSyntax&);
+        NodeIndex make_has(const HasSyntax&);
+        NodeIndex make_collect(const CollectSyntax&);
+        NodeIndex make_join(const JoinSyntax&);
+        NodeIndex make_free_decl(const FreeDeclSyntax&);
+        NodeIndex make_export_decl(const ExportDeclSyntax&);
+        NodeIndex make_lisp_expr(const LispExprSyntax&);
+        NodeIndex make_unparsed(const UnparsedSyntax&);
+
+        // -- Node access by index --
+        // Each function retrieves a previously allocated node by
+        // its position within the per-kind storage vector.
+
+        const LiteralSyntax& literal(std::uint32_t i) const { return literals[i]; }
+        const NameSyntax& name(std::uint32_t i) const { return names[i]; }
+        const QualifiedNameSyntax& qualified_name(std::uint32_t i) const { return qualified_names[i]; }
+        const ModuleSyntax& module(std::uint32_t i) const { return modules[i]; }
+        const NamespaceSyntax& namespace_node(std::uint32_t i) const { return namespaces[i]; }
+        const ImportSyntax& import_node(std::uint32_t i) const { return imports[i]; }
+        const ImportSignatureSyntax& import_signature(std::uint32_t i) const { return import_signatures[i]; }
+        const ConstantDefSyntax& constant_def(std::uint32_t i) const { return constant_defs[i]; }
+        const FunctionDefSyntax& function_def(std::uint32_t i) const { return function_defs[i]; }
+        const MacroDefSyntax& macro_def(std::uint32_t i) const { return macro_defs[i]; }
+        const TypeAliasSyntax& type_alias(std::uint32_t i) const { return type_aliases[i]; }
+        const SignatureSyntax& signature(std::uint32_t i) const { return signatures[i]; }
+        const ApplySyntax& apply(std::uint32_t i) const { return applications[i]; }
+        const InfixExprSyntax& infix_expr(std::uint32_t i) const { return infix_exprs[i]; }
+        const PrefixExprSyntax& prefix_expr(std::uint32_t i) const { return prefix_exprs[i]; }
+        const SuffixDotSyntax& suffix_dot(std::uint32_t i) const { return suffix_dots[i]; }
+        const RestrictSyntax& restrict_node(std::uint32_t i) const { return restricts[i]; }
+        const CoerceSyntax& coerce(std::uint32_t i) const { return coercions[i]; }
+        const QuoteSyntax& quote(std::uint32_t i) const { return quotes[i]; }
+        const BracketSyntax& bracket(std::uint32_t i) const { return brackets[i]; }
+        const TupleSyntax& tuple(std::uint32_t i) const { return tuples[i]; }
+        const SequenceSyntax& sequence(std::uint32_t i) const { return sequences[i]; }
+        const PileSyntax& pile(std::uint32_t i) const { return piles[i]; }
+        const MappingSyntax& mapping(std::uint32_t i) const { return mappings[i]; }
+        const ForallSyntax& forall(std::uint32_t i) const { return foralls[i]; }
+        const IfExprSyntax& if_expr(std::uint32_t i) const { return if_exprs[i]; }
+        const ReturnSyntax& return_node(std::uint32_t i) const { return returns[i]; }
+        const LeaveSyntax& leave(std::uint32_t i) const { return leaves[i]; }
+        const ImpliesSyntax& implies(std::uint32_t i) const { return implications[i]; }
+        const WhileSyntax& while_node(std::uint32_t i) const { return whiles[i]; }
+        const UntilSyntax& until_node(std::uint32_t i) const { return untils[i]; }
+        const ForInSyntax& for_in(std::uint32_t i) const { return for_ins[i]; }
+        const SuchThatSyntax& such_that(std::uint32_t i) const { return such_thats[i]; }
+        const IteratorsSyntax& iterators(std::uint32_t i) const { return iterators_list[i]; }
+        const CrossSyntax& cross(std::uint32_t i) const { return crosses[i]; }
+        const RepeatSyntax& repeat(std::uint32_t i) const { return repeats[i]; }
+        const IsSyntax& is_test(std::uint32_t i) const { return is_tests[i]; }
+        const IsntSyntax& isnt_test(std::uint32_t i) const { return isnt_tests[i]; }
+        const EqualPatternSyntax& equal_pattern(std::uint32_t i) const { return equal_patterns[i]; }
+        const ColonAppendSyntax& colon_append(std::uint32_t i) const { return colon_appends[i]; }
+        const AssignmentSyntax& assignment(std::uint32_t i) const { return assignments[i]; }
+        const LambdaSyntax& lambda(std::uint32_t i) const { return lambdas[i]; }
+        const DefaultValueSyntax& default_value(std::uint32_t i) const { return default_values[i]; }
+        const KeyArgSyntax& key_arg(std::uint32_t i) const { return key_args[i]; }
+        const BoundedSegmentSyntax& bounded_segment(std::uint32_t i) const { return bounded_segments[i]; }
+        const UnboundedSegmentSyntax& unbounded_segment(std::uint32_t i) const { return unbounded_segments[i]; }
+        const ReduceSyntax& reduce(std::uint32_t i) const { return reduces[i]; }
+        const StructureSyntax& structure(std::uint32_t i) const { return structures[i]; }
+        const RecordSyntax& record(std::uint32_t i) const { return records[i]; }
+        const AccessorDefSyntax& accessor_def(std::uint32_t i) const { return accessor_defs[i]; }
+        const CaseSyntax& case_node(std::uint32_t i) const { return cases[i]; }
+        const ThrowSyntax& throw_node(std::uint32_t i) const { return throws[i]; }
+        const CatchSyntax& catch_node(std::uint32_t i) const { return catches[i]; }
+        const FinallySyntax& finally_node(std::uint32_t i) const { return finallys[i]; }
+        const TrySyntax& try_node(std::uint32_t i) const { return trys[i]; }
+        const WhereSyntax& where(std::uint32_t i) const { return wheres[i]; }
+        const DynamicSyntax& dynamic(std::uint32_t i) const { return dynamics[i]; }
+        const WithSyntax& with_node(std::uint32_t i) const { return withs[i]; }
+        const AddSyntax& add_node(std::uint32_t i) const { return adds[i]; }
+        const CapsuleSyntax& capsule(std::uint32_t i) const { return capsules[i]; }
+        const PretendSyntax& pretend_node(std::uint32_t i) const { return pretends[i]; }
+        const HasSyntax& has_node(std::uint32_t i) const { return has_tests[i]; }
+        const CollectSyntax& collect(std::uint32_t i) const { return collects[i]; }
+        const JoinSyntax& join_node(std::uint32_t i) const { return joins[i]; }
+        const FreeDeclSyntax& free_decl(std::uint32_t i) const { return free_decls[i]; }
+        const ExportDeclSyntax& export_decl(std::uint32_t i) const { return export_decls[i]; }
+        const LispExprSyntax& lisp_expr(std::uint32_t i) const { return lisp_exprs[i]; }
+        const UnparsedSyntax& unparsed_node(std::uint32_t i) const { return unparsed[i]; }
+
+    private:
+        // -- Shared flat array for variable-length child lists.
+        std::vector<NodeIndex> children;
+
+        // -- Per-kind storage arrays.
+        std::vector<LiteralSyntax> literals;
+        std::vector<NameSyntax> names;
+        std::vector<QualifiedNameSyntax> qualified_names;
+        std::vector<ModuleSyntax> modules;
+        std::vector<NamespaceSyntax> namespaces;
+        std::vector<ImportSyntax> imports;
+        std::vector<ImportSignatureSyntax> import_signatures;
+        std::vector<ConstantDefSyntax> constant_defs;
+        std::vector<FunctionDefSyntax> function_defs;
+        std::vector<MacroDefSyntax> macro_defs;
+        std::vector<TypeAliasSyntax> type_aliases;
+        std::vector<SignatureSyntax> signatures;
+        std::vector<ApplySyntax> applications;
+        std::vector<InfixExprSyntax> infix_exprs;
+        std::vector<PrefixExprSyntax> prefix_exprs;
+        std::vector<SuffixDotSyntax> suffix_dots;
+        std::vector<RestrictSyntax> restricts;
+        std::vector<CoerceSyntax> coercions;
+        std::vector<QuoteSyntax> quotes;
+        std::vector<BracketSyntax> brackets;
+        std::vector<TupleSyntax> tuples;
+        std::vector<SequenceSyntax> sequences;
+        std::vector<PileSyntax> piles;
+        std::vector<MappingSyntax> mappings;
+        std::vector<ForallSyntax> foralls;
+        std::vector<IfExprSyntax> if_exprs;
+        std::vector<ReturnSyntax> returns;
+        std::vector<LeaveSyntax> leaves;
+        std::vector<ImpliesSyntax> implications;
+        std::vector<WhileSyntax> whiles;
+        std::vector<UntilSyntax> untils;
+        std::vector<ForInSyntax> for_ins;
+        std::vector<SuchThatSyntax> such_thats;
+        std::vector<IteratorsSyntax> iterators_list;
+        std::vector<CrossSyntax> crosses;
+        std::vector<RepeatSyntax> repeats;
+        std::vector<IsSyntax> is_tests;
+        std::vector<IsntSyntax> isnt_tests;
+        std::vector<EqualPatternSyntax> equal_patterns;
+        std::vector<ColonAppendSyntax> colon_appends;
+        std::vector<AssignmentSyntax> assignments;
+        std::vector<LambdaSyntax> lambdas;
+        std::vector<DefaultValueSyntax> default_values;
+        std::vector<KeyArgSyntax> key_args;
+        std::vector<BoundedSegmentSyntax> bounded_segments;
+        std::vector<UnboundedSegmentSyntax> unbounded_segments;
+        std::vector<ReduceSyntax> reduces;
+        std::vector<StructureSyntax> structures;
+        std::vector<RecordSyntax> records;
+        std::vector<AccessorDefSyntax> accessor_defs;
+        std::vector<CaseSyntax> cases;
+        std::vector<ThrowSyntax> throws;
+        std::vector<CatchSyntax> catches;
+        std::vector<FinallySyntax> finallys;
+        std::vector<TrySyntax> trys;
+        std::vector<WhereSyntax> wheres;
+        std::vector<DynamicSyntax> dynamics;
+        std::vector<WithSyntax> withs;
+        std::vector<AddSyntax> adds;
+        std::vector<CapsuleSyntax> capsules;
+        std::vector<PretendSyntax> pretends;
+        std::vector<HasSyntax> has_tests;
+        std::vector<CollectSyntax> collects;
+        std::vector<JoinSyntax> joins;
+        std::vector<FreeDeclSyntax> free_decls;
+        std::vector<ExportDeclSyntax> export_decls;
+        std::vector<LispExprSyntax> lisp_exprs;
+        std::vector<UnparsedSyntax> unparsed;
+    };
+
+    // -- Node field descriptors for generic traversal
+
+    // -- Discriminator for field values within a node descriptor.
+    enum class FieldRole : std::uint8_t {
+        Child,          // a child subtree (NodeIndex)
+        Span,           // an inline child list (NodeSpan)
+        WrappedSpan,    // a parenthesized child list (NodeSpan)
+        Token,          // a token, printed with identifier quoting
+        Literal,        // a token, printed verbatim
+    };
+
+    // -- A single field within a node descriptor.
+    struct NodeField {
+        FieldRole role;
+        union {
+            NodeIndex child;
+            NodeSpan span;
+            TokenIndex token;
+        };
+    };
+
+    // -- Compact description of a node's shape and field values.
+    struct NodeDescriptor {
+        const char* tag;            // S-expression tag (nullptr for leaves)
+        std::uint8_t count;         // number of fields
+        NodeField fields[4];        // ordered field values
+    };
+
+    // -- Helpers for constructing NodeField values.
+    inline NodeField child_field(NodeIndex n)
+    {
+        NodeField f { };
+        f.role = FieldRole::Child;
+        f.child = n;
+        return f;
+    }
+
+    inline NodeField span_field(NodeSpan s)
+    {
+        NodeField f { };
+        f.role = FieldRole::Span;
+        f.span = s;
+        return f;
+    }
+
+    inline NodeField wrapped_span_field(NodeSpan s)
+    {
+        NodeField f { };
+        f.role = FieldRole::WrappedSpan;
+        f.span = s;
+        return f;
+    }
+
+    inline NodeField token_field(TokenIndex t)
+    {
+        NodeField f { };
+        f.role = FieldRole::Token;
+        f.token = t;
+        return f;
+    }
+
+    inline NodeField literal_field(TokenIndex t)
+    {
+        NodeField f { };
+        f.role = FieldRole::Literal;
+        f.token = t;
+        return f;
+    }
+
+    // -- Return the S-expression tag name for a given Kind.
+    //    Returns nullptr for leaf nodes (Literal, Name).
+    const char* tag_name(Kind);
+
+    // -- Describe a node's shape and extract its field values.
+    NodeDescriptor describe_node(NodeIndex node,
+                                 const SyntaxForest& forest);
 }
 
 #endif  // OPENAXIOM_SYNTAX_TREE_included

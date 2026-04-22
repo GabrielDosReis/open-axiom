@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2010-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -50,9 +50,7 @@
 
 namespace OpenAxiom {
    namespace Sexpr {
-      // ------------
       // -- Lexeme --
-      // ------------
       struct Lexeme {
          enum Type {
             unknown,                 // unidentified token
@@ -79,25 +77,21 @@ namespace OpenAxiom {
             sharp_integer_sharp      // back reference, #n#
          };
 
-         std::pair<const Byte*, const Byte*> boundary;
+         std::pair<const char8_t*, const char8_t*> boundary;
          Ordinal line;
-         const Byte* begin() const { return boundary.first; }
-         const Byte* end() const { return boundary.second; }
+         const char8_t* begin() const { return boundary.first; }
+         const char8_t* end() const { return boundary.second; }
          Ordinal size() const { return end() - begin(); }
       };
 
-      // ------------
       // -- Syntax --
-      // ------------
       // Base class of syntax object classes.
       struct Syntax {
          struct Visitor;        // base class of syntax visitors
          virtual void accept(Visitor&) const = 0;
       };
 
-      // ----------------
       // -- AtomSyntax --
-      // ----------------
       // An atom is a syntax object consisting of exatly one token.
       // This should not be confused with the notion of atom
       // in Lisp languages. 
@@ -108,36 +102,28 @@ namespace OpenAxiom {
          explicit AtomSyntax(const Lexeme&);
       };
 
-      // -------------------
       // -- IntegerSyntax --
-      // -------------------
       // Integer literal syntax objects
       struct IntegerSyntax : AtomSyntax {
          explicit IntegerSyntax(const Lexeme&);
          void accept(Visitor&) const;
       };
 
-      // ---------------------
       // -- CharacterSyntax --
-      // ---------------------
       // Character literal syntax objects.
       struct CharacterSyntax : AtomSyntax {
          explicit CharacterSyntax(const Lexeme&);
          void accept(Visitor&) const;
       };
 
-      // ------------------
       // -- StringSyntax --
-      // ------------------
       // Striing literal syntax objjects.
       struct StringSyntax : AtomSyntax {
          explicit StringSyntax(const Lexeme&);
          void accept(Visitor&) const;
       };
 
-      // ------------------
       // -- SymbolSyntax --
-      // ------------------
       struct SymbolSyntax : AtomSyntax {
          enum Kind {
             ordinary   = 0x0,   // an interned symbol
@@ -147,18 +133,16 @@ namespace OpenAxiom {
          };
          SymbolSyntax(const Lexeme&, Kind);
          Kind kind() const { return sort; }
-         const Byte* begin() const { return lexeme().begin(); }
-         const Byte* end() const { return lexeme().end(); }
+         const char8_t* begin() const { return lexeme().begin(); }
+         const char8_t* end() const { return lexeme().end(); }
          std::size_t size() const { return lexeme().size(); }
-         Byte operator[](std::size_t i) const { return begin()[i]; }
+         char8_t operator[](std::size_t i) const { return begin()[i]; }
          void accept(Visitor&) const;
       private:
          const Kind sort;
       };
 
-      // ---------------------
       // -- ReferenceSyntax --
-      // ---------------------
       // Back reference object to a syntax object.
       struct ReferenceSyntax : AtomSyntax {
          ReferenceSyntax(const Lexeme&, Ordinal);
@@ -168,9 +152,7 @@ namespace OpenAxiom {
          Ordinal pos;
       };
 
-      // ------------------
       // -- AnchorSyntax --
-      // ------------------
       // Base anchor syntax object.
       struct AnchorSyntax : Syntax {
          AnchorSyntax(size_t, const Syntax*);
@@ -204,73 +186,55 @@ namespace OpenAxiom {
          std::pair<const Syntax*, const Syntax*> rep;
       };
 
-      // -----------------
       // -- QuoteSyntax --
-      // -----------------
       // Quotation syntax object.
       struct QuoteSyntax : unary_form<QuoteSyntax> {
          explicit QuoteSyntax(const Syntax*);
       };
       
-      // ---------------------
       // -- AntiquoteSyntax --
-      // ---------------------
       // Quasi-quotation syntax object.
       struct AntiquoteSyntax : unary_form<AntiquoteSyntax> {
          explicit AntiquoteSyntax(const Syntax*);
       };
       
-      // ------------
       // -- Expand --
-      // ------------
       // Expansion request inside a quasi-quotation.
       struct Expand : unary_form<Expand> {
          explicit Expand(const Syntax*);
       };
       
-      // ----------
       // -- Eval --
-      // ----------
       // Read-time evaluation request syntax object.
       struct Eval : unary_form<Eval> {
          explicit Eval(const Syntax*);
       };
       
-      // ------------
       // -- Splice --
-      // ------------
       // Splice request syntax object inside a quasi-quotation.
       struct Splice : unary_form<Splice> {
          explicit Splice(const Syntax*);
       };
       
-      // --------------
       // -- Function --
-      // --------------
       // Function literal syntax object.
       struct Function : unary_form<Function> {
          explicit Function(const Syntax*);
       };
 
-      // -------------
       // -- Include --
-      // -------------
       // Conditional inclusion syntax object
       struct Include : binary_form<Include> {
          Include(const Syntax*, const Syntax*);
       };
 
-      // -------------
       // -- Exclude --
-      // -------------
       // Conditional exclusion syntax object
       struct Exclude : binary_form<Exclude> {
          Exclude(const Syntax*, const Syntax*);
       };
 
-      // ----------------
       // -- ListSyntax --
-      // ----------------
       // List syntax objects.
       struct ListSyntax : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
@@ -292,9 +256,7 @@ namespace OpenAxiom {
          bool dot;
       };
       
-      // ------------------
       // -- VectorSyntax --
-      // ------------------
       // VectorSyntax syntax objects.
       struct VectorSyntax : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
@@ -311,9 +273,7 @@ namespace OpenAxiom {
          void accept(Visitor&) const;
       };
 
-      // ---------------------
       // -- Syntax::Visitor --
-      // ---------------------
       struct Syntax::Visitor {
          virtual void visit(const IntegerSyntax&) = 0;
          virtual void visit(const CharacterSyntax&) = 0;
@@ -345,9 +305,7 @@ namespace OpenAxiom {
          v.visit(static_cast<const T&>(*this));
       }
 
-      // ---------------
       // -- Allocator --
-      // ---------------
       // Allocator of syntax objects.
       struct Allocator {
          Allocator();
@@ -393,22 +351,22 @@ namespace OpenAxiom {
 
       // -- Reader --
       struct RawInput {
-         const Byte* start;
-         const Byte* end;
+         const char8_t* start;
+         const char8_t* end;
          Ordinal lineno;
       };
 
       struct Reader {
          struct State {
             RawInput bytes;
-            const Byte* cur;
-            const Byte* line;
+            const char8_t* cur;
+            const char8_t* line;
             Allocator alloc;
          };
 
          explicit Reader(const RawInput&);
-         Reader(const Byte*, const Byte*);
-         const Byte* position(Ordinal);
+         Reader(const char8_t*, const char8_t*);
+         const char8_t* position(Ordinal);
          bool at_start() const { return st.cur == st.bytes.start; }
          const Syntax* read();
       private:

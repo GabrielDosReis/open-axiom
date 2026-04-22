@@ -1,0 +1,109 @@
+// -- -*- C++ -*-
+// Copyright (C) 2026, Gabriel Dos Reis.
+// All rights reserved.
+// Written by Gabriel Dos Reis.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     - Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     - Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in
+//       the documentation and/or other materials provided with the
+//       distribution.
+//
+//     - Neither the name of OpenAxiom, nor the names of its contributors may
+//       be used to endorse or promote products derived from this software
+//       without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+// OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// --% Author: Gabriel Dos Reis
+// --% Description:
+// --%   Boot-to-Lisp translator.  Converts the intermediate AST
+// --%   (Lisp values produced by CST lowering) into Common Lisp
+// --%   S-expressions ready for pretty-printing as .clisp output.
+
+#ifndef OPENAXIOM_BOOT_TRANSLATOR_included
+#define OPENAXIOM_BOOT_TRANSLATOR_included
+
+#include <string>
+#include <vector>
+#include <iosfwd>
+
+#include <open-axiom/LispValue>
+
+namespace OpenAxiom::Boot {
+
+    // -- Translation unit state (mirrors old %LoadUnit).
+    struct TranslationUnit {
+        Lisp::Arena& arena;
+        int gensym_counter = 0;
+        int let_var_counter = 0;
+        int is_var_counter = 0;
+
+        // -- When true, function definitions are "clammed" (cached).
+        // Each f(args)==body generates two DEFUNs: f; (impl) and
+        // f (caching wrapper).
+        bool clamming = false;
+
+        // -- Side conditions accumulated during where-clause processing.
+        std::vector<Lisp::Value> side_conditions;
+
+        // -- Name of the enclosing function (for where-clause renaming).
+        std::u8string enclosing_function;
+
+        explicit TranslationUnit(Lisp::Arena& a) : arena(a) {}
+
+        // -- Generate a fresh symbol: bfVar#N, LETTMP#N, ISTMP#N.
+        Lisp::Value gensym();
+        Lisp::Value let_var();
+        Lisp::Value is_var();
+
+    private:
+        Lisp::Value fresh_symbol(
+            std::u8string_view prefix, int& counter);
+    };
+
+    // -- Apply translateForm to a Lisp S-expression.
+    //    Handles: QUOTE passthrough, apply->FUNCALL/APPLY,
+    //    LET bindings, L%T init, PROGN/LOOP/RETURN recursion.
+    Lisp::Value translate_form(
+        Lisp::Arena& arena,
+        Lisp::Value x);
+
+    // -- Translate a top-level AST node to a list of Lisp forms.
+    //    Returns a list of forms (DEFUN, DEFPARAMETER, etc.).
+    std::vector<Lisp::Value> translate_toplevel(
+        TranslationUnit& tu,
+        Lisp::Value ast);
+
+    // -- Generate the file preamble for a Boot module.
+    //    Takes the sequence of top-level AST nodes and extracts
+    //    module/namespace/import info to produce the preamble.
+    std::vector<Lisp::Value> translate_file(
+        TranslationUnit& tu,
+        const std::vector<Lisp::Value>& top_levels);
+
+    // -- Pretty-print a Lisp form with proper indentation.
+    //    Uses the Common Lisp pretty-printer style.
+    void pretty_print(std::ostream& os,
+                      Lisp::Value form,
+                      int indent = 0);
+
+}
+
+#endif  // OPENAXIOM_BOOT_TRANSLATOR_included

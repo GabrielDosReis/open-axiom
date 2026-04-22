@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2011-2022, Gabriel Dos Reis.
 // All rights reserved.
 //
@@ -154,9 +154,7 @@ namespace OpenAxiom {
       //     T      0x10
 
 
-      // -----------
       // -- Value --
-      // -----------
       // All VM values fit in a universal value datatype.
       using ValueBits = std::uintptr_t;
       using ValueMask = ValueBits;
@@ -186,20 +184,20 @@ namespace OpenAxiom {
       struct ValueTrait {
       };
 
-      // Return the tag of an abstract value, when viewed as a potential
+      // -- Return the tag of an abstract value, when viewed as a potential
       // T-value.
       template<typename T>
       constexpr ValueBits tag(Value v) {
          return ValueBits(v) & ValueTrait<T>::tag_mask;
       }
 
-      // Return true if the abstract value is, in fact, a T-value.
+      // -- Return true if the abstract value is, in fact, a T-value.
       template<typename T>
       constexpr bool is(Value v) {
          return tag<T>(v) == ValueTrait<T>::tag;
       }
 
-      // Return the pristine bits of an abstract value without its tag.
+      // -- Return the pristine bits of an abstract value without its tag.
       template<typename T>
       constexpr ValueBits native(Value v) {
          return ValueBits(v) & ~ValueTrait<T>::tag_mask;
@@ -215,9 +213,7 @@ namespace OpenAxiom {
          three    = 3,          // Exactly three arguments.
       };
 
-      // -----------
       // -- Boxed --
-      // -----------
       // Any internal value is of a class derived from this.
       internal_type Boxed {
          struct Visitor;
@@ -225,7 +221,7 @@ namespace OpenAxiom {
          virtual void accept(Visitor&) const = 0;
       };
 
-      // Provide an S-view of a T-typed expression, assuming the type T
+      // -- Provide an S-view of a T-typed expression, assuming the type T
       // derives from S.
       template<typename S, typename T>
       inline const S& as(const T& t) { return t; }
@@ -253,9 +249,7 @@ namespace OpenAxiom {
       struct Callable : Boxed {
       };
       
-      // -------------
       // -- Fixnum ---
-      // -------------
       // VM integers are divided into classes: small numbers,
       // and large numbers.  A small number fits entirely in a register.
       // A large number is allocated and represented by its address.
@@ -281,9 +275,7 @@ namespace OpenAxiom {
          return Value((ValueBits(i) << 1 ) | ValueTrait<Fixnum>::tag);
       }
 
-      // ------------
       // -- String --
-      // ------------
       using String = InternedString;
 
       template<>
@@ -304,9 +296,7 @@ namespace OpenAxiom {
          return is<String>(v) ? to_string(v) : nullptr;
       }
 
-      // -------------
       // -- Pointer --
-      // -------------
       // Allocated objects are represented by their addresses.
       using Memory::Pointer;
 
@@ -324,9 +314,7 @@ namespace OpenAxiom {
          return Value(ValueBits(p) | ValueTrait<Memory::Pointer>::tag);
       }
 
-      // ----------
       // -- Pair --
-      // ----------
       struct alignas(8) ConsCell {
          Value head;
          Value tail;
@@ -348,7 +336,7 @@ namespace OpenAxiom {
          return Value(ValueBits(p) | ValueTrait<Pair>::tag);
       }
 
-      // Return true if argument designates a pair.
+      // -- Return true if argument designates a pair.
       constexpr Value consp(Value v) {
          return to_value(v != Value::nil and v != Value::t and is<Pair>(v));
       }
@@ -357,7 +345,7 @@ namespace OpenAxiom {
          return null(consp(v));
       }
 
-      // If `v' designates a pair, return a pointer to its
+      // -- If `v' designates a pair, return a pointer to its
       // concrete representation.
       inline Pair if_pair(Value v) {
          return consp(v) == Value::t ? to_pair(v) : nullptr;
@@ -370,9 +358,7 @@ namespace OpenAxiom {
          return Fixnum::zero;
       }
 
-      // ---------------
       // -- Character --
-      // ---------------
       // This datatype is prepared for Uncode characters even if
       // we do not handle UCN characters at the moment.
       enum class Character : ValueBits { };
@@ -414,9 +400,7 @@ namespace OpenAxiom {
          return SymbolAttribute(ValueBits(x) & ValueBits(y));
       }
 
-      // ------------
       // -- Symbol --
-      // ------------
       struct Symbol : Boxed {
          const InternedString name;
          Value value;
@@ -483,9 +467,7 @@ namespace OpenAxiom {
          std::vector<Binding> dynamic;
       };
 
-      // -------------
       // -- Package --
-      // -------------
       struct Package : Boxed {
          const InternedString name;
          std::set<Symbol, CmpByName> symbols;
@@ -496,9 +478,7 @@ namespace OpenAxiom {
          Symbol* find_symbol(InternedString);
       };
 
-      // --------------
       // -- Function --
-      // --------------
       struct FunctionBase : Callable {
          const Symbol* name;
          Value type;
@@ -507,9 +487,7 @@ namespace OpenAxiom {
          void accept(Visitor&) const override;
       };
 
-      // ------------------------
       // -- Builtin Operations --
-      // ------------------------
       // Types for native implementation of builtin operators.
       struct BasicContext;
 
@@ -565,9 +543,7 @@ namespace OpenAxiom {
       template<typename Code>
       void BuiltinFunction<Code>::accept(Visitor& v) const { v.visit(*this); }
 
-      // ------------------
       // -- BasicContext --
-      // ------------------
       // Provides basic evaluation services.
       struct BasicContext : StringPool {
          BasicContext();

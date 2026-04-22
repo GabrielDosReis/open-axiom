@@ -1,0 +1,266 @@
+// -- -*- C++ -*-
+// Copyright (C) 2026, Gabriel Dos Reis.
+// All rights reserved.
+// Written by Gabriel Dos Reis.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     - Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     - Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in
+//       the documentation and/or other materials provided with the
+//       distribution.
+//
+//     - Neither the name of OpenAxiom, nor the names of its contributors may
+//       be used to endorse or promote products derived from this software
+//       without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+// OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// --% Author: Gabriel Dos Reis
+// --% Description:
+// --%   A lightweight, arena-allocated Lisp value representation for
+// --%   use as an intermediate representation in the Boot-to-Lisp
+// --%   translator.  Values are dynamically typed and immutable
+// --%   once constructed (with the exception of cons cell mutation
+// --%   for list construction).
+
+#ifndef OPENAXIOM_LISP_VALUE_included
+#define OPENAXIOM_LISP_VALUE_included
+
+#include <cstdint>
+#include <forward_list>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <unordered_map>
+#include <iosfwd>
+
+namespace OpenAxiom::Lisp {
+
+    // -- Value: a dynamically-typed Lisp value
+    // Represented as a tagged pointer packed into an enum with
+    // std::uint64_t as base type.  The low 3 bits encode the
+    // ValueKind discriminator; the upper 61 bits are the address
+    // of a heap-allocated data node (always 8-byte aligned, so
+    // the low bits are structurally zero).  nil is the zero
+    // enumerator — both address and tag are zero.
+
+    // -- Discriminator for value nodes.
+    enum class ValueKind : std::uint8_t {
+        Symbol,
+        Integer,
+        Float,
+        String,
+        Cons,
+    };
+
+    // -- Tagged pointer to a Lisp value node.
+    enum class Value : std::uint64_t { nil = 0 };
+
+    // -- Extract the raw bits from a Value.
+    constexpr std::uint64_t to_bits(Value v)
+    {
+        return static_cast<std::uint64_t>(v);
+    }
+
+    // -- Tag manipulation constants.
+    inline constexpr unsigned tag_width = 3;
+    inline constexpr std::uint64_t tag_mask = 0b111;
+
+    // -- Extract the kind discriminator.
+    constexpr ValueKind kind(Value v)
+    {
+        return ValueKind(to_bits(v) & tag_mask);
+    }
+
+    // -- Recover the data pointer (mask off the tag bits).
+    template<typename T>
+    const T* as(Value v)
+    {
+        return reinterpret_cast<const T*>(to_bits(v) & ~tag_mask);
+    }
+
+    // -- Forge a tagged Value from a data pointer and kind.
+    inline Value tag(const void* p, ValueKind k)
+    {
+        return Value{ reinterpret_cast<std::uint64_t>(p)
+                    | std::uint64_t(k) };
+    }
+
+    // -- Data nodes (headerless — no padding holes)
+    // Each node must be at least 8-byte aligned so that the
+    // low 3 bits of its address are structurally zero, available
+    // for the ValueKind tag.
+
+    struct alignas(8) SymbolData {
+        std::u8string_view name;        // interned in the Arena
+    };
+
+    struct alignas(8) IntegerData {
+        std::int64_t value;
+    };
+
+    struct alignas(8) FloatData {
+        double value;
+    };
+
+    struct alignas(8) StringData {
+        std::u8string_view text;        // interned in the Arena
+    };
+
+    struct alignas(8) ConsData {
+        Value car;
+        Value cdr;
+    };
+
+    // -- The canonical nil value.
+    inline constexpr Value nil = Value::nil;
+
+    // -- Predicates.
+    constexpr bool null(Value v)    { return v == nil; }
+    constexpr bool consp(Value v)   { return not null(v) and kind(v) == ValueKind::Cons; }
+    constexpr bool symbolp(Value v) { return not null(v) and kind(v) == ValueKind::Symbol; }
+    constexpr bool integerp(Value v){ return not null(v) and kind(v) == ValueKind::Integer; }
+    constexpr bool floatp(Value v)  { return not null(v) and kind(v) == ValueKind::Float; }
+    constexpr bool stringp(Value v) { return not null(v) and kind(v) == ValueKind::String; }
+    constexpr bool atomp(Value v)   { return not consp(v); }
+
+    // -- Car and cdr.
+    inline Value car(Value v) { return as<ConsData>(v)->car; }
+    inline Value cdr(Value v) { return as<ConsData>(v)->cdr; }
+
+    // -- Convenience: cadr, caddr, etc.
+    inline Value cadr(Value v)  { return car(cdr(v)); }
+    inline Value cddr(Value v)  { return cdr(cdr(v)); }
+    inline Value caddr(Value v) { return car(cddr(v)); }
+    inline Value caar(Value v)  { return car(car(v)); }
+    inline Value cdar(Value v)  { return cdr(car(v)); }
+
+    // -- Get the symbol name.
+    inline std::u8string_view symbol_name(Value v)
+    {
+        return as<SymbolData>(v)->name;
+    }
+
+    // -- Get the integer value.
+    inline std::int64_t integer_value(Value v)
+    {
+        return as<IntegerData>(v)->value;
+    }
+
+    // -- Get the string text.
+    inline std::u8string_view string_text(Value v)
+    {
+        return as<StringData>(v)->text;
+    }
+
+    // -- Test if a value is a symbol with the given name.
+    inline bool is_symbol(Value v, std::u8string_view name)
+    {
+        return symbolp(v) and symbol_name(v) == name;
+    }
+
+    // -- Test if a cons cell's car is a symbol with the given name.
+    inline bool is_tagged(Value v, std::u8string_view tag)
+    {
+        return consp(v) and is_symbol(car(v), tag);
+    }
+
+    // -- Length of a proper list.
+    std::uint32_t length(Value v);
+
+    // -- Iterate over the elements of a proper list.
+    template<typename Fn>
+    void for_each(Value lst, Fn fn)
+    {
+        while (consp(lst))
+        {
+            fn(car(lst));
+            lst = cdr(lst);
+        }
+    }
+
+    // -- Arena: factory for Lisp values
+    // All values are owned by an Arena.  Symbols and strings
+    // are interned so that equality can be tested by pointer
+    // comparison on the string_view data.
+    struct Arena {
+        Arena();
+
+        // -- Value constructors.
+        Value make_symbol(std::u8string_view name);
+        Value make_integer(std::int64_t value);
+        Value make_float(double value);
+        Value make_string(std::u8string_view text);
+        Value cons(Value car, Value cdr);
+
+        // -- List construction from a vector of elements.
+        Value list(std::initializer_list<Value> elems);
+        Value list(const std::vector<Value>& elems);
+
+        // -- Frequently used symbols (cached for efficiency).
+        Value T;                // T (true)
+        Value quote_sym;        // QUOTE
+        Value nil_sym;          // NIL (the symbol, not the value)
+
+    private:
+        // -- Interning tables.
+        std::unordered_map<std::u8string_view, Value> symbols;
+        std::forward_list<std::u8string> owned_strings;
+
+        // -- Storage pools.  forward_list gives stable addresses
+        // and automatic lifetime management.
+        std::forward_list<SymbolData> sym_pool;
+        std::forward_list<IntegerData> int_pool;
+        std::forward_list<FloatData> float_pool;
+        std::forward_list<StringData> str_pool;
+        std::forward_list<ConsData> cons_pool;
+
+        // -- Intern a string: return a stable u8string_view.
+        std::u8string_view intern_string(std::u8string_view s);
+    };
+
+    // -- Output: pretty-print a Lisp value
+
+    // -- Print a Lisp value as a Common Lisp S-expression.
+    // Symbols with lowercase or special characters are |bar|-quoted.
+    void print(std::ostream& os, Value v);
+
+    inline std::ostream& operator<<(std::ostream& os, Value v)
+    {
+        print(os, v);
+        return os;
+    }
+
+    // -- Condition evaluator for reader directives
+    // Evaluate a lowered Boot condition AST (from Boot::lower)
+    // in the context of a features list.  Used by the reader
+    // to process )if / )elseif conditions.
+    //
+    // Handles:
+    //   (%Call |%hasFeature| (kw-expr))  -- feature check
+    //   (%InfixExpr |and| lhs rhs)       -- logical and
+    //   (%InfixExpr |or| lhs rhs)        -- logical or
+    //   (%PrefixExpr |not| operand)       -- negation
+    //   NIL                               -- false
+    //   anything else                     -- true (non-nil)
+    bool eval_condition(Value v, Value features);
+
+}
+
+#endif  // OPENAXIOM_LISP_VALUE_included

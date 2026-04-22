@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2022, Gabriel Dos Reis.
+// -- Copyright (C) 2010-2022, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,7 @@
 #include <string.h>
 
 namespace OpenAxiom {
-   // ----------------
    // -- SystemError --
-   // ----------------
    SystemError::SystemError(const std::string& s) : text(s) { }
 
    SystemError::~SystemError() { }
@@ -75,7 +73,7 @@ namespace OpenAxiom {
    }
 
    namespace Memory {
-      // Return storage page allocation unit in byte count.
+      // -- Return storage page allocation unit in byte count.
       size_t page_size() {
 #if defined(_WIN32)
          SYSTEM_INFO si = { };
@@ -84,12 +82,12 @@ namespace OpenAxiom {
 #elif defined(HAVE_UNISTD_H)
          return sysconf(_SC_PAGESIZE);
 #else
-         // Well, we have to return a number.
+         // -- Well, we have to return a number.
          return 4096;
 #endif         
       }
 
-      // Subroutine of os_acquire_raw_memory.  Attempt to acquire
+      // -- Subroutine of os_acquire_raw_memory.  Attempt to acquire
       // storage from the host OS.  Return null on failure.
       static inline Pointer
       os_allocate_read_write_raw_memory(size_t nbytes) {
@@ -125,9 +123,7 @@ namespace OpenAxiom {
 #endif            
       }
 
-      // -------------
       // -- Storage --
-      // -------------
       struct Storage::Handle {
          size_t extent;         // count of allocated bytes
          void* start;           // beginning of usable address.
@@ -138,7 +134,7 @@ namespace OpenAxiom {
          return Storage::byte_address(h) + h->extent;
       }
 
-      // Acquire storage chunk of at least `n' bytes.
+      // -- Acquire storage chunk of at least `n' bytes.
       // The result is a pointer to a storage object.  That object
       // `result' is constructed such that `begin(result)' points
       // to the next allocatable address.
@@ -162,9 +158,7 @@ namespace OpenAxiom {
          return h->start;
       }
 
-      // -------------------------
       // -- SinglyLinkedStorage --
-      // -------------------------
       struct OneWayLinkHeader : Storage::Handle {
          Handle* previous;
       };
@@ -174,9 +168,7 @@ namespace OpenAxiom {
          return static_cast<OneWayLinkHeader*>(h)->previous;
       }
 
-      // -------------------------
       // -- DoublyLinkedStorage --
-      // -------------------------
       struct TwoWayLinkHeader : Storage::Handle {
          Handle* previous;
          Handle* next;
@@ -199,7 +191,7 @@ namespace OpenAxiom {
 
       DoublyLinkedStorage::Handle*
       DoublyLinkedStorage::acquire(size_t n, size_t a) {
-         // Add enough padding space for specified alignment.
+         // -- Add enough padding space for specified alignment.
          const size_t overhead = round_up(sizeof (TwoWayLinkHeader), a);
          TwoWayLinkHeader* h =
             acquire_storage_with_header<TwoWayLinkHeader>(overhead + n);
@@ -209,9 +201,7 @@ namespace OpenAxiom {
          return h;
       }
 
-      // ------------------
       // -- BlockStorage --
-      // ------------------
       struct BlockHeader : OneWayLinkHeader {
          Byte* available;
       };
@@ -226,9 +216,9 @@ namespace OpenAxiom {
          const size_t overhead = round_up(sizeof (BlockHeader), a);
          BlockHeader* h =
             acquire_storage_with_header<BlockHeader>(overhead + n);
-         // Remember the next available address to allocate from.
+         // -- Remember the next available address to allocate from.
          h->available = byte_address(h) + overhead;
-         // That is also where the actual object storage starts.
+         // -- That is also where the actual object storage starts.
          h->start = h->available;
          h->previous = nullptr;
          return h;
@@ -252,10 +242,8 @@ namespace OpenAxiom {
          return p;
       }
 
-      // -----------------
       // -- FileMapping --
-      // -----------------
-      FileMapping::FileMapping(std::string path)
+      FileMapping::FileMapping(const std::string& path)
       {
 #if defined(_WIN32)
          HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 
@@ -273,7 +261,7 @@ namespace OpenAxiom {
          HANDLE mapping = CreateFileMapping(file, 0, PAGE_READONLY, 0, 0, 0);
          if (mapping == 0)
             filesystem_error("could not map file " + path);
-         start = static_cast<Byte*>(MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
+         start = static_cast<std::byte*>(MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
          CloseHandle(mapping);
          CloseHandle(file);
 #elif defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_MMAN_H) && defined(HAVE_FCNTL_H)
@@ -292,9 +280,9 @@ namespace OpenAxiom {
             close(fd);
             return;
          }
-         start = static_cast<Byte*>(mmap(Pointer(), s.st_size, PROT_READ, MAP_SHARED, fd, 0));
+         start = static_cast<std::byte*>(mmap(Pointer(), s.st_size, PROT_READ, MAP_SHARED, fd, 0));
          close(fd);
-         if (start == MAP_FAILED)
+         if (start == static_cast<std::byte*>(MAP_FAILED))
             filesystem_error("could not map file " + path);
 #else
 #  error "Don't know how to map a file on this platform"         
@@ -302,12 +290,14 @@ namespace OpenAxiom {
       }
 
       FileMapping::FileMapping(FileMapping&& f)
-            : start(f.start), extent(f.extent) {
+            : start{ f.start }, extent{ f.extent }
+      {
          f.start = nullptr;
          f.extent = 0;
       }
 
-      FileMapping::~FileMapping() {
+      FileMapping::~FileMapping()
+      {
          if (start != nullptr) {
 #if defined(_WIN32)
             UnmapViewOfFile(start);

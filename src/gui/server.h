@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013, Gabriel Dos Reis.
+// -- Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -60,7 +60,7 @@ namespace OpenAxiom {
    };   
 }
 
-// Local Variables:
+// -- Local Variables:
 // mode: c++
 // End:
 
