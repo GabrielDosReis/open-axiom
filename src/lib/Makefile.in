@@ -35,6 +35,7 @@ core_SOURCES = \
 	cfuns-c.cxx \
 	sockio-c.cxx \
 	../utils/storage.cxx \
+	../io/charset.cxx \
 	../io/std-streams.cxx \
 	../io/InputFragment.cxx \
 	../syntax/token.cxx \
