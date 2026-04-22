@@ -61,7 +61,7 @@
 namespace fs = std::filesystem;
 
 namespace OpenAxiom {
-   // Make a copy of string data on free store.
+   // -- Make a copy of string data on free store.
    static char*
    copy_c_str(const std::string& s) {
       return strdup(s.c_str());
@@ -203,7 +203,7 @@ writeablep(const char* path)
    DWORD attributes = GetFileAttributes(path);
    if (attributes == INVALID_FILE_ATTRIBUTES)
    {
-      // The file does not exist, so check to see if the directory is writable.
+      // -- The file does not exist, so check to see if the directory is writable.
       auto dir = oa_dirname(path);
       auto result = axiom_has_write_access(dir);
       LocalFree(dir);

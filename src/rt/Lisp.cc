@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2014, Gabriel Dos Reis.
+// -- Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -31,6 +31,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <open-axiom/Lisp>
+#include <open-axiom/Charset>
 #include <typeinfo>
 #include <ostream>
 #include <sstream>
@@ -53,7 +54,7 @@ namespace OpenAxiom {
       { }
 
       static void unbound_function_symbol_error(const Symbol* sym) {
-         std::string s { sym->name->begin(), sym->name->end() };
+         std::string s { as_chars({ sym->name->begin(), sym->name->size() }) };
          throw UnboundFunctionSymbol(s + " has no function definition");
       }
       
@@ -119,7 +120,8 @@ namespace OpenAxiom {
 
       static void
       integer_too_large(const Sexpr::IntegerSyntax& x) {
-         std::string s { x.lexeme().begin(), x.lexeme().end() };
+         auto sv = as_chars({ x.lexeme().begin(), x.lexeme().size() });
+         std::string s { sv };
          throw IntegerOverflow{ s + " is too large for Fixnum; max value is "
                + std::to_string(FixnumBits(Fixnum::maximum)) };
       }
@@ -133,11 +135,11 @@ namespace OpenAxiom {
          auto cur = x.lexeme().begin();
          FixnumBits val = 0;
          switch (*cur) {
-         case '-': neg = true;
-         case '+': ++cur;
+         case u8'-': neg = true;
+         case u8'+': ++cur;
          default:
             for (; cur < x.lexeme().end(); ++cur) {
-               auto d = *cur - '0';
+               auto d = *cur - u8'0';
                if (val < fixmax_by_ten)
                   val = 10 * val + d;
                else if (val > fixmax_by_ten or d > fixmax_lsd)
@@ -236,33 +238,35 @@ namespace OpenAxiom {
 
       static std::string
       canonical_name(const Sexpr::SymbolSyntax& x) {
-         if (x.kind() & Sexpr::SymbolSyntax::absolute)
-            return { x.begin(), x.end() };
+         if (x.kind() & Sexpr::SymbolSyntax::absolute) {
+            auto sv = as_chars({ x.begin(), x.size() });
+            return { sv.begin(), sv.end() };
+         }
          const auto sz = x.size();
          std::string s(sz, char{ });
          for (std::size_t i = 0; i < sz; ++i)
-            s[i] = toupper(x[i]);
+            s[i] = toupper(static_cast<char>(x[i]));
          return s;
       }
 
-      // Return the (global) symbol value
+      // -- Return the (global) symbol value
       static Symbol*
       retrieve_symbol(Evaluator* ctx, const Sexpr::SymbolSyntax& x) {
          const auto s = canonical_name(x);
          auto name = ctx->intern(s.c_str());
          if (x.kind() & Sexpr::SymbolSyntax::keyword)
             return ctx->make_keyword(name);
-         // Note: Uninterned symbols are always distincts;
+         // -- Note: Uninterned symbols are always distincts;
          else if (x.kind() & Sexpr::SymbolSyntax::uninterned)
             unbound_symbol_error(s);
-         // FIXME: if this is a qualified symbol, lookup in its home.
+         // -- FIXME: if this is a qualified symbol, lookup in its home.
          else if (auto symbol = ctx->current_package()->find_symbol(name))
             return symbol;
          unbound_symbol_error(s);
          return nullptr;
       }
 
-      // Return the value designated by this symbol.
+      // -- Return the value designated by this symbol.
       static Value
       evaluate(Evaluator* ctx, const Sexpr::SymbolSyntax& x) {
          const auto s = canonical_name(x);
@@ -279,7 +283,7 @@ namespace OpenAxiom {
          return symbol->value;
       }
 
-      // Return the denotation of a sharp-apostrophe syntax.
+      // -- Return the denotation of a sharp-apostrophe syntax.
 
       static const Callable*
       symbol_function(Evaluator* ctx, const Sexpr::SymbolSyntax& s) {
@@ -324,7 +328,7 @@ namespace OpenAxiom {
             return Value::nil;
          auto s = dynamic_cast<const Sexpr::SymbolSyntax*>(x.front());
          if (s == nullptr)
-            // FIXME: real error
+            // -- FIXME: real error
             unimplemented(x);
          if (auto op = special_operator(*s))
             return op(ctx, x);
@@ -472,9 +476,9 @@ namespace OpenAxiom {
       static void format(String s, std::ostream& os) {
          os << '"';
          for (auto c : *s) {
-            if (c == '"')
+            if (c == u8'"')
                os << '\\';
-            os << char(c);
+            os << static_cast<char>(c);
          }
          os << '"';
       }
@@ -503,14 +507,12 @@ namespace OpenAxiom {
             std::ostream& os;
             V(std::ostream& s) : os(s) { }
             void visit(const Symbol& s) {
-               // FIXME: handle escapes.
-               std::copy(s.name->begin(), s.name->end(),
-                         std::ostream_iterator<char>(os));
+               // -- FIXME: handle escapes.
+               os << as_chars({ s.name->begin(), s.name->size() });
             }
             void visit(const Package& p) {
                os << "#<PACKAGE ";
-               std::copy(p.name->begin(), p.name->end(),
-                         std::ostream_iterator<char>(os));
+               os << as_chars({ p.name->begin(), p.name->size() });
                os << '>';
             }
             void visit(const FunctionBase& f) {

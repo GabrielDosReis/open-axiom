@@ -71,7 +71,7 @@ bootsys_SOURCES = \
 	translator.boot
 
 bemol_SOURCES = \
-	bemol.cc
+	bemol.cxx
 
 bemol_LDADD = \
 	$(oa_target_libdir)/libOpenAxiom.a \

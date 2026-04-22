@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2010-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -38,24 +38,24 @@
 #ifndef OPENAXIOM_FILEMAPPING_included
 #define OPENAXIOM_FILEMAPPING_included
 
-#include <open-axiom/storage>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
 namespace OpenAxiom {
    namespace Memory {
-      // -----------------
       // -- FileMapping --
-      // -----------------
       struct FileMapping {
-         explicit FileMapping(std::string);
+         explicit FileMapping(const std::string&);
          FileMapping(FileMapping&&);
          ~FileMapping();
-         const Byte* begin() const { return start; }
-         const Byte* end() const { return begin() + extent; }
+         const std::byte* begin() const { return start; }
+         const std::byte* end() const { return start + extent; }
          std::size_t size() const { return extent; }
          bool empty() const { return size() == 0; }
       protected:
-         Byte* start { };           // address at the mapped storage
-         size_t extent { };         // length (in bytes) of the storage
+         std::byte* start { };      // address of the mapped storage
+         std::size_t extent { };    // length (in bytes) of the storage
       private:
          FileMapping(const FileMapping&) = delete;
          FileMapping& operator=(const FileMapping&) = delete;

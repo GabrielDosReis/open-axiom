@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// -- Copyright (C) 2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -49,9 +49,10 @@
 #include <vector>
 #include <map>
 #include <open-axiom/storage>
+#include <open-axiom/Charset>
 #include <open-axiom/FileMapping>
 
-// Workaround lack of standard streaming operation for std::u8string.
+// -- Workaround lack of standard streaming operation for std::u8string.
 static std::ostream& print(std::ostream& os, const std::u8string& s)
 {
    constexpr auto cast = [](auto p) { return reinterpret_cast<const char*>(&*p); };
@@ -60,43 +61,35 @@ static std::ostream& print(std::ostream& os, const std::u8string& s)
 }
 
 namespace OpenAxiom::Hammer {
-   // -------------
    // -- Element --
-   // -------------
    // Base class of document elements.
    struct Element {
       virtual ~Element() = default;
    };
 
-   // ---------------
    // -- BasicText --
-   // ---------------
    // Plain text, with no reference to any chunk.  
    struct BasicText : Element {
       BasicText(const char8_t* f, const char8_t* l) : span(f, l) { }
-      // Pointer to the start of this basic text element
+      // -- Pointer to the start of this basic text element
       const char8_t* begin() const { return span.first; }
-      // One-past-the-end of the this basic text element.
+      // -- One-past-the-end of the this basic text element.
       const char8_t* end() const { return span.second; }
    private:
       std::pair<const char8_t*, const char8_t*> span;
    };
 
-   // ---------------
    // -- Reference --
-   // ---------------
    // Reference to a a chunk by name.
    struct Reference : Element {
       explicit Reference(const std::u8string& s) : label(s) { }
-      // Naame of the chunk referenced.
+      // -- Naame of the chunk referenced.
       const std::u8string& name() const { return label; }
    private:
       const std::u8string label;
    };
 
-   // -------------------
    // -- CompositeText --
-   // -------------------
    // Sequence of basic elements and reference to chunks.
    struct CompositeText: private std::vector<const Element*> {
       typedef std::vector<const Element*> base;
@@ -106,7 +99,7 @@ namespace OpenAxiom::Hammer {
       using base::size;
       using base::operator[];
 
-      // Augment this chunk with a basic text in the open interval
+      // -- Augment this chunk with a basic text in the open interval
       // [f,l).
       CompositeText& add_text(const char8_t* f, const char8_t* l) {
          texts.push_back(BasicText(f, l));
@@ -114,7 +107,7 @@ namespace OpenAxiom::Hammer {
          return *this;
       }
 
-      // Augment this chunk with a reference to another chunk
+      // -- Augment this chunk with a reference to another chunk
       // named `n'.  Note that we don't attempt to check for
       // possible circularities.
       CompositeText reference_chunk(const char8_t* f, const char8_t* l) {
@@ -128,9 +121,7 @@ namespace OpenAxiom::Hammer {
       std::list<Reference> refs;
    };
 
-   // --------------
    // -- Document --
-   // --------------
    // A whole document; a sequence of chunks.
    struct Document : std::list<CompositeText> {
       Document(const Memory::FileMapping& file)
@@ -140,7 +131,7 @@ namespace OpenAxiom::Hammer {
          parse(file);
       }
 
-      // Return a pointer to a document chunk name `n'.
+      // -- Return a pointer to a document chunk name `n'.
       // Otherwise, return null.
       CompositeText* lookup_chunk(const std::u8string& n) const {
          ChunkTable::const_iterator i = defs.find(n);
@@ -154,7 +145,7 @@ namespace OpenAxiom::Hammer {
       CompositeText* active_chunk; // chunk under construction.
       const char8_t* text_start;      // begining of current basic text.
 
-      // Append basic text in the range `[text_start,last)'
+      // -- Append basic text in the range `[text_start,last)'
       // to the current chunk.
       void finish_chunk(const char8_t* last) {
          if (text_start != last)
@@ -163,7 +154,7 @@ namespace OpenAxiom::Hammer {
          text_start = last;
       }
 
-      // Start a new chunk or extend an existing chunk.
+      // -- Start a new chunk or extend an existing chunk.
       void begin_chunk(const std::u8string& name, const char8_t* start) {
          if (CompositeText* chunk = lookup_chunk(name))
             active_chunk = chunk;
@@ -174,17 +165,17 @@ namespace OpenAxiom::Hammer {
          text_start = start;
       }
 
-      // Parse a file mapping into this document.
+      // -- Parse a file mapping into this document.
       void parse(const Memory::FileMapping&);
    };
 
-   // Return true if the character `c' introduces a newline.
+   // -- Return true if the character `c' introduces a newline.
    static inline bool
    looking_at_newline(char8_t c) {
       return c == u8'\n' or c == u8'\r';
    }
 
-   // Attempt to advance the cursor past newline marker.
+   // -- Attempt to advance the cursor past newline marker.
    // Return true on sucess.
    static bool
    saw_newline(const char8_t*& cur, const char8_t* end) {
@@ -200,17 +191,17 @@ namespace OpenAxiom::Hammer {
       return false;
    }
 
-   // Move `cur' to end of line or `end', whichever comes first.
+   // -- Move `cur' to end of line or `end', whichever comes first.
    // Return true if the area swept consisted only of blank characters.
    static inline bool
    trailing_blank(const char8_t*& cur, const char8_t* end) {
       bool result = true;
       for (; cur < end and not saw_newline(cur, end); ++cur)
-         result = isspace(*cur);
+         result = ascii_space(*cur);
       return result;
    }
 
-   // Attempt to advance `cur' past the double left angle brackets
+   // -- Attempt to advance `cur' past the double left angle brackets
    // starting a chunk name.  Returm true on success.
    static bool
    chunk_name_began(const char8_t*& cur, const char8_t* end) {
@@ -221,7 +212,7 @@ namespace OpenAxiom::Hammer {
       return false;
    }
 
-   // Attempt to move `cur' past the double right angle brackets
+   // -- Attempt to move `cur' past the double right angle brackets
    // terminating a chunk name.  Returm true on success.
    static bool
    chunk_name_ended(const char8_t*& cur, const char8_t* end) {
@@ -232,7 +223,7 @@ namespace OpenAxiom::Hammer {
       return false;
    }
 
-   // We've just seen the start of a chunk reference; skip
+   // -- We've just seen the start of a chunk reference; skip
    // characters till we seen of the chunk's name.
    static void
    skip_to_end_of_chunk_name(const char8_t*& cur, const char8_t* end) {
@@ -244,7 +235,7 @@ namespace OpenAxiom::Hammer {
       }
    }
 
-   // Move the cursor until end of line.
+   // -- Move the cursor until end of line.
    static void
    skip_to_end_of_line(const char8_t*& cur, const char8_t* end) {
       while (cur < end) {
@@ -258,15 +249,15 @@ namespace OpenAxiom::Hammer {
    Document::parse(const Memory::FileMapping& file) {
       auto cur = text_start;
       auto last = reinterpret_cast<const char8_t*>(file.end());
-      // Process one line at a time.
+      // -- Process one line at a time.
       while (cur < last) {
-         // 1. `@' ends previous chunk
+         // -- 1. `@' ends previous chunk
          if (*cur == u8'@') {
             auto p = cur;
             if (trailing_blank(++cur, last))
                finish_chunk(p);
          }
-         // 2. `<<' introduces a chunk reference or a chunk definition.
+         // -- 2. `<<' introduces a chunk reference or a chunk definition.
          else if (chunk_name_began(cur, last)) {
             auto label_start = cur;
             skip_to_end_of_chunk_name(cur, last);
@@ -274,13 +265,13 @@ namespace OpenAxiom::Hammer {
                auto label_end = cur - 2;
                if (cur < last and *cur == u8'=') {
                   if (trailing_blank(++cur, last)) {
-                     // chunk definition or extension
+                     // -- chunk definition or extension
                      finish_chunk(label_start - 2);
                      begin_chunk(std::u8string(label_start, label_end), cur);
                   }
                }
                else if (trailing_blank(cur, last)) {
-                  // This is just a reference to a chunk.
+                  // -- This is just a reference to a chunk.
                   active_chunk->add_text(text_start, label_start - 2);
                   active_chunk->reference_chunk(label_start, label_end);
                   text_start = cur;
@@ -295,7 +286,7 @@ namespace OpenAxiom::Hammer {
       finish_chunk(cur);
    }
 
-   // Capture  chunk resolution in a document.
+   // -- Capture  chunk resolution in a document.
    struct resolve_chunk {
       resolve_chunk(const std::u8string& s, const Document& f)
             : name(s), doc(f) { }
@@ -303,10 +294,10 @@ namespace OpenAxiom::Hammer {
       const Document& doc;    // document containing the chunk.
    };
 
-   // Print the resolution of a chunk name onto an output stream.
+   // -- Print the resolution of a chunk name onto an output stream.
    std::ostream&
    operator<<(std::ostream& os, const resolve_chunk& rc) {
-      // FIXME: no attempt at detecting circularities.
+      // -- FIXME: no attempt at detecting circularities.
       const CompositeText* doc = rc.doc.lookup_chunk(rc.name);
       if (doc == 0) {
          print(std::cerr << "chunk ", rc.name) << " is undefined" << std::endl;
@@ -328,13 +319,13 @@ namespace OpenAxiom::Hammer {
       return os;
    }
 
-   // Return true if the `arg' is the option named`opt'.
+   // -- Return true if the `arg' is the option named`opt'.
    static inline bool
    is_option(const char* arg, const char* opt) {
       return strcmp(arg, opt) == 0;
    }
 
-   // `arg' is a argument on the command line.  If `arg'
+   // -- `arg' is a argument on the command line.  If `arg'
    // does not match option name `opt', return null.  Otherwise,
    // return a pointer to the terminating NUL character if there
    // is no specified value for that option, or a pointer to the
@@ -343,7 +334,7 @@ namespace OpenAxiom::Hammer {
    is_named_arg(const char* arg, const char* opt) {
       const int n = strlen(opt);
       int i = 0;
-      // Get out if argion name does not match.
+      // -- Get out if argion name does not match.
       // Note:  Ideally, we could use strncmp().  However, that
       // function is not available in C++98, so we cannot depend on it.
       for (; i < n ; ++i)
@@ -364,7 +355,7 @@ main(int argc, char* argv[]) {
    const char* chunk = nullptr;      // chunck to tangle
    const char* output_path = nullptr; // path to the output file
    const char* input_path = nullptr;  // path to the input file.
-   // 1. Process command line arguments.
+   // -- 1. Process command line arguments.
    for (int pos = 1; error_count == 0 and pos < argc; ++pos) {
       if (const char* val = is_named_arg(argv[pos], "--tangle")) {
          if (chunk != 0) {
@@ -394,7 +385,7 @@ main(int argc, char* argv[]) {
          input_path = argv[pos];
    }
 
-   // 2. Basic sanity check.
+   // -- 2. Basic sanity check.
    if (input_path == 0) {
       std::cerr << "missing input file" << std::endl;
       return 1;
@@ -411,7 +402,7 @@ main(int argc, char* argv[]) {
    if (error_count != 0)
       return 1;
 
-   // 3. Attempt to extract the chunk.
+   // -- 3. Attempt to extract the chunk.
    try {
       OpenAxiom::Memory::FileMapping file(input_path);
       std::ofstream os(output_path);

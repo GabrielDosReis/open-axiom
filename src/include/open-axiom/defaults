@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -43,13 +43,13 @@ namespace OpenAxiom {
    // -- known as `based class parameterized by derived classes', or
    // -- `curiously recurring pattern'.
    namespace defaults {
-      // generate definition for != assuming existence of ==.
+      // -- generate definition for != assuming existence of ==.
       template<typename t>
       struct neq {
          friend bool operator!=(t x, t y) { return not(x == y); }
       };
 
-      // generate definitions for ordering functions assuming <.
+      // -- generate definitions for ordering functions assuming <.
       template<typename t>
       struct ordering {
          friend bool operator<=(t x, t y) { return not(y < x); }

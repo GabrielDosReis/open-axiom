@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2016-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -35,15 +35,33 @@
 #define OPENAXIOM_PARSER_included
 
 #include <string>
+#include <vector>
+
+#include <open-axiom/token>
+#include <open-axiom/SyntaxTree>
 
 namespace OpenAxiom {
-   // Translate a Boot input source code to a Lisp source code.
+   // -- Translate a Boot input source code to a Lisp source code.
    // Both parameters point to the pathnames of the input source file
    // and the output source file, respectively.  Return zero on success.
    extern "C" int boot_to_lisp(const char*, const char*);
 
+   namespace Boot {
+      // -- Parse all top-level forms from a token stream into the given
+      // forest.  Returns a vector of NodeIndex handles for each
+      // top-level form.
+      std::vector<Syntax::NodeIndex> parse_boot(
+         const std::vector<Token>&, Syntax::SyntaxForest&);
+
+      // -- Parse all top-level forms from a Spad token stream.
+      // If `consumed` is non-null, stores the number of tokens consumed.
+      std::vector<Syntax::NodeIndex> parse_spad(
+         const std::vector<Token>&, Syntax::SyntaxForest&,
+         std::size_t* consumed = nullptr);
+   }
+
    namespace Error {
-      // Exception type for filesystem error.
+      // -- Exception type for filesystem error.
       struct CannotOpenFile {
          std::string path;
       };

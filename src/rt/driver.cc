@@ -1,4 +1,4 @@
-// Copyright (C) 2014, Gabriel Dos Reis.
+// -- Copyright (C) 2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -40,7 +40,7 @@ static OpenAxiom::Sexpr::RawInput
 raw_input(const std::string& line, OpenAxiom::Ordinal lineno) {
    if (line.empty())
       return { nullptr, nullptr, lineno };
-   auto p = reinterpret_cast<const OpenAxiom::Byte*>(&line[0]);
+   auto p = reinterpret_cast<const char8_t*>(&line[0]);
    return { p, p + line.size(), lineno };
 }
 

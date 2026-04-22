@@ -491,7 +491,7 @@ wait_for_client_write(openaxiom_sio* sock, const Byte* buf,
   }
 }
 
-// Prefix a message with a given string for diagnostic purposes.
+// -- Prefix a message with a given string for diagnostic purposes.
 static std::string diagnostic(const char* prefix, const char* msg)
 {
   std::string s = prefix;

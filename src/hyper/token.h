@@ -48,18 +48,18 @@
 #define BACKSPACE  0002
 
 namespace OpenAxiom {
-  // The category of enumeration types.
+  // -- The category of enumeration types.
   template<typename T>
   concept EnumType = std::is_enum_v<T>;
 
-  // Return the underlying integer value of an enumeration value.
+  // -- Return the underlying integer value of an enumeration value.
   template<EnumType T>
   constexpr auto rep(T t)
   {
      return static_cast<std::underlying_type_t<T>>(t);
   }
 
-   // User tokens. ie, these can be found on a page
+   // -- User tokens. ie, these can be found on a page
    enum class TokenType : int {
       Word = 1,
       Page = 2,
@@ -161,7 +161,7 @@ namespace OpenAxiom {
       Controlbitmap = 98,
       NumberUserTokens = 98,
       
-      // Here are the system tokens. These are used internally to help
+      // -- Here are the system tokens. These are used internally to help
       // with parsing and displaying of text
       SystemTokens = 1001,
       Lbrace = 1001,
@@ -199,7 +199,7 @@ namespace OpenAxiom {
       Scrollupbutton = 1033,
       Scrolldownbutton = 1034,
 
-      // Here are the tokens used to mark the end to some sort of group of
+      // -- Here are the tokens used to mark the end to some sort of group of
       // tokens. ie, the tokens found in a centerline command
       Endtokens = 2000,
       End1 = 2001,
@@ -237,7 +237,7 @@ namespace OpenAxiom {
       Endpaste = 4029,
       Endspadsrc = 4030,
 
-      // Types of HyperDoc pages
+      // -- Types of HyperDoc pages
       UlUnknownPage = 9993, /*I hate this hack, but I have to know whether*/
       UnknownPage = 9994, /*this page has been loaded or not.           */
       ErrorPage = 9995,
@@ -247,7 +247,7 @@ namespace OpenAxiom {
       UnloadedPageType = 9999,
    };
 
-   // Commands from the server.
+   // -- Commands from the server.
    // See also interp/hypertex.boot and interp/nhyper.boot
    enum class HyperCommand : int {
       SpadError = 90,
@@ -283,7 +283,7 @@ enum class SourceInputKind {
 };
 
 namespace OpenAxiom {
-  // Basic error type in the Hyper component.
+  // -- Basic error type in the Hyper component.
   struct HyperError { };
 }
 

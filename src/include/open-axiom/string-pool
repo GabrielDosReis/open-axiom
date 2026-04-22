@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2010-2015, Gabriel Dos Reis.
 // All rights reserved.
 //
@@ -43,25 +43,21 @@
 namespace OpenAxiom {
    struct StringPool;
 
-   // ----------------
    // -- StringItem --
-   // ----------------
    // String data allocated from a stringpool.
    struct StringItem {
-      const Byte* begin() const { return text; }
-      const Byte* end() const { return text + length; }
+      const char8_t* begin() const { return text; }
+      const char8_t* end() const { return text + length; }
       size_t size() const { return length; }
-      bool equal(const Byte*, size_t) const;
+      bool equal(const char8_t*, size_t) const;
    protected:
-      const Byte* text;         // pointer to the byte sequence
-      size_t length;            // number of bytes in this string
+      const char8_t* text;      // pointer to the character sequence
+      size_t length;            // number of characters in this string
       friend StringPool;
       StringItem() : text(), length() { }
    };
 
-   // ----------------
    // -- StringPool --
-   // ----------------
    // A string-pool object is a repository of long-living string objects.
    // It contains no duplicates, therefore allows  fast equality 
    // comparison of string objects.
@@ -69,15 +65,15 @@ namespace OpenAxiom {
       using BasicHashTable<StringItem>::EntryType;
 
       StringPool();
-      // Intern a NUL-terminated sequence of characters.
+      // -- Intern a NUL-terminated sequence of characters.
       EntryType* intern(const char*);
 
-      // Intern a sequence of characters given by its start and length.
-      EntryType* intern(const Byte*, size_t);
+      // -- Intern a sequence of characters given by its start and length.
+      EntryType* intern(const char8_t*, size_t);
    private:
-      Memory::Arena<Byte> strings; // character blub
-      // Allocate a string from the internal arena.
-      const Byte* make_copy(const Byte*, size_t);
+      Memory::Arena<char8_t> strings; // character storage
+      // -- Allocate a string from the internal arena.
+      const char8_t* make_copy(const char8_t*, size_t);
    };
 
    using InternedString = const StringPool::EntryType*;

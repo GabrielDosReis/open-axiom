@@ -1,10 +1,9 @@
 # Linux: GCC 15 + Clozure CL (standard FASL path)
 name: 'CI: Linux GCC+CCL'
 on:
-  push:
-    branches: [master, cmake-migration-proposal]
-  pull_request:
-    branches: [master]
+  schedule:
+    - cron: '0 3 * * *'  # nightly at 03:00 UTC
+  workflow_dispatch:
 jobs:
   build:
     uses: ./.github/workflows/ci-linux-build.yml

@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2013-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -36,14 +36,14 @@
 
 #include <cstdint>
 #include <limits>
-#include <stack>
 #include <iosfwd>
 #include <string_view>
+#include <open-axiom/Charset>
 #include <open-axiom/dialect>
 #include <open-axiom/InputFragment>
 
 namespace OpenAxiom {
-   // Categorization of Boot and Spad tokens.
+   // -- Categorization of Boot and Spad tokens.
    enum class TokenCategory : std::uint8_t {
       Unclassified,             // token of unknown class
       Whitespace,               // white-space characters
@@ -62,7 +62,7 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, TokenCategory);
 
-   // The abstract value associated with a token.
+   // -- The abstract value associated with a token.
    // Note: All token values are within the bound of an 8-bit integer.
    enum class TokenValue : std::uint8_t {
 #undef OPENAXIOM_DEFINE_TOKEN
@@ -85,13 +85,13 @@ namespace OpenAxiom {
       return std::uint32_t(t) & 0x00FFFFFF;
    }
 
-   // Program text region, with a fragment.
+   // -- Program text region, with a fragment.
    struct Region {
       FragmentCursor start;
       FragmentCursor end;
    };
 
-   // Given a symbolic or alphabetic token, retrieve its category
+   // -- Given a symbolic or alphabetic token, retrieve its category
    // and associated abstract value.
    struct TokenClassification {
       TokenCategory category;
@@ -102,9 +102,9 @@ namespace OpenAxiom {
       }
    };
 
-   TokenClassification classify(std::string_view);
+   TokenClassification classify(std::string_view, Language = Language::All);
 
-   // Token data structure: a region of text with a classification.
+   // -- Token data structure: a region of text with a classification.
    struct Token : Region, TokenClassification { };
 
    // -- Exception types
@@ -118,15 +118,36 @@ namespace OpenAxiom {
       ColumnIndex column;
    };
 
-   // Object of this datatype decompose a program fragment into a
+   // -- Object of this datatype decomposes a program fragment into a
    // token stream.  The tokens are of type indicated by Tok.
+   //
+   // The tokenizer produces raw tokens (identifiers, operators,
+   // literals, whitespace, comments, etc.) but does NOT emit
+   // formatting tokens (Indent/Justify/Unindent).  Formatting
+   // structure is added by the separate pile() phase, which mirrors
+   // the algorithm of pile.boot.
+   //
+   // Line continuation:
+   //   A trailing underscore at the very end of a line (e.g. `and_`)
+   //   signals that the next physical line continues the current
+   //   logical line.  In that case, the tokenizer simply advances
+   //   to the next line and continues lexing as if no line break
+   //   occurred.
    template<typename Tok>
    struct Tokenizer {
       Tokenizer(const Fragment& f)
             : frag(f),
               pos{ 0, frag.front().indent }
       {
-         indents.push(pos);
+         // -- Skip leading Meta/Ignorable lines so the tokenizer
+         // never produces tokens for reader/system commands.
+         while (pos.line < frag.size()
+                and (frag[pos.line].kind == LineKind::Meta
+                     or frag[pos.line].kind == LineKind::Ignorable)) {
+            ++pos.line;
+         }
+         if (pos.line < frag.size())
+            pos.column = frag(pos).indent;
       }
 
       bool eos() const
@@ -138,7 +159,6 @@ namespace OpenAxiom {
    private:
       const Fragment& frag;
       FragmentCursor pos;
-      std::stack<FragmentCursor> indents;
 
       std::size_t line_length() const { return frag(pos).size(); }
 
@@ -149,21 +169,13 @@ namespace OpenAxiom {
       Tok finish(Tok&, Language);
    };
 
-   bool separator_or_punctuator(std::uint8_t);
+   bool separator_or_punctuator(char8_t);
 
    template<typename T>
    inline void comment_token(T& t, TokenValue v)
    {
       t.category = TokenCategory::Comment;
       t.value = v;
-   }
-
-   template<typename T>
-   inline T& formatting_token(T& t, TokenValue v)
-   {
-      t.category = TokenCategory::Formatting;
-      t.value = v;
-      return t;
    }
 
    template<typename T>
@@ -222,7 +234,7 @@ namespace OpenAxiom {
       while (frag.covering(pos) && not done) {
          switch (frag(pos)[pos.column++]) {
          case '"': done = !escape;
-            // fallthrough
+            // -- fallthrough
          default: escape = false; break;
          case '_':
             if (pos.column == frag(pos).size()
@@ -243,13 +255,25 @@ namespace OpenAxiom {
    template<typename L>
    void skip_to_end_of_integer(L& line, ColumnIndex& idx)
    {
-      while (idx < line.size() and isdigit(line[idx]))
+      while (idx < line.size() and ascii_digit(line[idx]))
+         ++idx;
+   }
+
+   template<typename L>
+   void skip_radix_digits(L& line, ColumnIndex& idx)
+   {
+      while (idx < line.size() and ascii_xdigit(line[idx]))
          ++idx;
    }
    
-   static bool next_line(const Fragment& frag, FragmentCursor& pos)
+   inline bool next_line(const Fragment& frag, FragmentCursor& pos)
    {
-      if (++pos.line < frag.size()) {
+      while (++pos.line < frag.size()) {
+         // -- Skip comment-only and reader/system lines so they
+         // don't affect indentation or produce tokens.
+         if (frag[pos.line].kind == LineKind::Ignorable
+             or frag[pos.line].kind == LineKind::Meta)
+            continue;
          pos.column = frag(pos).indent;
          return true;
       }
@@ -265,12 +289,20 @@ namespace OpenAxiom {
    }
 
    template<typename L, typename T>
-   T& number(L& line, ColumnIndex& idx, T& t)
+   T& number(L& line, ColumnIndex& idx, T& t, Language dialect = Language::Boot)
    {
       integer(line, idx, t);
+      // -- Spad radix notation: NNrDDD (e.g. 16rFF, 2r1010).
+      if (dialect == Language::Spad
+          and idx < line.size() and line[idx] == 'r')
+      {
+         ++idx;
+         skip_radix_digits(line, idx);
+         return t;
+      }
       if (idx >= line.size() or line[idx] != '.')
          return t;
-      if (++idx >= line.size() or not isdigit(line[idx])) {
+      if (++idx >= line.size() or not ascii_digit(line[idx])) {
          --idx;
          return t;
       }
@@ -281,43 +313,77 @@ namespace OpenAxiom {
          return t;
       if (++idx < line.size() and (line[idx] == '+' or line[idx] == '-'))
          ++idx;
-      if (idx >= line.size() or not isdigit(line[idx]))
+      if (idx >= line.size() or not ascii_digit(line[idx]))
          throw MissingExponent{ line.number, idx };
       skip_to_end_of_integer(line, idx);
       return t;
    }
 
    inline bool
-   identifier_head(std::uint8_t c)
+   identifier_head(char8_t c)
    {
-      return isalpha(c) or c == '%' or c == '_';
+      return ascii_alpha(c) or c == u8'%' or c == u8'_';
    }
 
    inline bool
-   identifier_part(uint8_t c)
+   identifier_part(char8_t c)
    {
-      return identifier_head(c) or isdigit(c);
+      return identifier_head(c) or ascii_digit(c);
    }
 
    inline bool
-   identifier_suffix(std::uint8_t c)
+   identifier_suffix(char8_t c)
    {
-      return c == '!' or c == '?';
+      return c == u8'!' or c == u8'?';
    }
 
-   inline bool internal_prefix(std::uint8_t c)
+   inline bool internal_prefix(char8_t c)
    {
-      return c == '%' or c == '$';
+      return c == u8'%' or c == u8'$';
    }
 
    template<typename L>
    inline void
-   skip_prefix(L& line, ColumnIndex& idx, std::uint8_t c)
+   skip_prefix(L& line, ColumnIndex& idx, char8_t c)
    {
       while (idx < line.size() and line[idx] == c)
          ++idx;
    }
 
+   // -- Scan an identifier or keyword token.
+   //
+   // Boot identifiers may contain:
+   //   - Head characters: alpha, '%', '_'
+   //   - Continuation characters: head chars + digits
+   //   - Apostrophe (Boot only): e.g. x' or don't
+   //   - Suffix characters: '!' or '?'
+   //   - Internal prefix '$' or '%' for system names: $foo, %thing
+   //
+   // Underscore serves double duty:
+   //   - Inside an identifier, underscore is an escape character that
+   //     allows the next character to be included literally.  This is
+   //     how Boot spells identifiers containing special characters,
+   //     e.g. _+ means the identifier "plus" spelled as the literal
+   //     character '+'.  When an escape is seen, keyword classification
+   //     is suppressed (the escaped identifier is always treated as a
+   //     user identifier, never a keyword).
+   //   - At the very end of a line, underscore is NOT part of the
+   //     identifier; it is a line-continuation marker that the
+   //     tokenizer's `get()` method processes separately.  For example,
+   //     in the Boot source:
+   //         (cons? first u             and_
+   //          CAAR u isnt [.,:.]        and_
+   //          ...
+   //     each `and_` at end-of-line means "keyword `and` followed by
+   //     a continuation underscore".  If the identifier scanner were
+   //     to consume the trailing underscore, the tokenizer would see
+   //     `and_` as a single identifier instead of the keyword `and`,
+   //     and the continuation semantics would be lost.
+   //
+   // After scanning, the resulting text is classified (via `classify()`)
+   // to determine whether it matches a reserved keyword or operator.
+   // If the identifier contained underscore escapes, classification
+   // is skipped -- escaped names are always user identifiers.
    template<typename L, typename T>
    T& identifier(L& line, ColumnIndex& idx, T& t, Language dialect)
    {
@@ -328,17 +394,35 @@ namespace OpenAxiom {
          skip_prefix(line, idx, line[idx]);
       bool saw_escape = false;
       while (idx < line.size()) {
-         if (not identifier_part(line[idx]) and line[idx - 1] != '_')
+         if (not identifier_part(line[idx])
+             and (line[idx - 1] != '_' or line[idx] == ' ' or line[idx] == '\t')
+             and not (dialect == Language::Boot and line[idx] == '\'')
+             and not (dialect == Language::Spad and line[idx] == '?'))
             break;
-         else if (line[idx] == '_')
+         else if (line[idx] == '_') {
+            // -- An underscore at the end of a line is a continuation
+            // marker, not part of the identifier.  Stop the scan
+            // here so that get() sees the trailing underscore and
+            // handles line continuation properly.
+            if (idx + 1 >= line.size())
+               break;
             saw_escape = true;
+         }
          ++idx;
       }
       while (idx < line.size() and identifier_suffix(line[idx]))
          ++idx;
+      // -- In Spad, trailing apostrophes are prime marks that are part
+      // of the name: x', x'', etc.  Unlike Boot where apostrophes
+      // can appear mid-identifier (e.g. don't), Spad primes are
+      // strictly suffixes.
+      if (dialect == Language::Spad) {
+         while (idx < line.size() and line[idx] == '\'')
+            ++idx;
+      }
 
       if (!saw_escape) {
-         auto info = classify(line.sub_string(start, idx));
+         auto info = classify(as_chars(line.sub_string(start, idx)), dialect);
          if (info.category != TokenCategory::Identifier) {
             t.category = info.category;
             t.value = info.value;
@@ -554,7 +638,14 @@ namespace OpenAxiom {
    template<typename Tok>
    void sharp_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t, Language dialect)
    {
-      if (dialect != Language::Lisp)
+      if (dialect == Language::Spad
+          and frag.covering(pos) and ascii_digit(frag[pos]))
+      {
+         // -- Spad argument designator: #1, #2, etc.
+         skip_to_end_of_integer(frag(pos), pos.column);
+         operator_token(t, TokenValue::ArgumentDesignator);
+      }
+      else if (dialect != Language::Lisp)
          operator_token(t, TokenValue::Sharp);
       else if (frag.covering(pos))
          switch (frag[pos++]) {
@@ -603,9 +694,10 @@ namespace OpenAxiom {
       case '$': dollar_et_al(frag, pos, t, dialect); break;
 
       default:
-         if (isdigit(c))
-            number(frag(pos), pos.column, t);
-         else if (identifier_head(c))
+         if (ascii_digit(c))
+            number(frag(pos), pos.column, t, dialect);
+         else if (identifier_head(c)
+                  or (dialect == Language::Spad and c == '?'))
             identifier(frag(pos), pos.column, t, dialect);
          else
             junk(frag(pos), pos.column, t);
@@ -616,6 +708,16 @@ namespace OpenAxiom {
       return t;
    }
 
+   // -- Main entry point for retrieving the next token from the fragment.
+   //
+   // The tokenizer produces raw tokens: identifiers, operators,
+   // literals, whitespace, and comments.  It does NOT emit any
+   // formatting tokens (Indent/Justify/Unindent); those are added
+   // by the separate pile() phase.
+   //
+   // When the cursor reaches the end of a line, the tokenizer
+   // advances to the next line and continues lexing.  Line
+   // continuation (trailing underscore) joins lines seamlessly.
    template<typename Tok>
    Tok Tokenizer<Tok>::get(Language dialect)
    {
@@ -624,6 +726,8 @@ namespace OpenAxiom {
       
       if (eos())
          return eos_token(t);
+
+      // -- Skip leading whitespace on the current line.
       switch (frag[pos]) {
       case ' ':
          skip_whitespace(frag(pos), pos.column);
@@ -635,33 +739,33 @@ namespace OpenAxiom {
          break;
       }
 
+      // -- Line continuation: trailing underscore joins the next
+      // physical line seamlessly.
       if (line_continuation()) {
          if (next_line(frag, pos))
             return finish(t, dialect);
          return eos_token(t);
       }
-      else if (pos.column >= line_length()) {
+
+      // -- End of current line: advance to next line.
+      if (pos.column >= line_length()) {
          if (not next_line(frag, pos))
             return eos_token(t);
-         t.start = t.end = pos;
-         auto indent = indents.top();
-         if (indent.column < pos.column) {
-            indents.push(pos);
-            return formatting_token(t, TokenValue::Indent);
-         }
-         else if (indent.column > pos.column) {
-            indents.pop();
-            return formatting_token(t, TokenValue::Unindent);
-         }
-
-         return formatting_token(t, TokenValue::Justify);
+         t.start = pos;
+         return finish(t, dialect);
       }
 
+      // -- Lex the next token character.
       return finish(t, dialect);
    }
 
    // -- Token streams.
    std::vector<Token> words(const Fragment&, Language);
+
+   // -- Pile phase: restructure a flat token stream by inserting
+   // Indent/Justify/Unindent tokens based on indentation.
+   // Mirrors the algorithm of pile.boot.
+   std::vector<Token> pile(const std::vector<Token>&);
 
 }
 

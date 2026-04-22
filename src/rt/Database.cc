@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2014, Gabriel Dos Reis.
+// -- Copyright (C) 2013-2026, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -35,11 +35,17 @@
 namespace OpenAxiom {
    namespace VM {
       Database::Database(const std::string& path)
-            : file(path), reader{ file.begin(), file.end() }, toc() {
+            : file(path),
+              reader {
+                 reinterpret_cast<const char8_t*>(file.begin()),
+                 reinterpret_cast<const char8_t*>(file.end())
+              },
+              toc()
+      {
       }
 
-      Value
-      Database::find_with(Value key, Lisp::Evaluator& ctx) {
+      Value Database::find_with(Value key, Lisp::Evaluator& ctx)
+      {
          auto p = dict.find(key);
          if (p != dict.end())
             return p->second;

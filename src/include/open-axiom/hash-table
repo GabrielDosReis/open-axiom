@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2010, Gabriel Dos Reis.
 // All rights reserved.
 //
@@ -41,9 +41,7 @@
 #include <open-axiom/storage>
 
 namespace OpenAxiom {
-   // --------------------
    // -- HashTableEntry --
-   // --------------------
    // Datatype for entries in a parameterized hash table.
    // The type parameter is required to be a value-construcitble datatype.
    // A table bucket entry is required to be at least 8-byte aligned
@@ -55,9 +53,7 @@ namespace OpenAxiom {
       size_t hash;             // hash code of stored data
    };
 
-   // --------------------
    // -- BasicHashTable --
-   // --------------------
    // A simple hash table data structure.  Ideally, we would like to use
    // standard C++ types, but hash tables were only in a C++ 2003 TR,
    // officially part of C++0x standard library.  We still don't have

@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -- -*- C++ -*-
 // Copyright (C) 2014-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -76,6 +76,7 @@ OPENAXIOM_DEFINE_TOKEN(SharpColon, "#:", Operator, Language::Lisp)
 OPENAXIOM_DEFINE_TOKEN(SharpPlus, "#+", Punctuator, Language::Lisp)
 OPENAXIOM_DEFINE_TOKEN(SharpMinus, "#-", Punctuator, Language::Lisp)
 OPENAXIOM_DEFINE_TOKEN(SharpDot, "#.", Operator, Language::Lisp)
+OPENAXIOM_DEFINE_TOKEN(ArgumentDesignator, "#n", Operator, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Dollar, "$", Operator, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Ampersand, "&", Operator, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(RightArrow, "->", Operator, Language::BootSpad)
@@ -113,8 +114,10 @@ OPENAXIOM_DEFINE_TOKEN(Cross, "cross", Operator, Language::BootSpad)
 OPENAXIOM_DEFINE_TOKEN(Do, "do", Keyword, Language::BootSpad)
 OPENAXIOM_DEFINE_TOKEN(Else, "else", Keyword, Language::BootSpad)
 OPENAXIOM_DEFINE_TOKEN(Exists, "exists", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Export, "export", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Finally, "finally", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(For, "for", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Free, "free", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Forall, "forall", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(From, "from", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Function, "function", Keyword, Language::Boot)

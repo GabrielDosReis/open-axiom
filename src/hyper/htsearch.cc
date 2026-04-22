@@ -50,16 +50,16 @@
 #include <iostream>
 #include "cfuns.h"
 
-// FIXME: Remove kludge
+// -- FIXME: Remove kludge
 using namespace OpenAxiom;
 
- // Path to the directory containing the hyperdoc pages.
+ // -- Path to the directory containing the hyperdoc pages.
 static std::string htpagedir;
 
-// Path to the  hthits program.
+// -- Path to the  hthits program.
 static std::string hthitscmd;
 
-// Path to the database file of the hyperdoc pages.
+// -- Path to the database file of the hyperdoc pages.
 static std::string htdbfile;
 
 /*
@@ -176,7 +176,7 @@ htsearch(const char* pattern)
         presea(NULL,size,1,pattern);
     else {
 
-        // hthits requires to change directory
+        // -- hthits requires to change directory
         // to where the HyperDoc pages reside.
        if (oa_chdir(htpagedir.c_str()) == -1) {
           std::cerr << "Cannot change the page directory: "
@@ -184,7 +184,7 @@ htsearch(const char* pattern)
             exit(-1);
         }
         
-        // Call hthits with: hthits pattern ht.db
+        // -- Call hthits with: hthits pattern ht.db
         hthitscmd = hthitscmd + " " + pattern + " " + htdbfile;
         if ((hits = popen(hthitscmd.c_str(), "r")) != NULL) {
             while (fgets(buf, 1024, hits) != NULL)

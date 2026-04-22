@@ -1,5 +1,5 @@
 // -- -*- C++ -*-
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2026, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -31,25 +31,46 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <open-axiom/Input>
+// --% Author: Gabriel Dos Reis
+// --% Description:
+// --%   CST-to-AST lowering: converts SyntaxForest nodes into
+// --%   Lisp values matching the old Boot translator's %Ast
+// --%   representation.
 
-namespace OpenAxiom {
-   // -- Input::NonEmptyText --
-   Input::NonEmptyLine::NonEmptyLine(Ordinal n, const Text& t)
-         : structure::binary<Ordinal, Text>(n, t)
-   { }
+#ifndef OPENAXIOM_BOOT_AST_included
+#define OPENAXIOM_BOOT_AST_included
 
-   // -- Input::Line --
-   const Input::NonEmptyLine&
-   Input::Line::get() const {
-      return source()->at(index());
-   }
+#include <string>
+#include <string_view>
+#include <vector>
 
-   // -- Input::Source --
-   Input::Line
-   Input::Source::line(LineNumber n, const Text& t) {
-      Index idx = size();
-      emplace_back(n, t);
-      return { this, idx };
-   }
+#include <open-axiom/SyntaxTree>
+#include <open-axiom/LispValue>
+#include <open-axiom/token>
+
+namespace OpenAxiom::Boot {
+
+    // -- Strip Boot underscore-escape sequences from an identifier.
+    //    '_' followed by whitespace is a line continuation (removed).
+    //    '_' followed by a non-whitespace character escapes it.
+    std::u8string unescape_boot_id(std::u8string_view text);
+
+    // -- Bundled context for CST-to-Lisp lowering.
+    struct LoweringContext {
+        const Syntax::SyntaxForest& forest;
+        const std::vector<Token>& tokens;
+        const Fragment& fragment;
+        Lisp::Arena& arena;
+    };
+
+    // -- Lower a single CST node to a Lisp AST value.
+    Lisp::Value lower(Syntax::NodeIndex node,
+                                   LoweringContext& ctx);
+
+    // -- Lower a span of CST children to a Lisp list.
+    Lisp::Value lower_span(Syntax::NodeSpan span,
+                                        LoweringContext& ctx);
+
 }
+
+#endif  // OPENAXIOM_BOOT_AST_included

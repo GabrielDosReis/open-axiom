@@ -64,9 +64,15 @@ add_library(open-axiom-core STATIC
   lib/sockio-c.cxx
   utils/storage.cxx
   io/std-streams.cxx
+  io/charset.cxx
   io/InputFragment.cxx
   syntax/token.cxx
   syntax/sexpr.cxx
+  syntax/syntax-tree.cxx
+  syntax/syntax-print.cxx
+  syntax/lisp-value.cxx
+  syntax/boot-ast.cxx
+  syntax/boot-translator.cxx
   syntax/Parser.cxx
 )
 
@@ -88,7 +94,11 @@ target_sources(open-axiom-core
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/Lisp"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/Parser"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/SourceFile"
+      "${PROJECT_SOURCE_DIR}/src/include/open-axiom/SyntaxPrint"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/SyntaxTree"
+      "${PROJECT_SOURCE_DIR}/src/include/open-axiom/LispValue"
+      "${PROJECT_SOURCE_DIR}/src/include/open-axiom/BootAst"
+      "${PROJECT_SOURCE_DIR}/src/include/open-axiom/BootTranslator"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/defaults"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/diagnostics"
       "${PROJECT_SOURCE_DIR}/src/include/open-axiom/dialect"
@@ -166,9 +176,15 @@ if(oa_use_dynamic_lib STREQUAL "yes")
     lib/sockio-c.cxx
     utils/storage.cxx
     io/std-streams.cxx
+    io/charset.cxx
     io/InputFragment.cxx
     syntax/token.cxx
     syntax/sexpr.cxx
+    syntax/syntax-tree.cxx
+    syntax/syntax-print.cxx
+    syntax/lisp-value.cxx
+    syntax/boot-ast.cxx
+    syntax/boot-translator.cxx
     syntax/Parser.cxx
   )
   set_target_properties(open-axiom-core-shared PROPERTIES
@@ -295,6 +311,11 @@ target_link_libraries(open-axiom PRIVATE OpenAxiom open-axiom-core)
 add_executable(oa-lisp rt/driver.cc)
 set_target_properties(oa-lisp PROPERTIES OUTPUT_NAME lisp)
 target_link_libraries(oa-lisp PRIVATE OpenAxiom open-axiom-core)
+
+# bemol -- parser test driver.
+# Reads .boot and .spad files, tokenizes and parses them, reports statistics.
+add_executable(boot-parser-test boot/bemol.cxx)
+target_link_libraries(boot-parser-test PRIVATE OpenAxiom open-axiom-core)
 
 # -- E. Lisp compilation and base-image linking ------------------------------
 # The Lisp chain:
