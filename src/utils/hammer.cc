@@ -414,7 +414,7 @@ main(int argc, char* argv[]) {
    // 3. Attempt to extract the chunk.
    try {
       OpenAxiom::Memory::FileMapping file(input_path);
-      std::ofstream os(output_path);
+      std::ofstream os(output_path, std::ios::binary);
       auto what = reinterpret_cast<const char8_t*>(chunk);
       if (not file.empty())
          os << resolve_chunk(what, Document(file));
