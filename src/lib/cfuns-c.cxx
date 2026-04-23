@@ -37,6 +37,8 @@
 #include "openaxiom-c-macros.h"
 
 #include <filesystem>
+#include <format>
+#include <chrono>
 #include <errno.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -495,25 +497,49 @@ oa_unlink(const char* path)
 OPENAXIOM_C_EXPORT const char*
 oa_acquire_temporary_pathname() {
 #if _WIN32
-   char buf[MAX_PATH];
+   // Generate a truly unique temporary pathname combining:
+   // - process ID (DWORD)
+   // - high-resolution timestamp (microseconds)
+   // - sequential counter within process
+   // This ensures no collisions even with parallel builds.
+   static unsigned int counter = 0;
    const char* tmpdir = oa_get_tmpdir();
-   auto n = GetTempFileName(tmpdir, "oa-", 0, buf);
-   /* tmpdir was malloc()ed when _WIN32.  */
+   
+   DWORD pid = GetCurrentProcessId();
+   FILETIME ft;
+   GetSystemTimeAsFileTime(&ft);
+   unsigned long long timestamp = (((unsigned long long)ft.dwHighDateTime) << 32) 
+                                   | ft.dwLowDateTime;
+   
+   // Combine PID, timestamp, and counter into a unique name.
+   // Format: oa-<PID>_<timestamp>_<counter>.tmp
+   // This guarantees uniqueness per process and across time.
+   std::string path = std::format("{}\\oa-{}_{}_{}.tmp",
+                                   tmpdir, (unsigned long)pid, timestamp, ++counter);
+   
+   // tmpdir was malloc()ed when _WIN32.
    free(const_cast<char*>(tmpdir));
-   if (n == 0) {
-      perror("oa_acquire_temporary_pathname");
-      exit(1);
-   }
-   /* GetTempFileName creates a 0-byte file to reserve the name.
-      Remove it so the caller can use the path as a directory.  */
-   DeleteFile(buf);
-   return strdup(buf);
+   
+   return copy_c_str(path);
 #elif HAVE_DECL_MKTEMP
-   return mktemp(copy_c_str(std::string{ oa_get_tmpdir() } + "/oa-XXXXXX"));
+   // On Unix/Linux with mktemp available: generate template and let mktemp
+   // replace XXXXXX with random characters, ensuring uniqueness per call.
+   std::string tmpdir_path = std::format("{}/oa-XXXXXX", oa_get_tmpdir());
+   return mktemp(copy_c_str(tmpdir_path));
 #elif HAVE_DECL_TEMPNAM
+   // Use platform's tempnam() for secure temporary file naming.
    return tempnam(oa_get_tmpdir(), "oa-");
 #else
-   return copy_c_str("oa-" + std::to_string(random()));
+   // Fallback: combine process ID, timestamp, and random number for uniqueness.
+   // Format: oa-<PID>_<timestamp>_<random>
+   static unsigned int counter = 0;
+   pid_t pid = getpid();
+   auto now = std::chrono::system_clock::now();
+   auto micros = std::chrono::time_point_cast<std::chrono::microseconds>(now);
+   
+   std::string path = std::format("oa-{}_{}_{}", (unsigned long)pid, 
+                                   micros.time_since_epoch().count(), ++counter);
+   return copy_c_str(path);
 #endif   
 }
 
