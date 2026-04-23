@@ -198,6 +198,7 @@ initializeGlobalState() ==
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"
   $optimizeRep := getOptionValue "inline-rep"
+  $printLoadMsgs := getOptionValue "print-load-messages"
   setCompilerOptimizations(getOptionValue "optimize" or
                              $defaultOptimizationLevel)
   GCMSG(NIL)
