@@ -1811,6 +1811,10 @@ moveLibdirByCopy lib ==
     dst := makeFilePath(directory <- relativeDirname libDirname lib,
              name <- filePathName src, type <- filePathType src)
     copyFile(filePathString src,filePathString dst)
-  removeFile libStationaryDirname lib = 0 => libDirname lib
-  systemError ['"Could not remove stationary directory",
-                :bright libStationaryDirname lib]
+  -- On Windows, parallel builds or antivirus scanners may hold handles
+  -- on the stationary directory, preventing removal.  The compiled
+  -- artifacts have already been copied, so this is not fatal.
+  removeFile libStationaryDirname lib ~= 0 =>
+    sayBrightly ['"WARNING: Could not remove stationary directory",
+                  :bright libStationaryDirname lib]
+  libDirname lib
