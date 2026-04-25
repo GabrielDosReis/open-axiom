@@ -43,7 +43,7 @@ namespace BOOTTRAN ==
 
 namespace BOOTTRAN
 
-module utility (objectMember?, symbolMember?, stringMember?,
+module utility (%Inert, objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   listMap, listMap!, butLast, butLast!, last,
@@ -84,6 +84,9 @@ module utility (objectMember?, symbolMember?, stringMember?,
     stringPrefix?: (%String,%String) -> %Maybe %Short
 
 %defaultReadAndLoadSettings()
+
+++ The package for inert (self-evaluating) symbols.
+%Inert == '"KEYWORD"
 
 --%
 

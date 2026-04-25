@@ -221,6 +221,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Symbol|) |%Symbol|) |bfColonColon|))
 
 (DEFUN |bfColonColon| (|package| |name|)
+  (COND ((CONSTANTP |package|) (SETQ |package| (SYMBOL-VALUE |package|))))
   (COND
    ((AND (|%hasFeature| :CLISP) (|symbolMember?| |package| '(EXT FFI)))
     (FIND-SYMBOL (SYMBOL-NAME |name|) |package|))
@@ -1218,7 +1219,7 @@
 
 (DEFUN |bfKeyArg| (|k| |x|) (LIST '|%Key| |k| |x|))
 
-(DEFUN |bfInert| (|x|) (INTERN |x| "KEYWORD"))
+(DEFUN |bfInert| (|x|) (INTERN |x| |%Inert|))
 
 (DEFUN |lispKey| (|k|) (|bfInert| (STRING-UPCASE (SYMBOL-NAME |k|))))
 
@@ -2580,7 +2581,7 @@
              (CONS 'DEFSTRUCT
                    (CONS
                     (LIST |s|
-                          (LIST (|bfColonColon| 'KEYWORD 'COPIER)
+                          (LIST (|bfInert| "COPIER")
                                 (INTERN (CONCAT "copy" (SYMBOL-NAME |s|)))))
                     (LET ((|bfVar#6| NIL)
                           (|bfVar#7| NIL)
@@ -2623,7 +2624,7 @@
                            (RETURN |bfVar#9|))
                           (T
                            (LET ((|bfVar#11|
-                                  (LIST (|bfColonColon| 'KEYWORD |p|) |p|)))
+                                  (LIST (|bfInert| (SYMBOL-NAME |p|)) |p|)))
                              (COND ((NULL |bfVar#11|) NIL)
                                    ((NULL |bfVar#9|)
                                     (SETQ |bfVar#9| |bfVar#11|)

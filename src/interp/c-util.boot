@@ -301,7 +301,7 @@ ivExportBytecodes iv ==
 
 ++ Token to indicate that a function body should be ignored.
 $ClearBodyToken ==
-  KEYWORD::OpenAxiomClearBodyToken
+  %Inert::OpenAxiomClearBodyToken
 
 ++
 $ConstructorCache := hashTable 'EQ

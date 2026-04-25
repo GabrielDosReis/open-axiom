@@ -205,11 +205,11 @@ import oa__system: string -> int for runCommand
 
 ++ run a program with specified arguments
 runProgram(prog,args) ==
-)if %hasFeature KEYWORD::GCL
+)if %hasFeature %Inert::GCL
   SYSTEM::SYSTEM(strconc/[prog,:[:['" ",a] for a in args]])
-)elseif %hasFeature KEYWORD::CLISP
+)elseif %hasFeature %Inert::CLISP
   EXT::RUN_-PROGRAM(prog,arguments <- args)
-)elseif %hasFeature KEYWORD::SBCL
+)elseif %hasFeature %Inert::SBCL
   SB_-EXT::RUN_-PROGRAM(prog,args)
 )else
   systemError '"don't how to execute external program with this Lisp"
@@ -220,7 +220,7 @@ runProgram(prog,args) ==
 
 import quiet__double__NaN: () -> double for quietDoubleNaN
 
-)if %hasFeature KEYWORD::GCL
+)if %hasFeature %Inert::GCL
 import plus__infinity: () -> double for plusInfinity
 
 import minus__infinity: () -> double for minusInfinity
@@ -228,7 +228,7 @@ import minus__infinity: () -> double for minusInfinity
 $plusInfinity := plusInfinity()
 $minusInfinity := minusInfinity()
 
-)elseif %hasFeature KEYWORD::SBCL
+)elseif %hasFeature %Inert::SBCL
 $plusInfinity == SB_-EXT::DOUBLE_-FLOAT_-POSITIVE_-INFINITY
 
 $minusInfinity == SB_-EXT::DOUBLE_-FLOAT_-NEGATIVE_-INFINITY
@@ -240,7 +240,7 @@ $plusInfinity == $DoubleFloatMaximum
 $minusInfinity == -$plusInfinity
 )endif
 
-)if not %hasFeature KEYWORD::GCL
+)if not %hasFeature %Inert::GCL
 plusInfinity() ==
   $plusInfinity
 

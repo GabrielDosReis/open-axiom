@@ -174,6 +174,8 @@ bfColon x==
 
 bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
+  if readOnly? package then
+    package := symbolValue package
   %hasFeature bfInert '"CLISP" and package in '(EXT FFI) =>
     symbolBinding(symbolName name,package)
   makeSymbol(symbolName name, package)
@@ -802,7 +804,7 @@ bfKeyArg(k,x) ==
   ['%Key,k,x]
 
 bfInert x ==
-  makeSymbol(x,'"KEYWORD")
+  makeSymbol(x,%Inert)
 
 lispKey k ==
   bfInert stringUpcase symbolName k
@@ -1376,11 +1378,11 @@ bfRecordDef(tu,s,fields,accessors) ==
   fun := makeSymbol strconc('"mk",symbolName s)
   ctor := makeSymbol strconc('"MAKE-",symbolName s)
   recDef := ["DEFSTRUCT",
-               [s,[bfColonColon("KEYWORD","COPIER"),
+               [s,[bfInert '"COPIER",
                     makeSymbol strconc('"copy",symbolName s)]],
                       :[x for ['%Signature,x,.] in fields]]
   ctorDef :=
-    args := [:[bfColonColon("KEYWORD",p),p] for p in parms]
+    args := [:[bfInert(symbolName p),p] for p in parms]
     ["DEFMACRO",fun,parms,["LIST",quote ctor,:args]]
   accDefs :=
     accessors = nil => nil
