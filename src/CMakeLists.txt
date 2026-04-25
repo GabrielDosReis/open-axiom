@@ -1165,7 +1165,7 @@ oa_scan_algebra_sources("${oa_algebra_srcdir}")
 # -- Build the catch-all layer for unassigned constructors -----------------
 # Must be called after oa_scan_algebra_sources() so that OA_ALGEBRA_CONSTRUCTORS
 # is populated.  See OpenAxiomAlgebraLayers.cmake for the catch-all strategy.
-
+message(STATUS "Algebra: assigning constructors to compilation layers...")
 oa_algebra_build_catchall()
 
 # -- Paths for initdb (needed by oa_spad_compile_prefix) -------------------
@@ -1603,7 +1603,7 @@ add_custom_target(all-algebra-layers
 # Autotools equivalent: all-algebra
 # Umbrella target for the entire algebra substrate.  Depends on
 # all-algebra-layers and (eventually) all-share and all-hyper-pre.
-add_custom_target(all-algebra
+add_custom_target(all-algebra ALL
   DEPENDS all-algebra-layers
   COMMENT "Build the complete OpenAxiom algebra (bootstrap + all layers)"
 )

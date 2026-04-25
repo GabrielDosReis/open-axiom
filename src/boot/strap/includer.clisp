@@ -115,8 +115,17 @@
   (LET* (|a|)
     (PROGN
      (SETQ |a| (|readLine| |s|))
-     (COND ((NOT (EQ |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
+     (COND ((NOT (EQ |a| |%nothing|))
+            (CONS (|stripTrailingCR| |a|) (|bRgen| |s|)))
            (T |$bStreamNil|)))))
+
+(DEFUN |stripTrailingCR| (|a|)
+  (LET* ((|n| (LENGTH |a|)))
+    (COND
+     ((AND (> |n| 0)
+           (CHAR= (SCHAR |a| (- |n| 1)) (CODE-CHAR 13)))
+      (SUBSEQ |a| 0 (- |n| 1)))
+     (T |a|))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
 

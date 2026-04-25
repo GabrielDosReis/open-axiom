@@ -165,8 +165,17 @@ bRgen s ==
  
 bRgen1 s ==
   a := readLine s
-  a ~= %nothing => [a,:bRgen s]
+  a ~= %nothing => [stripTrailingCR a,:bRgen s]
   $bStreamNil
+
+++ Strip any trailing carriage return from a line.
+++ Common Lisp's READ-LINE strips the newline but may leave a carriage
+++ return on Windows or when reading files with CRLF line endings.
+stripTrailingCR a ==
+  n := #a
+  n > 0 and stringChar(a,n - 1) = abstractChar 13 =>
+    subString(a,0,n - 1)
+  a
  
 bIgen n ==
   bDelay(function bIgen1,[n])

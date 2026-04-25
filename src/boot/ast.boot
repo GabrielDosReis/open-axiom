@@ -174,7 +174,7 @@ bfColon x==
 
 bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
-  %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
+  %hasFeature bfInert '"CLISP" and package in '(EXT FFI) =>
     symbolBinding(symbolName name,package)
   makeSymbol(symbolName name, package)
 
@@ -1137,7 +1137,7 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
       elts isnt [.,:.] =>
         elts := shoeCompTran1(elts,fluidVars,locVars,dollarVars)
         x.op := 'MAKE_-ARRAY
-        x.args := [['LIST_-LENGTH,elts],KEYWORD::INITIAL_-CONTENTS,elts]
+        x.args := [['LIST_-LENGTH,elts],bfInert '"INITIAL-CONTENTS",elts]
       x.op := 'COERCE
       x.args := [shoeCompTran1(elts,fluidVars,locVars,dollarVars),quote 'VECTOR]
     x
@@ -1279,7 +1279,7 @@ bfCompHash(tu,op,argl,body) ==
   bfTuple [computeFunction,:bfMain(tu,auxfn,op)]
  
 shoeCompileTimeEvaluation x ==
-  ["EVAL-WHEN", [KEYWORD::COMPILE_-TOPLEVEL], x]
+  ["EVAL-WHEN", [bfInert '"COMPILE-TOPLEVEL"], x]
 
 bfMain(tu,auxfn,op)==
   g1 := bfGenSymbol tu
@@ -1395,7 +1395,7 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
     hs = nil =>
       ["COND",
         :reverse!
-          [[true,["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,n]],:xs]]
+          [[true,["THROW",bfInert '"OPEN-AXIOM-CATCH-POINT",n]],:xs]]
     hs is [['%Catch,['%Signature,v,t],s],:hs'] =>
       t := 
         symbol? t => quote [t] -- instantiate niladic type ctor
@@ -1405,8 +1405,8 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
 
 codeForCatchHandlers(g,e,cs) ==
   ehTest := ['AND,['CONSP,g],
-              bfQ(['CAR,g],KEYWORD::OPEN_-AXIOM_-CATCH_-POINT)]
-  ["LET",[[g,["CATCH",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,e]]],
+              bfQ(['CAR,g],bfInert '"OPEN-AXIOM-CATCH-POINT")]
+  ["LET",[[g,["CATCH",bfInert '"OPEN-AXIOM-CATCH-POINT",e]]],
     ["COND",[ehTest,bfHandlers(g,["CDR",g],cs)],[true,g]]]
 
 ++ Generate code for try-catch expressions.
@@ -1431,8 +1431,8 @@ bfThrow e ==
   t :=
     symbol? t => quote [t]
     quote t
-  ["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,
-    ["CONS",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,["CONS",t,x]]]
+  ["THROW",bfInert '"OPEN-AXIOM-CATCH-POINT",
+    ["CONS",bfInert '"OPEN-AXIOM-CATCH-POINT",["CONS",t,x]]]
 
 --%
 
@@ -1580,79 +1580,79 @@ nativeType t ==
   t isnt [.,:.] =>
     t' := rest objectAssoc(coreSymbol t,$NativeTypeTable) => 
       t' := 
-	%hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
-	%hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
+	%hasFeature bfInert '"SBCL" => bfColonColon("SB-ALIEN", t')
+	%hasFeature bfInert '"CLISP" => bfColonColon("FFI",t')
 	t'
       -- ??? decree we have not discovered Unicode yet.
-      t is "string" and %hasFeature KEYWORD::SBCL =>
-	[t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
-	   KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
+      t is "string" and %hasFeature bfInert '"SBCL" =>
+	[t',bfInert '"EXTERNAL-FORMAT",bfInert '"ASCII",
+	   bfInert '"ELEMENT-TYPE", "BASE-CHAR"]
       t'
     t in '(byte uint8) =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),8]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT8")
-      %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::CLOZURE =>
-        KEYWORD::UNSIGNED_-BYTE
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","UNSIGNED"),8]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","UINT8")
+      %hasFeature bfInert '"ECL" or %hasFeature bfInert '"CLOZURE" =>
+        bfInert '"UNSIGNED-BYTE"
       nativeType "char"           -- approximate by 'char' for GCL
     t is "int16" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),16]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT16")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
-         KEYWORD::INT16_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-HALFWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","SIGNED"),16]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","INT16")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT16-T" =>
+         bfInert '"INT16-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"SIGNED-HALFWORD"
       unknownNativeTypeError t
     t is "uint16" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT16")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
-         KEYWORD::UINT16_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-HALFWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","UINT16")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT16-T" =>
+         bfInert '"UINT16-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"UNSIGNED-HALFWORD"
       unknownNativeTypeError t
     t is "int32" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),32]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
-         KEYWORD::INT32_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-FULLWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","SIGNED"),32]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","INT32")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT32-T" =>
+         bfInert '"INT32-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"SIGNED-FULLWORD"
       unknownNativeTypeError t
     t is "uint32" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
-         KEYWORD::UINT32_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-FULLWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","INT32")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT32-T" =>
+         bfInert '"UINT32-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"UNSIGNED-FULLWORD"
       unknownNativeTypeError t
     t is "int64" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),64]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT64")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
-         KEYWORD::INT64_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-DOUBLEWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","SIGNED"),64]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","INT64")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT64-T" =>
+         bfInert '"INT64-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"SIGNED-DOUBLEWORD"
       unknownNativeTypeError t
     t is "uint64" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),64]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT64")
-      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
-         KEYWORD::UINT64_-T
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-DOUBLEWORD
+      %hasFeature bfInert '"SBCL" => [bfColonColon("SB-ALIEN","UNSIGNED"),64]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","UINT64")
+      %hasFeature bfInert '"ECL" and %hasFeature bfInert '"UINT64-T" =>
+         bfInert '"UINT64-T"
+      %hasFeature bfInert '"CLOZURE" => bfInert '"UNSIGNED-DOUBLEWORD"
       unknownNativeTypeError t
     t is "float32" => nativeType "float"
     t is "float64" => nativeType "double"
     t is "pointer" =>
-      %hasFeature KEYWORD::GCL => "fixnum"
-      %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
-      %hasFeature KEYWORD::SBCL => ["*",bfColonColon("SB-ALIEN","VOID")]
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
-      %hasFeature KEYWORD::CLOZURE => KEYWORD::ADDRESS
+      %hasFeature bfInert '"GCL" => "fixnum"
+      %hasFeature bfInert '"ECL" => bfInert '"POINTER-VOID"
+      %hasFeature bfInert '"SBCL" => ["*",bfColonColon("SB-ALIEN","VOID")]
+      %hasFeature bfInert '"CLISP" => bfColonColon("FFI","C-POINTER")
+      %hasFeature bfInert '"CLOZURE" => bfInert '"ADDRESS"
       unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
   first t is "buffer" =>
-    %hasFeature KEYWORD::GCL => "OBJECT"
-    %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
-    %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
-    %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
-    %hasFeature KEYWORD::CLOZURE => [KEYWORD::_*, nativeType second t]
+    %hasFeature bfInert '"GCL" => "OBJECT"
+    %hasFeature bfInert '"ECL" => bfInert '"OBJECT"
+    %hasFeature bfInert '"SBCL" => ["*",nativeType second t]
+    %hasFeature bfInert '"CLISP" => bfColonColon("FFI","C-POINTER")
+    %hasFeature bfInert '"CLOZURE" => [bfInert '"*", nativeType second t]
     unknownNativeTypeError t
   first t is "pointer" =>
     -- we don't bother looking at what the pointer points to.
@@ -1694,9 +1694,9 @@ needsStableReference? t ==
 ++ a call to a native functions.
 coerceToNativeType(a,t) ==
   -- GCL, ECL, CLISP, and CLOZURE don't do it this way.
-  %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL
-     or %hasFeature KEYWORD::CLISP or %hasFeature KEYWORD::CLOZURE => a
-  %hasFeature KEYWORD::SBCL =>
+  %hasFeature bfInert '"GCL" or %hasFeature bfInert '"ECL"
+     or %hasFeature bfInert '"CLISP" or %hasFeature bfInert '"CLOZURE" => a
+  %hasFeature bfInert '"SBCL" =>
     not needsStableReference? t => a
     [.,[c,y]] := t
     c is "buffer" => [bfColonColon("SB-SYS","VECTOR-SAP"),a]
@@ -1763,7 +1763,7 @@ genECLnativeTranslation(op,s,t,op') ==
   [["DEFUN",op, args,
     [bfColonColon("FFI","C-INLINE"),args, reverse! argtypes,
       rettype, callTemplate(op',#args,s), 
-        KEYWORD::ONE_-LINER, true]]] where
+        bfInert '"ONE-LINER", true]]] where
 	  callTemplate(op,n,s) ==
 	    "strconc"/[symbolName op,'"(",
 	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
@@ -1815,10 +1815,10 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- parameter of non-simple datatype are described as being pointers.
   foreignDecl := 
     [bfColonColon("FFI","DEF-CALL-OUT"),n,
-      [KEYWORD::NAME,symbolName op'],
-	[KEYWORD::ARGUMENTS,:[[a, x] for x in argtypes for a in parms]],
-	  [KEYWORD::RETURN_-TYPE, rettype],
-	      [KEYWORD::LANGUAGE,KEYWORD::STDC]]
+      [bfInert '"NAME",symbolName op'],
+	[bfInert '"ARGUMENTS",:[[a, x] for x in argtypes for a in parms]],
+	  [bfInert '"RETURN-TYPE", rettype],
+	      [bfInert '"LANGUAGE",bfInert '"STDC"]]
 
   -- The forwarding function.  We have to introduce local foreign
   -- variables to hold the address of converted Lisp objects.  Then
@@ -1905,7 +1905,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   -- Build the actual foreign function call.
   -- Note that Clozure CL does not mangle foreign function call for
   -- us, so we're left with more platform dependencies than needed.
-  if %hasFeature KEYWORD::DARWIN then
+  if %hasFeature bfInert '"DARWIN" then
     op' := strconc('"__",op')
   call := [bfColonColon("CCL","EXTERNAL-CALL"), STRING op', :args, rettype]
             where
@@ -1948,9 +1948,9 @@ genImportDeclaration(op, sig, dom) ==
   if dom is ["%LoadUnit",lib] and not symbolMember?(lib,$foreignLoadUnits) then
     $foreignLoadUnits := [lib,:$foreignLoadUnits]
 
-  %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
-  %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')
-  %hasFeature KEYWORD::CLISP => genCLISPnativeTranslation(op,s,t,op')
-  %hasFeature KEYWORD::ECL => genECLnativeTranslation(op,s,t,op')
-  %hasFeature KEYWORD::CLOZURE => genCLOZUREnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"GCL" => genGCLnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"SBCL" => genSBCLnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"CLISP" => genCLISPnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"ECL" => genECLnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"CLOZURE" => genCLOZUREnativeTranslation(op,s,t,op')
   fatalError '"import declaration not implemented for this Lisp"
