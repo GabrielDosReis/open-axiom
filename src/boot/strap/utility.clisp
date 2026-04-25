@@ -15,7 +15,7 @@
 
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
   (EXPORT
-   '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
+   '(|%Inert| |objectMember?| |symbolMember?| |stringMember?| |charMember?|
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |listMap| |listMap!| |butLast| |butLast!|
@@ -25,6 +25,8 @@
                      |remove| |removeSymbol| |atomic?| |every?| |any?| |take|
                      |takeWhile| |drop| |copyTree| |finishLine| |stringPrefix?|
                      |stringSuffix?| |findChar| |charPosition|)))
+
+(DEFCONSTANT |%Inert| "KEYWORD")
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
