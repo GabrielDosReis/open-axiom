@@ -1,0 +1,2 @@
+# Database files are binary; do not perform CRLF conversion or text diffs.
+*.daase binary

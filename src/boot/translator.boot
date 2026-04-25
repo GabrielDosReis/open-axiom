@@ -66,7 +66,7 @@ genModuleFinalization(stream) ==
   setFFS := ["SETQ","$dynamicForeignFunctions",
               ["append!",quote $ffs,"$dynamicForeignFunctions"]]
   reallyPrettyPrint(atLoadOrExecutionTime setFFS,stream)
-  %hasFeature KEYWORD::CLISP =>
+  %hasFeature bfInert '"CLISP" =>
     $foreignsDefsForCLisp = nil => nil
     init := ["PROGN", :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]
     reallyPrettyPrint(atLoadOrExecutionTime init,stream)
@@ -78,7 +78,7 @@ genOptimizeOptions stream ==
 
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
-  if %hasFeature KEYWORD::GCL then
+  if %hasFeature bfInert '"GCL" then
     symbolValue(bfColonColon("COMPILER","*COMPILE-VERBOSE*")) := false
     symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*")) := false
     symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*")) := true
@@ -405,12 +405,12 @@ translateToplevelExpression expr ==
   first expr'
 
 inAllContexts x ==
-  ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
-                  KEYWORD::LOAD_-TOPLEVEL,
-                    KEYWORD::EXECUTE], x]
+  ["EVAL-WHEN",[bfInert '"COMPILE-TOPLEVEL",
+                  bfInert '"LOAD-TOPLEVEL",
+                    bfInert '"EXECUTE"], x]
 
 atLoadOrExecutionTime x ==
-  ["EVAL-WHEN",[KEYWORD::LOAD_-TOPLEVEL,KEYWORD::EXECUTE],x]
+  ["EVAL-WHEN",[bfInert '"LOAD-TOPLEVEL",bfInert '"EXECUTE"],x]
 
 exportNames ns ==
   ns = nil => nil
@@ -423,12 +423,12 @@ packageBody(x,p) ==
       [symbolName p]
     ns is 'System =>
       ['COND,
-        [['%hasFeature,KEYWORD::COMMON_-LISP],['USE_-PACKAGE,'"COMMON-LISP",:user]],
+        [['%hasFeature,bfInert '"COMMON-LISP"],['USE_-PACKAGE,'"COMMON-LISP",:user]],
            ['T,['USE_-PACKAGE,'"LISP",:user]]]
     z :=
       ns is ['DOT,'System,'Foreign] =>
-        %hasFeature KEYWORD::SBCL => 'SB_-ALIEN
-        %hasFeature KEYWORD::ECL => 'FFI
+        %hasFeature bfInert '"SBCL" => 'SB_-ALIEN
+        %hasFeature bfInert '"ECL" => 'FFI
         return nil
       ident? ns => ns
       bfSpecificErrorHere '"invalid namespace"
@@ -620,19 +620,19 @@ loadNativeModule(m,:dir) ==
   if dir ~= nil then
      [dir] := dir
      m := strconc(dir,m)
-  %hasFeature KEYWORD::SBCL =>
+  %hasFeature bfInert '"SBCL" =>
     apply(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),
-          [m,KEYWORD::DONT_-SAVE,true])
-  %hasFeature KEYWORD::CLISP =>
+          [m,bfInert '"DONT-SAVE",true])
+  %hasFeature bfInert '"CLISP" =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
-  %hasFeature KEYWORD::ECL =>
+  %hasFeature bfInert '"ECL" =>
     EVAL [bfColonColon("FFI","LOAD-FOREIGN-LIBRARY"), m]
-  %hasFeature KEYWORD::CLOZURE =>
+  %hasFeature bfInert '"CLOZURE" =>
     EVAL [bfColonColon("CCL","OPEN-SHARED-LIBRARY"), m]
   coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==
-  %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
+  %hasFeature bfInert '"ECL" or %hasFeature bfInert '"GCL" => nil
   dir :=
      path := directoryFromCommandLine '"syslib" => path
      strconc(systemRootDirectory(),'"lib/")

@@ -116,6 +116,7 @@ function(oa_scan_algebra_sources srcdir)
   set(_pamphlet_bases "")
   set(_plain_bases "")
 
+  message(STATUS "Algebra: reading source manifest...")
   foreach(_entry ${_entries})
     # Skip comments and blank lines.
     string(STRIP "${_entry}" _entry)
@@ -191,6 +192,8 @@ function(oa_scan_algebra_sources srcdir)
 
   set(_all_ctors "")
 
+  list(LENGTH _pamphlet_bases _npam_tmp)
+  message(STATUS "Algebra: scanning ${_npam_tmp} pamphlets for constructors...")
   foreach(_base ${_pamphlet_bases})
     set(_pam "${srcdir}/${_base}.spad.pamphlet")
     file(STRINGS "${_pam}" _lines
