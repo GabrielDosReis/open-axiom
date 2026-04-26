@@ -1,4 +1,6 @@
 (PROCLAIM '(OPTIMIZE SPEED))
+(IMPORT-MODULE "tokens")
+
 (IMPORT-MODULE "includer")
 
 (IMPORT-MODULE "scanner")
