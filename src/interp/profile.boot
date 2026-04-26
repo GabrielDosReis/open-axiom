@@ -34,7 +34,7 @@
 
 import sys_-macros
 import sys_-utility
-import c_-util
+import c_-data
 namespace BOOT
 
 --$profileCompiler := true

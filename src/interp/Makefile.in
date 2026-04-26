@@ -73,7 +73,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	                     	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
-	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
+	g-opt.$(FASLEXT)	c-data.$(FASLEXT)	c-util.$(FASLEXT)	\
 	astr.$(FASLEXT)		                  	\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
 	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
@@ -262,7 +262,7 @@ br-util.$(FASLEXT): bc-util.$(FASLEXT)
 bc-solve.$(FASLEXT): bc-matrix.$(FASLEXT) bc-misc.$(FASLEXT)
 bc-matrix.$(FASLEXT): bc-util.$(FASLEXT)
 bc-misc.$(FASLEXT): bc-util.$(FASLEXT)
-bc-util.$(FASLEXT): ht-util.$(FASLEXT) c-util.$(FASLEXT)
+bc-util.$(FASLEXT): ht-util.$(FASLEXT) c-data.$(FASLEXT)
 ht-root.$(FASLEXT): ht-util.$(FASLEXT)
 htcheck.$(FASLEXT): sys-driver.$(FASLEXT) sys-macros.$(FASLEXT)
 ht-util.$(FASLEXT): sys-macros.$(FASLEXT)
@@ -272,7 +272,7 @@ hypertex.$(FASLEXT): types.$(FASLEXT)
 ## OpenAxiom's interpreter.
 makeint.$(FASLEXT): util.$(FASLEXT)
 setvars.$(FASLEXT): sys-macros.$(FASLEXT) debug.$(FASLEXT)
-profile.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT) c-util.$(FASLEXT)
+profile.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT) c-data.$(FASLEXT)
 rulesets.$(FASLEXT): vmlisp.$(FASLEXT)
 osyscmd.$(FASLEXT): int-top.$(FASLEXT)
 int-top.$(FASLEXT): incl.$(FASLEXT) i-toplev.$(FASLEXT) unlisp.$(FASLEXT)
@@ -310,7 +310,7 @@ compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): sys-macros.$(FASLEXT)
 newfort.$(FASLEXT): sys-macros.$(FASLEXT)
 lisplib.$(FASLEXT): database.$(FASLEXT) debug.$(FASLEXT)
-c-doc.$(FASLEXT): c-util.$(FASLEXT)
+c-doc.$(FASLEXT): c-data.$(FASLEXT)
 server.$(FASLEXT): sys-macros.$(FASLEXT)
 
 ##
@@ -367,11 +367,12 @@ g-opt.$(FASLEXT): g-util.$(FASLEXT)
 g-timer.$(FASLEXT): sys-macros.$(FASLEXT) g-util.$(FASLEXT)
 msgdb.$(FASLEXT): g-util.$(FASLEXT)
 g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
-c-util.$(FASLEXT): g-opt.$(FASLEXT)
+c-data.$(FASLEXT): g-util.$(FASLEXT)
+c-util.$(FASLEXT): c-data.$(FASLEXT) g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)
 word.$(FASLEXT): g-util.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) sys-macros.$(FASLEXT) daase.$(FASLEXT)
-g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-util.$(FASLEXT)
+g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-data.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 util.$(FASLEXT): lexing.$(FASLEXT)
 fname.$(FASLEXT): sys-macros.$(FASLEXT)

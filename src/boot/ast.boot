@@ -38,6 +38,7 @@
 --   for representing Boot programs.
 --
 
+import utility
 import includer
 namespace BOOTTRAN
 module ast (quote, translateForm)
