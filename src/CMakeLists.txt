@@ -1604,7 +1604,7 @@ add_custom_target(all-algebra-layers
 # Autotools equivalent: all-algebra
 # Umbrella target for the entire algebra substrate.  Depends on
 # all-algebra-layers and (eventually) all-share and all-hyper-pre.
-add_custom_target(all-algebra ALL
+add_custom_target(all-algebra
   DEPENDS all-algebra-layers
   COMMENT "Build the complete OpenAxiom algebra (bootstrap + all layers)"
 )
@@ -1627,9 +1627,8 @@ add_custom_target(all-algebra ALL
 set(oa_database_targets
   "${OA_STAGE_ROOT}/algebra/interp.daase"
   "${OA_STAGE_ROOT}/algebra/browse.daase"
-  "${OA_STAGE_ROOT}/algebra/categor.daase"
+  "${OA_STAGE_ROOT}/algebra/category.daase"
   "${OA_STAGE_ROOT}/algebra/operation.daase"
-  "${OA_STAGE_ROOT}/algebra/compress.daase"
 )
 
 add_custom_command(
@@ -1646,7 +1645,7 @@ add_custom_command(
     --build-databases
   # Core .daase files.
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    interp.daase browse.daase categor.daase operation.daase compress.daase
+    interp.daase browse.daase category.daase operation.daase
     "${OA_STAGE_ROOT}/algebra/"
   # Auxiliary database artifacts: text indices and per-constructor
   # reverse-lookup tables used by )what, )show, and the browser.
@@ -1670,8 +1669,8 @@ add_custom_command(
 )
 
 # Autotools equivalent: all-databases
-# Artifacts: interp.daase, browse.daase, categor.daase, operation.daase,
-#   compress.daase, plus USERS.DAASE/index.KAF, DEPENDENTS.DAASE/index.KAF,
+# Artifacts: interp.daase, browse.daase, category.daase, operation.daase,
+#   plus USERS.DAASE/index.KAF, DEPENDENTS.DAASE/index.KAF,
 #   libdb.text, comdb.text, glosskey.text, glossdef.text.
 #   These are the indexed databases that the interpreter queries at runtime
 #   for constructor information, operation signatures, and category
@@ -1818,7 +1817,7 @@ add_custom_command(
 # Depends on: all-databases (databases must exist before linking),
 #   all-algebra-layers (algebra .fasl files), interpsys modules (same OBJS),
 #   exposed.fasl (constructor visibility), makeint.fasl (build timestamp).
-add_custom_target(all-axiomsys
+add_custom_target(all-axiomsys ALL
   DEPENDS "${oa_axiomsys}"
   COMMENT "Link AXIOMsys -- the complete OpenAxiom image with all algebra"
 )

@@ -146,8 +146,9 @@ def setup_paths(build_dir: str, output_dir: str | None, target_triple: str) -> N
     BUILD_DIR = os.path.abspath(build_dir)
     ALGEBRA_DIR = os.path.join(BUILD_DIR, "algebra")
     STAGING_DIR = os.path.join(BUILD_DIR, target_triple, "algebra")
-    DRIVER = os.path.join(BUILD_DIR, "src", "open-axiom.exe")
-    INTERPSYS = os.path.join(BUILD_DIR, "interp", "interpsys.exe")
+    exe_ext = ".exe" if sys.platform == "win32" else ""
+    DRIVER = os.path.join(BUILD_DIR, "src", "open-axiom" + exe_ext)
+    INTERPSYS = os.path.join(BUILD_DIR, "interp", "interpsys" + exe_ext)
     SYSTEM = os.path.join(BUILD_DIR, target_triple)
     INITDB = os.path.join(ALGEBRA_DIR, "initdb.fasl")
     SYSDB = os.path.abspath(os.path.join("src", "share", "algebra"))
@@ -543,6 +544,24 @@ def main() -> None:
     print(f"Build directory : {BUILD_DIR}")
     print(f"Output directory: {OUTPUT_DIR}")
     print(f"Staging directory: {STAGING_DIR}")
+
+    # Ensure the staging algebra directory is completely empty before
+    # starting -- remove ALL files, not just .fasl, to guarantee no
+    # stale artifacts from prior builds influence the computation.
+    if os.path.isdir(STAGING_DIR):
+        removed = 0
+        for f in os.listdir(STAGING_DIR):
+            p = os.path.join(STAGING_DIR, f)
+            if os.path.isfile(p):
+                os.remove(p)
+                removed += 1
+            elif os.path.isdir(p):
+                shutil.rmtree(p)
+                removed += 1
+        print(f"Wiped {removed} entries from staging directory")
+    else:
+        os.makedirs(STAGING_DIR, exist_ok=True)
+        print(f"Created staging directory")
 
     start = args.start_layer
     layer = start
