@@ -121,7 +121,7 @@ if test -n "$oa_user_lisp"; then
     ## Honor use of Lisp image specified on command line
     OA_LISP=$oa_user_lisp
 elif test -z "$oa_include_gcl"; then
-    AC_CHECK_PROGS([OA_LISP], [sbcl gcl ecl clisp ccl64 ccl32 ccl])
+    AC_CHECK_PROGS([OA_LISP], [sbcl gcl ecl clisp gaia ccl64 ccl32 ccl])
 fi
 ])
 
@@ -204,6 +204,9 @@ else
        *"Clozure Common Lisp"*)
 	   oa_lisp_flavor=clozure
 	   ;;
+       *"Gaia"*)
+      oa_lisp_flavor=gaia
+      ;;
    esac
 fi
 AC_MSG_RESULT([$oa_lisp_flavor])
@@ -490,6 +493,9 @@ case $oa_lisp_flavor in
        oa_quiet_flags='--quiet --no-init'
        oa_eval_flags='--eval'
        ;;
+    gaia)
+       oa_quiet_flags=''
+       oa_eval_flags='--eval'
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $OA_LISP]) ;;
 esac
 ])

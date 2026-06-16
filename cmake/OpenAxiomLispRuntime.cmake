@@ -37,6 +37,8 @@ function(oa_parse_lisp_flavor OUTVAR RAW_TEXT)
     set(_flavor "clozure")
   elseif(_lisp_text MATCHES "gcl")
     set(_flavor "gcl")
+  elseif(_lisp_text MATCHES "gaia")
+    set(_flavor "gaia")
   endif()
 
   set(${OUTVAR} "${_flavor}" PARENT_SCOPE)
@@ -355,7 +357,7 @@ function(oa_configure_lisp_runtime)
   # Map the detected flavor to the C++ Runtime:: enum.  If the flavor
   # does not match any known enumerator, fall back to Runtime::unknown
   # so that the generated header is always valid C++.
-  if(_detected_flavor MATCHES "^(gcl|ecl|sbcl|clisp|clozure|bemol|polyml)$")
+  if(_detected_flavor MATCHES "^(gcl|ecl|sbcl|clisp|clozure|gaia|bemol|polyml)$")
     set(OPENAXIOM_BASE_RTS "Runtime::${_detected_flavor}" PARENT_SCOPE)
   else()
     set(OPENAXIOM_BASE_RTS "Runtime::unknown"             PARENT_SCOPE)
