@@ -189,6 +189,7 @@ namespace OpenAxiom {
       clisp,                 // CLISP-based runtime
       ecl,                   // ECL-based runtime
       clozure,               // Clozure CL-based runtime
+      gaia,                  // Gaia-based runtime
       bemol,                 // Bemol-based runtime
       polyml                 // Poly/ML abstract machine-based runtime
    };

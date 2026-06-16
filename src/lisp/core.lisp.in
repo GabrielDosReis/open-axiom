@@ -457,6 +457,7 @@
   #+:sbcl #'sb-impl::toplevel-init
   #+clisp #'system::main-loop
   #+:clozure nil			; don't know, kept private
+  #+:gaia #'gaia:top-level
   )
 
 ;; Lisp source file extension.
@@ -949,7 +950,8 @@
   #+:gcl (si::bye status)
   #+:ecl (ext:quit status)
   #+:clozure (ccl:quit status)
-  #-(or :sbcl :clisp :gcl :ecl :clozure) 
+  #+:gaia (quit status)
+  #-(or :sbcl :clisp :gcl :ecl :clozure :gaia) 
   (error "`coreQuit' not implemented for this Lisp"))
 
 

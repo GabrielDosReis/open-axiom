@@ -60,7 +60,7 @@ option(OA_KEEP_INTERMEDIATE_FILES "Keep intermediary generated files in later ph
 
 # Which Lisp runtime to use for the interpreter / algebra build chain.
 set(OA_WITH_LISP "sbcl" CACHE STRING "Base Lisp runtime for OpenAxiom")
-set_property(CACHE OA_WITH_LISP PROPERTY STRINGS sbcl gcl ecl clisp clozure bemol polyml)
+set_property(CACHE OA_WITH_LISP PROPERTY STRINGS sbcl gcl ecl clisp clozure gaia bemol polyml)
 
 # Package identity -- substituted into the generated config header and
 # passed to the Autotools-era code that still reads these symbols.
