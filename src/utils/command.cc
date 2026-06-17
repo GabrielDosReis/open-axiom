@@ -239,6 +239,12 @@ build_rts_options(Command* command, Driver driver)
          command->rt_args[1] = (char*) "-norc";
          break;
 
+      case Runtime::gaia:
+         // Gaia images embed their entry point and read every argument
+         // following the doubledash separator, so they need no runtime
+         // options of their own.
+         break;
+
       default:
          abort();
       }

@@ -1054,14 +1054,15 @@
 ;; Command line arguments: equivalent of traditional `argv[]' from
 ;;  systems programming world.
 (defun |getCommandLineArguments| nil
-  #-(or :gcl :sbcl :clisp :ecl :clozure) 
+  #-(or :gcl :sbcl :clisp :ecl :clozure :gaia) 
   (|fatalError| "don't know how to get command line args")
   (let* ((all-args  
 	  #+:clozure ccl:*command-line-argument-list*
           #+:ecl (ext:command-args)
           #+:gcl si::*command-args*
           #+:sbcl sb-ext::*posix-argv*
-          #+:clisp (coerce (ext::argv) 'list))
+          #+:clisp (coerce (ext::argv) 'list)
+          #+:gaia (gaia:command-line-arguments))
          (args (member "--" all-args :test #'equal)))
     (cons (car all-args) (if args (cdr args) args))))
 
@@ -1081,11 +1082,21 @@
 			  &optional (entry-point nil) (prologue nil))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
-  #-:ecl 
+  #-(or :ecl :gaia) 
   (progn
     (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
     (eval prologue)
     (|saveCore| core-image entry-point))
+  #+:gaia
+  (progn
+    ;; Gaia links a fresh executable from the supplied FASLs, so resolve
+    ;; the entry-point suspension before handing it to the builder.
+    (when (consp entry-point)
+      (setq entry-point (apply (car entry-point) (cdr entry-point))))
+    (gaia:build-program core-image
+                        :fasls lisp-files
+                        :entry-point entry-point)
+    (|coreQuit|))
   #+:ecl 
   (let* ((compiler::*ld* oa-cxx)
 	 (compiler::*ld-flags* (concatenate 'string 
