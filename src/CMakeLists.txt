@@ -381,7 +381,7 @@ configure_file(
 )
 
 # Guard: only emit the Lisp build rules when a supported runtime was found.
-if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$")
+if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure|gaia)$")
   # Common Lisp invocation prefix -- used by every custom command below.
   # Wraps the binary in `cmake -E env` for flavor-specific environment
   # variables (e.g. GCL_ANSI=t), followed by quiet/batch flags.
@@ -418,7 +418,13 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure)$
       COMMENT "Compile the OpenAxiom core Lisp runtime"
       VERBATIM
     )
-    set(oa_base_lisp_objects "nil")
+    if(OA_LISP_FLAVOR STREQUAL "gaia")
+      # Gaia links a standalone image from compiled FASLs, so the base
+      # image must include the core runtime FASL explicitly.
+      set(oa_base_lisp_objects "(\"core.${OA_LISP_FASL_EXT}\")")
+    else()
+      set(oa_base_lisp_objects "nil")
+    endif()
   endif()
 
   # -- Step 3: Link the FASL into a standalone executable image --
@@ -649,6 +655,13 @@ function(oa_boot_link_image stage fasl_list)
   # Use file(GENERATE ...) so that generator expressions (e.g. OA_DRIVER)
   # are resolved at generation time rather than configure time.
   set(cmdfile "${outdir}/link-bootsys.cmdfile")
+  # Gaia links a standalone image from FASLs and does not inherit the core
+  # runtime from a base image, so prepend the staged core FASL.  Other
+  # flavors obtain core from the base image or complete-fasl-list-for-link.
+  set(_link_fasls ${fasl_list})
+  if(OA_LISP_FLAVOR STREQUAL "gaia")
+    list(PREPEND _link_fasls "${OA_STAGE_ROOT}/lisp/core.${OA_LISP_FASL_EXT}")
+  endif()
   string(JOIN "\n" _cmd_content
     "${OA_DRIVER}"
     "--execpath=${OA_LISPSYS}"
@@ -658,7 +671,7 @@ function(oa_boot_link_image stage fasl_list)
     "--prologue=(pushnew :open-axiom-boot *features*)"
     "--output=${image}"
     "--load-directory=${outdir}"
-    ${fasl_list}
+    ${_link_fasls}
   )
   file(GENERATE OUTPUT "${cmdfile}" CONTENT "${_cmd_content}\n")
 
