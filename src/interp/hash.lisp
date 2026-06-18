@@ -59,21 +59,6 @@
         #'(lambda (key val) (declare (ignore val)) (push key keys)) table)
         keys))
 
-#+AKCL
-(clines "int mem_value(x ,i)object x;int i; { return ((short *)x)[i];}")
-#+AKCL
-(defentry memory-value-short(object int) (int "mem_value"))
-
-;(memory-value-short  (make-hash-table :test 'equal) 12) is 0,1,or 2
-;depending on whether the test is eq,eql or equal.
-#+AKCL
-(defun HASHTABLE-CLASS (table)
-  (case (memory-value-short table 12)
-        (0 'EQ)
-        (1 'EQL)
-        (2 'EQUAL)
-        (t "error unknown hash table class")))
-
 ;17.4 Searching and Updating
 
 (defun HPUT (table key value) (setf (gethash key table) value))
