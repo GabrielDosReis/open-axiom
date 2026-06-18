@@ -1,27 +1,55 @@
-# Linux: GCC 15 + GCL (GCL_ANSI=t workaround; binary is gcl27)
+# Linux: GCC 15 + GCL 2.6.x (Autotools, full-system build)
 #
-# Disabled: GCL 2.7 cannot compile the Boot translator's DECLAIM FTYPE
-# forms that use (FUNCTION ...) as a parameter type specifier.  The three
-# failing declarations in utility.clisp are:
-#   |every?|   : (FTYPE (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) ...) ...) ...)
-#   |any?|     : same pattern
-#   |takeWhile|: same pattern
-# This is valid ANSI CL (CLHS 4.2.3) but GCL's PROCLAIM implementation
-# signals an error when (FUNCTION ...) appears nested inside an FTYPE
-# parameter list.  Re-enable once GCL is fixed or the Boot translator
-# emits a GCL-compatible workaround.
+# GCL is built with the traditional Autotools path (configure + make),
+# NOT the CMake migration -- the CMake GCL path is not ready yet.
 #
-# name: 'CI: Linux GCC+GCL'
-# on:
-#   push:
-#     branches: [master, cmake-migration-proposal]
-#   pull_request:
-#     branches: [master]
-# jobs:
-#   build:
-#     uses: ./.github/workflows/ci-linux-build.yml
-#     with:
-#       cc: gcc-15
-#       cxx: g++-15
-#       lisp: gcl
-#       lisp_executable: gcl27
+# GCL 2.7 (the 'gcl27' package) cannot compile the Boot translator's
+# DECLAIM FTYPE forms that nest (FUNCTION ...) inside a parameter type
+# specifier (|every?|, |any?|, |takeWhile|) -- valid ANSI CL (CLHS 4.2.3)
+# that GCL 2.7's PROCLAIM rejects.  The distro 'gcl' package (the 2.6.x
+# line) compiles them, so this job requires GCL 2.6.x.  GCL_ANSI=t selects
+# the ANSI image.
+name: 'CI: Linux GCC+GCL'
+on:
+  push:
+    branches: [master, cmake-migration-proposal]
+  pull_request:
+    branches: [master]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      GCL_ANSI: t
+      CC: gcc-15
+      CXX: g++-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC 15 and GCL 2.6.x
+        run: |
+          sudo apt-get update
+          # GCC 15 (Ubuntu 24.04 ships gcc-13 by default).
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y gcc-15 g++-15
+          # Build dependencies plus GCL 2.6.x.  The 'gcl' package is the
+          # 2.6.x line; 'gcl27' (2.7) cannot build the Boot translator.
+          # libreadline-dev links the GCL runtime image.
+          sudo apt-get install -y \
+            build-essential libxt-dev libxpm-dev texlive \
+            gcl libreadline-dev
+          # Require GCL 2.6.x specifically.
+          gcl_ver=$(dpkg-query -W -f='${Version}' gcl)
+          echo "Installed GCL version: $gcl_ver"
+          case "$gcl_ver" in
+            2.6.*|*:2.6.*) echo "OK: GCL 2.6.x" ;;
+            *) echo "::error::Expected GCL 2.6.x, got '$gcl_ver'"; exit 1 ;;
+          esac
+
+      - name: Configure, build, and test the full system
+        run: |
+          mkdir gcl-build && cd gcl-build
+          touch ../configure && sleep 1
+          ../configure --disable-maintainer-mode --with-lisp=gcl
+          make
+          make check
