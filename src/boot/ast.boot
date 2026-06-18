@@ -1975,14 +1975,24 @@ genCLISPownedStringReturn(op,op',parms,argtypes,release,nullable) ==
       [bfInert '"LANGUAGE",bfInert '"STDC"]]
   $foreignsDefsForCLisp := [callDecl,releaseDecl,:$foreignsDefsForCLisp]
   p := gensym()
-  decode := [bfColonColon("FFI","MEMORY-AS"), p,
-              [bfColonColon("FFI","PARSE-C-TYPE"),
-                ["QUOTE", bfColonColon("FFI","C-STRING")]]]
+  cell := gensym()
+  -- Decode the returned `char*' into a fresh Lisp string.  `p' already
+  -- points at the characters, so we must not read it directly as a
+  -- `c-string': CLISP's `c-string' is itself a pointer type, so
+  -- `memory-as' would misread the leading bytes of the text as a pointer
+  -- and follow it into oblivion.  Instead we hold `p' in a `c-pointer'
+  -- cell and read that cell as a `c-string', which follows the pointer
+  -- and copies its characters.
+  decode := [bfColonColon("FFI","WITH-C-VAR"),
+              [cell, ["QUOTE", bfColonColon("FFI","C-POINTER")], p],
+                [bfColonColon("FFI","CAST"), cell,
+                  [bfColonColon("FFI","PARSE-C-TYPE"),
+                    ["QUOTE", bfColonColon("FFI","C-STRING")]]]]
   body := ["UNWIND-PROTECT", decode, [releaseHack, p]]
+  -- A null result decodes as NIL.  CLISP maps a NULL `c-pointer' to NIL,
+  -- so the guard is a plain null test and there is nothing to release.
   if nullable then
-    body := ["IF",
-              ["ZEROP", [bfColonColon("FFI","FOREIGN-ADDRESS-UNSIGNED"), p]],
-                nil, body]
+    body := ["IF", ["NULL", p], nil, body]
   [["DEFUN",op,parms, ["LET",[[p,[callHack,:parms]]], body]]]
 
 
