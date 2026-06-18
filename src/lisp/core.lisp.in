@@ -1240,13 +1240,6 @@
   #-:ecl (compile-file-pathname file)
   #+:ecl (compile-file-pathname file :type :object))
 
-(defun |currentDirectoryName| nil
-  (let* ((dir (namestring (truename "")))
-         (n (1- (length dir))))
-    (if (char= (char dir n) #\/)
-        (subseq dir 0 n)
-      dir)))    
-
 ;; Compile Lisp source files to target object code.  Most of the time
 ;; this function is called externally to accomplish just that: compile
 ;; a Lisp file.  So, by default, we exit the read-eval-print loop after
@@ -1277,7 +1270,7 @@
           (setq out-file 
                 (make-pathname :name (pathname-name out-file)
                                :type (pathname-type out-file)
-                               :directory (list (|currentDirectoryName|)))))
+                               :directory (pathname-directory (truename "")))))
   (unwind-protect
       (progn
 	(|startCompileDuration|)
