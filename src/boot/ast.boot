@@ -63,7 +63,7 @@ structure %Ast ==
   %Namespace(%Symbol)                   -- namespace AxiomCore
   %Import(%Ast)                         -- import module; import namespace foo
   %LoadUnit(%Symbol)                    -- System.LoadUnit lib
-  %ImportSignature(%Symbol,%Signature,%Domain)  -- import function declaration
+  %ImportSignature(%Symbol,%Signature,%List)  -- import op(s): t with props == cname
   %Record(%List,%List)                  -- Record(num: %Short, den: %Short)
   %AccessorDef(%Symbol,%Ast)            -- numerator == (.num)
   %TypeAlias(%Head, %List)              -- type alias definition
@@ -1662,9 +1662,28 @@ nativeType t ==
     nativeType "pointer"
   unknownNativeTypeError t
 
+++ True if `t' is a nullable native return type, i.e. `%Maybe T'.
+maybeType? t ==
+  t is [h,.] and symbol? h and symbolName h = '"%Maybe"
+
+++ The underlying type of a possibly-nullable native type `t': the `T' of
+++ a `%Maybe T', otherwise `t' itself.
+maybeBaseType t ==
+  maybeType? t => second t
+  t
+
+++ True if the native return type `t' is a `string' whose storage the
+++ caller must manage explicitly -- decoding the raw pointer, then freeing
+++ it (when `release' is non-nil) and/or guarding a null pointer (when `t'
+++ is a `%Maybe').
+managedStringReturn?(t,release) ==
+  maybeBaseType t = "string" and (release ~= nil or maybeType? t)
+
 ++ Check that `t' is a valid return type for a native function, and
-++ returns its translation
+++ returns its translation.  A `%Maybe T' return decodes a possibly-null
+++ result; the underlying native type is that of `T'.
 nativeReturnType t ==
+  maybeType? t => nativeReturnType second t
   objectMember?(t,$NativeSimpleReturnTypes) => nativeType t
   coreError strconc('"invalid return type for native function: ", 
               PNAME t)
@@ -1672,6 +1691,7 @@ nativeReturnType t ==
 ++ Check that `t' is a valid parameter type for a native function,
 ++ and returns its translation.
 nativeArgumentType t ==
+  maybeType? t => nativeArgumentType second t
   objectMember?(t,$NativeSimpleDataTypes) => nativeType t
   -- Allow 'string'  for `pass-by-value'
   t is "string" => nativeType t
@@ -1713,15 +1733,24 @@ coerceToNativeType(a,t) ==
 ++ Generate GCL native translation for import op: s -> t for op'
 ++ `argtypes' is the list of GCL FFI names for types in `s'.
 ++ `rettype' is the GCL FFI name for `t'.
-genGCLnativeTranslation(op,s,t,op') ==
+genGCLnativeTranslation(op,s,t,op',release) ==
   argtypes := [nativeArgumentType x for x in s]
   rettype := nativeReturnType t
-  -- If a simpel DEFENTRY will do, go for it
+  -- An owned (carries a release) or nullable (%Maybe) `string' return
+  -- cannot use a plain DEFENTRY: GCL would copy the C string but leak the
+  -- original (owned), or crash on a null pointer (nullable).  Such returns
+  -- go through the C-stub path below, which copies into a Lisp string,
+  -- guards a null pointer, and frees the original.
+  -- An owned or nullable string return needs a C stub (copy + free/guard).
+  managedStringReturn?(t,release) =>
+    genGCLownedStringReturn(op,s,t,op',release,maybeType? t)
+  -- If a simple DEFENTRY will do, go for it.
   and/[isSimpleNativeType x for x in [t,:s]] =>
     [["DEFENTRY", op, argtypes, [rettype, symbolName op']]]
   -- Otherwise, do it the hard way.
   [["CLINES",ccode], ["DEFENTRY", op, argtypes, [rettype, cop]]] where
     cop := strconc(symbolName op','"__stub")
+    cargs := [mkCArgName i for i in 0..(#s - 1)]
     ccode := 
       "strconc"/[gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
@@ -1729,7 +1758,6 @@ genGCLnativeTranslation(op,s,t,op') ==
 	     symbolName op', '"(",
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]
-                where cargs := [mkCArgName i for i in 0..(#s - 1)]
     mkCArgName i == strconc('"x",toString i)
     cparm(x,a) ==
       strconc(gclTypeInC first x, '" ", first a,
@@ -1755,18 +1783,79 @@ genGCLnativeTranslation(op,s,t,op') ==
       strconc(gclArgInC(first x, first a),
 	(rest x => '", "; '""))  
 
-genECLnativeTranslation(op,s,t,op') ==
+++ Generate a GCL `string'-returning import that owns its result (when
+++ `release' is non-nil) and/or may be null (when `nullable').  A plain
+++ DEFENTRY would let GCL copy the C string but leak the original, or
+++ crash on a null pointer.  We route through a C stub that copies into a
+++ Lisp string with make_simple_string, returns NIL for a null pointer,
+++ and frees the original through the named release function.
+genGCLownedStringReturn(op,s,t,op',release,nullable) ==
+  argtypes := [nativeArgumentType x for x in s]
+  [["CLINES",ccode], ["DEFENTRY", op, argtypes, ["OBJECT", cop]]] where
+    cop := strconc(symbolName op','"__stub")
+    cargs := [mkCArgName i for i in 0..(#s - 1)]
+    ccode :=
+      "strconc"/['"object ", cop, '"(",
+        :[cparm(x,a) for x in tails s for a in tails cargs],
+        '") { char *p = ", symbolName op', '"(",
+        :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
+        '"); ",
+        (nullable => '"if (p == 0) return Cnil; "; '""),
+        '"{ object r = make__simple__string(p); ",
+        (release ~= nil => strconc(symbolName release,'"(p); "); '""),
+        '"return r; } }" ]
+    mkCArgName i == strconc('"x",toString i)
+    cparm(x,a) ==
+      strconc(gclCType first x, '" ", first a,
+        (rest x => '", "; '""))
+    gclCType x ==
+      objectMember?(x,$NativeSimpleDataTypes) => symbolName x
+      x is "void" => '"void"
+      x is "string" => '"char*"
+      x is [.,["pointer",.]] => "fixnum"
+      '"object"
+    gclArgInCall(x,a) ==
+      objectMember?(x,$NativeSimpleDataTypes) => a
+      x is "string" => a
+      [.,[c,y]] := x
+      c is "pointer" => a
+      y is "char" => strconc(a,'"->st.st__self")
+      y is "byte" => strconc(a,'"->ust.ust__self")
+      y is "int" => strconc(a,'"->fixa.fixa__self")
+      y is "float" => strconc(a,'"->sfa.sfa__self")
+      y is "double" => strconc(a,'"->lfa.lfa__self")
+      coreError '"unknown argument type"
+    gclArgsInC(x,a) ==
+      strconc(gclArgInCall(first x, first a),
+        (rest x => '", "; '""))
+
+genECLnativeTranslation(op,s,t,op',release) ==
   args := nil
   argtypes := nil
   for x in s repeat
      argtypes := [nativeArgumentType x,:argtypes]
      args := [gensym(),:args]
   args := reverse args
-  rettype := nativeReturnType t
-  [["DEFUN",op, args,
-    [bfColonColon("FFI","C-INLINE"),args, reverse! argtypes,
-      rettype, callTemplate(op',#args,s), 
-        bfInert '"ONE-LINER", true]]] where
+  buildECLImport(op,args,argtypes,op',s,t,release) where
+	  buildECLImport(op,args,argtypes,op',s,t,release) ==
+	    nullable := maybeType? t
+	    managed := managedStringReturn?(t,release)
+	    rettype := nativeReturnType t
+	    if managed then rettype := bfInert '"POINTER-VOID"
+	    callForm := [bfColonColon("FFI","C-INLINE"),args, reverse! argtypes,
+	                   rettype, callTemplate(op',#args,s), bfInert '"ONE-LINER", true]
+	    not managed => [["DEFUN",op, args, callForm]]
+	    p := gensym()
+	    decode := [bfColonColon("FFI","CONVERT-FROM-FOREIGN-STRING"), p]
+	    body := decode
+	    if release ~= nil then
+	      body := ["UNWIND-PROTECT", decode,
+	                 [bfColonColon("FFI","C-INLINE"), [p], [bfInert '"POINTER-VOID"],
+	                   bfInert '"VOID", strconc(symbolName release,'"((char*)(#0))"),
+	                     bfInert '"ONE-LINER", true]]
+	    if nullable then
+	      body := ["IF", [bfColonColon("FFI","NULL-POINTER-P"), p], nil, body]
+	    [["DEFUN",op, args, ["LET",[[p,callForm]], body]]]
 	  callTemplate(op,n,s) ==
 	    "strconc"/[symbolName op,'"(",
 	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
@@ -1788,7 +1877,7 @@ genECLnativeTranslation(op,s,t,op') ==
             c is "pointer" => '""
             coreError '"unknown type constructor"
 
-genCLISPnativeTranslation(op,s,t,op') ==
+genCLISPnativeTranslation(op,s,t,op',release) ==
   -- check parameter types and return types.
   rettype := nativeReturnType t
   argtypes := [nativeArgumentType x for x in s]
@@ -1806,6 +1895,13 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- them back.  Ugh.  
   n := makeSymbol strconc(symbolName op, '"%clisp-hack")
   parms := [gensym '"parm" for x in s]  -- parameters of the forward decl.
+
+  -- An owned `string' return is decoded from a raw pointer which is then
+  -- handed to the named release function.  (CLISP's own `ffi:c-string'
+  -- already maps a null pointer to NIL, so a nullable non-owned return
+  -- needs no special handling here.)
+  maybeBaseType t = "string" and release ~= nil =>
+    genCLISPownedStringReturn(op,op',parms,argtypes,release,maybeType? t)
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
   -- of the form ((parameter boot-type . ffi-type) ...)
@@ -1858,8 +1954,39 @@ genCLISPnativeTranslation(op,s,t,op') ==
 getCLISPType a ==
   [bfColonColon("FFI","C-ARRAY"), #a]
 
+++ Generate the CLISP translation of an owned (and possibly nullable)
+++ `string'-returning foreign call.  The foreign call yields a raw pointer
+++ whose pointed-to storage we decode into a fresh Lisp string before
+++ handing the pointer to the named release function.
+genCLISPownedStringReturn(op,op',parms,argtypes,release,nullable) ==
+  callHack := makeSymbol strconc(symbolName op, '"%clisp-call")
+  releaseHack := makeSymbol strconc(symbolName op, '"%clisp-release")
+  callDecl :=
+    [bfColonColon("FFI","DEF-CALL-OUT"),callHack,
+      [bfInert '"NAME",symbolName op'],
+      [bfInert '"ARGUMENTS",:[[a, x] for x in argtypes for a in parms]],
+      [bfInert '"RETURN-TYPE", bfColonColon("FFI","C-POINTER")],
+      [bfInert '"LANGUAGE",bfInert '"STDC"]]
+  releaseDecl :=
+    [bfColonColon("FFI","DEF-CALL-OUT"),releaseHack,
+      [bfInert '"NAME",symbolName release],
+      [bfInert '"ARGUMENTS",[gensym '"loc", bfColonColon("FFI","C-POINTER")]],
+      [bfInert '"RETURN-TYPE", nil],
+      [bfInert '"LANGUAGE",bfInert '"STDC"]]
+  $foreignsDefsForCLisp := [callDecl,releaseDecl,:$foreignsDefsForCLisp]
+  p := gensym()
+  decode := [bfColonColon("FFI","MEMORY-AS"), p,
+              [bfColonColon("FFI","PARSE-C-TYPE"),
+                ["QUOTE", bfColonColon("FFI","C-STRING")]]]
+  body := ["UNWIND-PROTECT", decode, [releaseHack, p]]
+  if nullable then
+    body := ["IF",
+              ["ZEROP", [bfColonColon("FFI","FOREIGN-ADDRESS-UNSIGNED"), p]],
+                nil, body]
+  [["DEFUN",op,parms, ["LET",[[p,[callHack,:parms]]], body]]]
 
-genSBCLnativeTranslation(op,s,t,op') ==    
+
+genSBCLnativeTranslation(op,s,t,op',release) ==    
   -- check return type and argument types.
   rettype := nativeReturnType t
   argtypes := [nativeArgumentType x for x in s]
@@ -1873,7 +2000,13 @@ genSBCLnativeTranslation(op,s,t,op') ==
       unstableArgs := [a,:unstableArgs]
   
   op' := symbolName op'
-    
+
+  -- A `string' return that is owned (carries a release) or nullable
+  -- (%Maybe) is decoded from a raw pointer, so it can be freed and/or
+  -- guarded against a NULL result.
+  managedStringReturn?(t,release) =>
+    genSBCLownedStringReturn(op,args,newArgs,unstableArgs,argtypes,op',release,maybeType? t)
+
   unstableArgs = nil =>
     [["DEFUN",op,args,
       [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
@@ -1887,8 +2020,40 @@ genSBCLnativeTranslation(op,s,t,op') ==
 
 
 
+++ Generate an SBCL `string'-returning foreign call that owns its result
+++ (when `release' is non-nil) and/or may return a null pointer (when
+++ `nullable').  The raw pointer is decoded into a fresh Lisp string; an
+++ owned result is freed with an UNWIND-PROTECT cleanup, and a nullable
+++ result yields NIL for a NULL pointer.
+genSBCLownedStringReturn(op,args,newArgs,unstableArgs,argtypes,cname,release,nullable) ==
+  sap := bfColonColon("SB-SYS","SYSTEM-AREA-POINTER")
+  call :=
+    unstableArgs = nil =>
+      [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
+        [makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), cname,
+          ["FUNCTION",sap,:argtypes]], :args]
+    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), reverse! unstableArgs,
+      [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
+        [makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), cname,
+          ["FUNCTION",sap,:argtypes]], :reverse! newArgs]]
+  p := gensym()
+  decode := [makeSymbol('"C-STRING-TO-STRING",'"SB-ALIEN"), p,
+              [makeSymbol('"DEFAULT-EXTERNAL-FORMAT",'"SB-IMPL")],
+                ["QUOTE","CHARACTER"]]
+  body := decode
+  if release ~= nil then
+    body := ["UNWIND-PROTECT", decode,
+              [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
+                [makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), symbolName release,
+                  ["FUNCTION",bfColonColon("SB-ALIEN","VOID"),sap]], p]]
+  if nullable then
+    body := ["IF",
+              [bfColonColon("SB-SYS","SAP="), p, [bfColonColon("SB-SYS","INT-SAP"), 0]],
+                nil, body]
+  [["DEFUN",op,args, ["LET",[[p,call]], body]]]
+
 ++ Generate Clozure CL's equivalent of import declaration
-genCLOZUREnativeTranslation(op,s,t,op') ==
+genCLOZUREnativeTranslation(op,s,t,op',release) ==
   -- check parameter types and return types.
   rettype := nativeReturnType t
   argtypes := [nativeArgumentType x for x in s]
@@ -1918,10 +2083,27 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
                     p' := objectAssoc(p, aryPairs) => rest p'
                     p
 
-  -- If the foreign call returns a C-string, turn it into a Lisp string.
-  -- Note that if the C-string was malloc-ed, this will leak storage.
-  if t is "string" then
-    call := [bfColonColon("CCL","%GET-CSTRING"), call]
+  -- Decode a C-string result into a fresh Lisp string.  An owned result
+  -- (`release' is non-nil) is handed to the named release function under
+  -- an UNWIND-PROTECT cleanup; a nullable result (a `%Maybe' return)
+  -- decodes a null pointer as NIL.
+  nullable := maybeType? t
+  if maybeBaseType t = "string" then
+    if release ~= nil or nullable then
+      ptr := gensym()
+      body := [bfColonColon("CCL","%GET-CSTRING"), ptr]
+      if release ~= nil then
+        relName := symbolName release
+        if %hasFeature bfInert '"DARWIN" then
+          relName := strconc('"__", relName)
+        body := ["UNWIND-PROTECT", body,
+                  [bfColonColon("CCL","EXTERNAL-CALL"), relName,
+                    bfInert '"ADDRESS", ptr, bfInert '"VOID"]]
+      if nullable then
+        body := ["IF", [bfColonColon("CCL","%NULL-PTR-P"), ptr], nil, body]
+      call := ["LET", [[ptr, call]], body]
+    else
+      call := [bfColonColon("CCL","%GET-CSTRING"), call]
 
   -- If we have array arguments from Boot, bind pointers to initial data.
   for arg in aryPairs repeat
@@ -1943,17 +2125,27 @@ $ffs := nil
 ++ Generate an import declaration for `op' as equivalent of the
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
-genImportDeclaration(op, sig, dom) ==
+++ Look up the value of foreign import property `name' (a string) in the
+++ property association list `props', or nil if the property is absent.
+foreignProperty(name,props) ==
+  props = nil => nil
+  [k,v] := first props
+  symbolName k = name => v
+  foreignProperty(name,rest props)
+
+genImportDeclaration(op, sig, props) ==
   sig isnt ["%Signature", op', m] => coreError '"invalid signature"
   m isnt ["%Mapping", t, s] => coreError '"invalid function type"
   if s ~= nil and symbol? s then s := [s]
   $ffs := [op,:$ffs]
-  if dom is ["%LoadUnit",lib] and not symbolMember?(lib,$foreignLoadUnits) then
+  lib := foreignProperty('"library",props)
+  if lib ~= nil and not symbolMember?(lib,$foreignLoadUnits) then
     $foreignLoadUnits := [lib,:$foreignLoadUnits]
+  release := foreignProperty('"release",props)
 
-  %hasFeature bfInert '"GCL" => genGCLnativeTranslation(op,s,t,op')
-  %hasFeature bfInert '"SBCL" => genSBCLnativeTranslation(op,s,t,op')
-  %hasFeature bfInert '"CLISP" => genCLISPnativeTranslation(op,s,t,op')
-  %hasFeature bfInert '"ECL" => genECLnativeTranslation(op,s,t,op')
-  %hasFeature bfInert '"CLOZURE" => genCLOZUREnativeTranslation(op,s,t,op')
+  %hasFeature bfInert '"GCL" => genGCLnativeTranslation(op,s,t,op',release)
+  %hasFeature bfInert '"SBCL" => genSBCLnativeTranslation(op,s,t,op',release)
+  %hasFeature bfInert '"CLISP" => genCLISPnativeTranslation(op,s,t,op',release)
+  %hasFeature bfInert '"ECL" => genECLnativeTranslation(op,s,t,op',release)
+  %hasFeature bfInert '"CLOZURE" => genCLOZUREnativeTranslation(op,s,t,op',release)
   fatalError '"import declaration not implemented for this Lisp"

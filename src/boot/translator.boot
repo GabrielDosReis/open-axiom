@@ -457,8 +457,8 @@ translateToplevel(ps,b,export?) ==
         bootImport symbolName m
       [["IMPORT-MODULE", symbolName m]]
 
-    %ImportSignature(x, sig, dom) =>
-      genImportDeclaration(x, sig, dom)
+    %ImportSignature(x, sig, props) =>
+      genImportDeclaration(x, sig, props)
 
     %TypeAlias(lhs, rhs) => [genTypeAlias(lhs,rhs)]
 
