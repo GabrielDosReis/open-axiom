@@ -230,14 +230,14 @@ abbreviationsSpad2Cmd l ==
       constructor := abbreviation?(key) => abbQuery(constructor)
       abbQuery(key)
     type is 'remove =>
-      DELDATABASE(key,'ABBREVIATION)
+      DELDATABASE(key,&ABBREVIATION)
     odd? # al => sayKeyedMsg("S2IZ0002",[type])
     repeat
       null al => return 'fromLoop
       [a,b,:al] := al
       mkUserConstructorAbbreviation(b,a,type)
-      SETDATABASE(b,'ABBREVIATION,a)
-      SETDATABASE(b,'CONSTRUCTORKIND,type)
+      SETDATABASE(b,&ABBREVIATION,a)
+      SETDATABASE(b,&CONSTRUCTORKIND,type)
     null quiet =>
       sayKeyedMsg("S2IZ0001",[a,type,opOf b])
       nil

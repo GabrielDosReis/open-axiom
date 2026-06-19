@@ -348,7 +348,7 @@ maximalSuperType d ==
 ++ predicate `pred'.
 noteSubDomainInfo: (%Symbol,%Instantiation,%Form) -> %Thing
 noteSubDomainInfo(sub,super,pred) ==
-  SETDATABASE(sub,"SUPERDOMAIN",[super,pred])
+  SETDATABASE(sub,&SUPERDOMAIN,[super,pred])
 
 ++ Returns non-nil if `d1' is a sub-domain of `d2'.  This is the
 ++ case when `d1' is transitively given by an instance of SubDomain

@@ -406,9 +406,24 @@ dnl GCL assumes that the C compiler is from GNU.
 AC_DEFUN([OPENAXIOM_SATISFY_GCL_NEEDS],[
 ## If we are using GCL as the base runtime system, then we do really need
 ## a C compiler from GNU.  Well, at least for the moment.
+oa_gcl_cc_flags=
 case $oa_lisp_flavor,$oa_cxx_compiler_lineage in
    gcl,gnu)
        oa_cflags="-O2 -Wall -D_GNU_SOURCE"
+       ## GCL emits K&R C whose tagged-pointer/fixnum puns trip
+       ## -Wint-conversion, which modern GCC treats as an error by default.
+       ## When the C compiler accepts -Wno-int-conversion, hand it to GCL so
+       ## that it can compile the C code it generates at run time.
+       AC_LANG_PUSH([C])
+       oa_saved_cflags=$CFLAGS
+       CFLAGS="$CFLAGS -Wno-int-conversion"
+       AC_MSG_CHECKING([whether $CC accepts -Wno-int-conversion])
+       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+          [AC_MSG_RESULT([yes])]
+          [oa_gcl_cc_flags="-Wno-int-conversion"],
+          [AC_MSG_RESULT([no])])
+       CFLAGS=$oa_saved_cflags
+       AC_LANG_POP([C])
        ;;
    
    gcl,*)
@@ -416,6 +431,7 @@ case $oa_lisp_flavor,$oa_cxx_compiler_lineage in
        ;;
 esac
 AC_SUBST(oa_cflags)
+AC_SUBST(oa_gcl_cc_flags)
 ])
 
 dnl ---------------------------------
