@@ -414,7 +414,9 @@
  (browseopen)
  (setq *category-stream-stamp* '(0 . 0))
  (categoryopen) ;note: this depends on constructorform in browse.daase
-#+:AKCL (gbc t)
+ ;; Reference GCL's garbage collector by its home package: in the BOOT
+ ;; package a bare GBC reads as an unbound BOOT::GBC under ANSI mode.
+#+:AKCL (system::gbc t)
 )
 
 
@@ -635,6 +637,11 @@
     (format t "getdatabase call: ~20a ~a~%" constructor key))
   (let (data table stream ignore struct)
     (declare (ignore ignore))
+    ;; Normalize the OBJECT key: under GCL ANSI it may reach us as BOOT::OBJECT
+    ;; while the CASE forms below dispatch on SYSTEM::OBJECT (the foreign C type).
+    #+(and :gcl :common-lisp)
+    (when (and (symbolp key) (string= (symbol-name key) "OBJECT"))
+      (setq key 'object))
     (when (or (symbolp constructor)
 	      (and (eq key 'hascategory) (consp constructor)))
       (let ((struct (and (symbolp constructor) (|constructorDB| constructor))))
@@ -901,6 +908,11 @@
 	      (concat root ".daase"))
   )
  (let ((ancestors-table (make-hash-table :test #'eq))
+       ;; GCL's top level leaves *print-level* and *print-length* bound to a
+       ;; small value in the saved image; bind them off so the databases are
+       ;; serialized in full rather than abbreviated with # and `...'.
+       (*print-level* nil)
+       (*print-length* nil)
        d)
   (declare (special |$constructorList|))
   (do-symbols (symbol)
