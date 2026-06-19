@@ -1752,7 +1752,8 @@ genGCLnativeTranslation(op,s,t,op',release) ==
     cop := strconc(symbolName op','"__stub")
     cargs := [mkCArgName i for i in 0..(#s - 1)]
     ccode := 
-      "strconc"/[gclTypeInC t, '" ", cop, '"(",
+      "strconc"/['"extern ", gclTypeInC t, '" ", symbolName op', '"(); ",
+         gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
 	   '") { ", (t isnt "void" => '"return "; ""),
 	     symbolName op', '"(",
@@ -1795,7 +1796,9 @@ genGCLownedStringReturn(op,s,t,op',release,nullable) ==
     cop := strconc(symbolName op','"__stub")
     cargs := [mkCArgName i for i in 0..(#s - 1)]
     ccode :=
-      "strconc"/['"object ", cop, '"(",
+      "strconc"/['"extern char* ", symbolName op', '"(); ",
+        (release ~= nil => strconc('"extern void ", symbolName release, '"(); "); '""),
+        '"object ", cop, '"(",
         :[cparm(x,a) for x in tails s for a in tails cargs],
         '") { char *p = ", symbolName op', '"(",
         :[gclArgsInC(x,a) for x in tails s for a in tails cargs],

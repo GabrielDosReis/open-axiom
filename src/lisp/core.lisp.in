@@ -55,6 +55,12 @@
   ;; image obtained from compiler link will not work.  The root cause
   ;; is a non-ANSI compliant organization of GCL's implementation.
   #+:gcl (:use "DEFPACKAGE")
+  ;; In ANSI mode, GCL's native-interface vocabulary -- in particular the
+  ;; C type designators INT, DOUBLE, VOID used by $NativeTypeTable and the
+  ;; foreign function code generators -- is not present in COMMON-LISP; it
+  ;; lives in the CLTL1-COMPAT extension package.  In traditional mode it
+  ;; comes from the LISP package used above.
+  #+(and :gcl :common-lisp) (:use "CLTL1-COMPAT")
   ;; Clozure CL sequesters most of its useful extensions, in particular
   ;; threads, in the CCL package.
   ;; #+:clozure (:use "CCL")

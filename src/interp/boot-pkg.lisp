@@ -36,6 +36,11 @@
   #+:common-lisp (:use "COMMON-LISP")
   #-:common-lisp (:use "LISP")
   #+:SBCL (:use "SB-ALIEN")
+  ;; In ANSI mode, GCL's CLINES/DEFENTRY (emitted by the foreign function
+  ;; code generators) are not present in COMMON-LISP; they live in the
+  ;; CLTL1-COMPAT extension package.  In traditional mode they come from
+  ;; the LISP package used above.
+  #+(and :gcl :common-lisp) (:use "CLTL1-COMPAT")
   (:use "AxiomCore" "BOOTTRAN"))
 
 (in-package "BOOT")
