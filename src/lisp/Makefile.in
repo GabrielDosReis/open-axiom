@@ -142,6 +142,11 @@ float_type = @float_type@
 double_type = @double_type@
 string_type = @string_type@
 
+## Extra flags for the C compiler GCL uses on the code it generates.  Empty
+## unless the base Lisp is GCL and the C compiler accepts them; determined
+## by OPENAXIOM_SATISFY_GCL_NEEDS at configuration time.
+oa_gcl_cc_flags = @oa_gcl_cc_flags@
+
 oa_comma =,
 
 oa_keep_files = $(patsubst %,|%|,$(subst $(oa_comma), ,@oa_keep_files@))
@@ -151,6 +156,7 @@ edit = sed \
 	-e 's|@oa_optimize_options[@]|$(oa_optimize_options)|g' \
 	-e 's|@CXX[@]|$(CXX)|g' \
 	-e 's|@LDFLAGS[@]|$(LDFLAGS)|g' \
+	-e 's|@oa_gcl_cc_flags[@]|$(oa_gcl_cc_flags)|g' \
 	-e 's|@oa_editor[@]|$(oa_editor)|g' \
 	-e 's/@oa_keep_files[@]/$(oa_keep_files)/g' \
 	-e 's|@host[@]|$(host)|g' \

@@ -377,6 +377,12 @@
 (defconstant oa-cxx "@CXX@")
 (defconstant oa-ldflags "@LDFLAGS@")
 
+;; Extra flags for the C compiler that GCL uses to compile the C code it
+;; generates at run time.  Determined at configuration time; empty when the
+;; compiler does not accept them.  GCL keeps the compiler and its flags
+;; together in COMPILER::*CC*, so the flags are appended there (see topLevel).
+(defconstant oa-gcl-cc-flags "@oa_gcl_cc_flags@")
+
 ;; The directory that contains the final installation directory, as
 ;; specified at configuration time (or in exoteric cases, as overriden
 ;; on the Make command line). 
@@ -1324,6 +1330,16 @@
 (defun |topLevel|()
   (let ((*package* (find-package "AxiomCore"))
 	(command-args (|getCommandLineArguments|)))
+    ;; GCL re-resolves COMPILER::*CC* at every image startup, discarding any
+    ;; load-time change, so hand it the configured C compiler flags here, at
+    ;; run time and before any constructor code is compiled.  This is the
+    ;; common entry point for both the saved image and the interpreter
+    ;; (BOOT::systemMain calls it).
+    #+:gcl
+    (when (and (plusp (length oa-gcl-cc-flags))
+               (not (search oa-gcl-cc-flags compiler::*cc*)))
+      (setq compiler::*cc*
+            (concatenate 'string compiler::*cc* " " oa-gcl-cc-flags)))
     (when (null command-args) 
       (|internalError| "empty command line args"))
     ;; Existing system programming practive, and POSIX, have it
