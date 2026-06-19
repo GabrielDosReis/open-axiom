@@ -306,15 +306,10 @@ bufferToVector buf ==
   v
 
 
-++ Return the name of a relative path for a directory
-++ given by the string `s',  GCL does not implement
-++ Common Lisp semantics, so we have a special version for it.
+++ Return the Common Lisp directory list naming the relative directory
+++ given by the string `s', e.g. "foo.NRLIB" -> (:relative "foo.NRLIB").
 relativeDirname s ==
-)if %hasFeature &GCL and not %hasFeature &COMMON_-LISP
-  [s]
-)else
   [&RELATIVE,s]
-)endif
 
 --% Sub-domains information handlers
 
