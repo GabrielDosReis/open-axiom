@@ -530,29 +530,74 @@ bpProvenance ps ==
     bpPush(ps,%LoadUnit lib)
   bpPush(ps,nil)
 
-++ Parse a module import, or a import declaration for a foreign entity.
+++ Parse a module import, or an import declaration for a foreign entity.
 ++ Import:
-++    IMPORT Signature FOR Name
-++    IMPORT Signature IN Application FOR Name
+++    IMPORT Name ( ArgtypeList ) : Type [ WITH PropertyList ] == Name
 ++    IMPORT Name
 ++    IMPORT NAMESPACE LongName
+++ A foreign function import binds the logical Boot name on the left of
+++ `==' to the foreign entity named on its right.  Optional properties
+++ express the ownership contract of the binding, e.g. `with release: c_free'.
 bpImport ps ==
   bpEqKey(ps,"IMPORT") =>
     bpEqKey(ps,"NAMESPACE") =>
       bpLeftAssoc(ps,'(DOT),function bpName) and
         bpPush(ps,%Import bfNamespace bpPop1 ps)
           or bpTrap ps
-    a := bpState ps
     bpRequire(ps,function bpName)
-    bpEqPeek(ps,"COLON") =>
-      bpRestore(ps,a)
-      bpRequire(ps,function bpSignature)
-      bpProvenance ps
-      bpEqKey(ps,"FOR") or bpTrap ps
-      bpRequire(ps,function bpName)
-      bpPush(ps,%ImportSignature(bpPop1 ps, bpPop2 ps, bpPop1 ps))
+    bpEqPeek(ps,"OPAREN") =>
+      bpForeignImport ps
     bpPush(ps,%Import bpPop1 ps)
   false
+
+++ Parse the tail of a foreign function import, after the logical name:
+++    ( ArgtypeList ) : Type [ WITH PropertyList ] == Name
+++ The logical name has already been pushed onto the parser stack.
+bpForeignImport ps ==
+  (bpParenthesized(ps,function bpArgtypeList) or bpTrap ps) and
+    (bpEqKey(ps,"COLON") or bpTrap ps) and
+      bpRequire(ps,function bpApplication) and
+        bpForeignProperties ps and
+          (bpEqKey(ps,"DEF") or bpTrap ps) and
+            bpRequire(ps,function bpName) and
+              bpPushForeignImport ps
+
+++ Assemble a %ImportSignature node from the foreign import components left
+++ on the parser stack: name, argtypes, result, properties, cname.
+bpPushForeignImport ps ==
+  cname := bpPop1 ps
+  properties := bpPop1 ps
+  result := bpPop1 ps
+  argtypes := bpPop1 ps
+  name := bpPop1 ps
+  bpPush(ps,%ImportSignature(name,
+            %Signature(cname,%Mapping(result,bfUntuple argtypes)),
+            properties))
+
+++ Parse an optional foreign import property clause:
+++    WITH PropertyList
+++ Always leaves a (possibly empty) property association list on the stack.
+bpForeignProperties ps ==
+  bpEqKey(ps,"WITH") => bpRequire(ps,function bpForeignPropertyList)
+  bpPush(ps,nil)
+
+++ PropertyList:
+++    Property
+++    Property , PropertyList
+bpForeignPropertyList ps ==
+  bpForeignProperty ps =>
+    bpEqKey(ps,"COMMA") =>
+      bpRequire(ps,function bpForeignPropertyList) and
+        bpPush(ps,[bpPop2 ps,:bpPop1 ps])
+    bpPush(ps,[bpPop1 ps])
+  false
+
+++ Property:
+++    Name : Name
+bpForeignProperty ps ==
+  bpName ps and (bpEqKey(ps,"COLON") or bpTrap ps) and
+    bpRequire(ps,function bpName) and
+      bpPush(ps,[bpPop2 ps,bpPop1 ps])
 
 ++
 ++ Namespace:

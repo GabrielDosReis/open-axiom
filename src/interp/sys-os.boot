@@ -50,17 +50,16 @@ loadSystemRuntimeCore()
 --% File System Support
 
 ++ Get a temporary pathname
-import oa__acquire__temporary__pathname: () -> string for
-  acquireTemporaryPathname
+import acquireTemporaryPathname(): string with release: oa__release__temporary__pathname == oa__acquire__temporary__pathname
 
 ++ Current working directory
-import oa__getcwd: () -> string for doGetWorkingDirectory
+import doGetWorkingDirectory(): string with release: oa__release__storage == oa__getcwd
 
 getWorkingDirectory() ==
   ensureTrailingSlash doGetWorkingDirectory()
 
 ++ Copy a file.
-import oa__copy__file: (string,string) -> int for doCopyFile
+import doCopyFile(string, string): int == oa__copy__file
        -- 0: success
        -- otherwise: error.
 
@@ -69,60 +68,57 @@ copyFile(src,dst) ==
   systemError ['"Could not copy file",:bright src,'"to",:bright dst]
 
 ++ change current working directory.
-import oa__chdir: string -> int for changeDirectory
+import changeDirectory(string): int == oa__chdir
        -- 0: success, -1: failure
   
 ++ remove file or directory tree.
-import oa__unlink: string -> int for removeFile
+import removeFile(string): int == oa__unlink
        -- 0: sucess, -1: failure
 
 ++ rename file or directory
-import oa__rename: (string,string) -> int for renameFile
+import renameFile(string, string): int == oa__rename
        -- 0: success, -1 failure
 
 ++ create a directory
-import oa__mkdir: string -> int for mkdir
+import mkdir(string): int == oa__mkdir
        -- 0: sucess, -1: failure.
 
 ++ Test whether a path names a directory.
-import directoryp: string -> int for directoryp
+import directoryp(string): int == directoryp
        -- -1: path does not exist or access denied
        --  0: path exists but is not directory
        --  1: path designates directory
 
 ++ Test whether a file exists and is accessible for read.
-import readablep: string -> int for readablep
+import readablep(string): int == readablep
        -- -1: inexistent.
        --  0: exist but read access denied.
        --  1: exist and read accress granted.
   
 ++ Test whether a file exists and is accessible for write.
-import writeablep: string -> int for writeablep
+import writeablep(string): int == writeablep
        -- -1: inexistent.
        --  0: exists but write access denied
        --  1: exists and write access granted
        --  2: inexistent but write access to parent directory granted.
 
-import oa__filedesc__read: (int,writeonly buffer byte,int) -> int 
-  for readFromFileHandle
+import readFromFileHandle(int, writeonly buffer byte, int): int == oa__filedesc__read
        -- -1: failure; otherwise
        -- actual read bytes count
 
-import oa__filedesc__write: (int,readonly buffer byte,int) -> int 
-  for writeToFileHandle
+import writeToFileHandle(int, readonly buffer byte, int): int == oa__filedesc__write
        -- -1: failure; otherwise
        -- actual written bytes count
 
-import oa__filedesc__close: int -> int for closeFileHandle
+import closeFileHandle(int): int == oa__filedesc__close
        -- -1: failure; otherwise 0.
 
-import oa__getenv: string -> string for getEnv
+import getEnv(string): %Maybe string == oa__getenv
   
 
 --% Local IPC socket support
 
-import oa__open__local__client__stream__socket: string -> int 
-  for openLocalClientStreamSocket
+import openLocalClientStreamSocket(string): int == oa__open__local__client__stream__socket
        -- -1: failure
 
 --% INET socket stream support
@@ -133,75 +129,67 @@ import oa__open__local__client__stream__socket: string -> int
 ++    -1: failure
 ++     0: success
 ++ Note that at the moment, only IP4 is supported.
-import oa__inet__pton: (string, int, writeonly buffer byte) -> int
-  for presentationToNumeric
+import presentationToNumeric(string, int, writeonly buffer byte): int == oa__inet__pton
 
 ++ Try to resolve a network hostname to its IP address.  On success,
 ++ return 0, otherwise -1.  The IP address is written into the 
 ++ third argument.
-import oa__get__host__address: (string, int, writeonly buffer byte) -> int
-  for hostnameToNumeric
+import hostnameToNumeric(string, int, writeonly buffer byte): int == oa__get__host__address
 
 ++ Try to establish a client TCP/IP socket connection.  The IP numeric
 ++ address is specified by the first argument; second argument is the
 ++ version of IP used (4 or 6); third argument is the desired port.
 ++ Return -1 on failure, otherwise the file descriptor corresponding
 ++ to the obtained client socket.
-import oa__connect__ip__port__stream: (readonly buffer byte,int,int) -> int
-  for doConnectToHostAndPort
+import doConnectToHostAndPort(readonly buffer byte, int, int): int == oa__connect__ip__port__stream
 
 ++ Try to read bytes of data from socket.  
 ++    Return -1 for failure; number of read bytes, otherwise.
-import oa__socket__read: (int,writeonly buffer byte,int) -> int 
-  for readFromStreamSocket
+import readFromStreamSocket(int, writeonly buffer byte, int): int == oa__socket__read
 
 ++ Try read a byte socket from a socket.  
 ++ Return -1 on failure; byte read, otherwise.
-import oa__socket__read__byte: int -> int
-  for doReadByteFromStreamSocket
+import doReadByteFromStreamSocket(int): int == oa__socket__read__byte
   
 ++ Try to write bytes of data to socket.
 ++    Return -1 on failure; actual bytes written, otherwise.
-import oa__socket__write: (int,readonly buffer byte,int) -> int 
-  for writeToStreamSocket
+import writeToStreamSocket(int, readonly buffer byte, int): int == oa__socket__write
 
 ++ Try to write a byte to socket.
 ++   Return -1 on failure; the written byte, otherwise.
-import oa__socket__write__byte: (int,int) -> int
-  for doWriteByteToStreamSocket
+import doWriteByteToStreamSocket(int, int): int == oa__socket__write__byte
 
-import oa__close__socket: int -> int for closeSocket
+import closeSocket(int): int == oa__close__socket
 
 --% OpenAxiom subsystem socket support
 
 ++ socket interface
-import open__server: string -> int for openServer
+import openServer(string): int == open__server
 
-import sock__get__int: int -> int for sockGetInt
+import sockGetInt(int): int == sock__get__int
 
-import sock__send__int: (int,int) -> int for sockSendInt
+import sockSendInt(int, int): int == sock__send__int
 
-import sock__get__string: int -> string for sockGetString
+import sockGetString(int): string == sock__get__string
 
-import sock__send__string__len: (int, string, int) -> int
-  for doSendString
+import doSendString(int, string, int): int == sock__send__string__len
 
 sockSendString(type,str) ==
   doSendString(type, str, # str)
 
-import sock__get__float: int -> double for sockGetFloat
+import sockGetFloat(int): double == sock__get__float
 
-import sock__send__float: (int,double) -> int for sockSendFloat
+import sockSendFloat(int, double): int == sock__send__float
 
-import sock__send__wakeup: (int,int) -> int for sockSendWakeup
+import sockSendWakeup(int, int): int == sock__send__wakeup
 
-import server__switch: () -> int for serverSwitch
+import serverSwitch(): int == server__switch
 
-import sock__send__signal: (int,int) -> int for sockSendSignal
+import sockSendSignal(int, int): int == sock__send__signal
 
 --%
 
-import oa__system: string -> int for runCommand
+import runCommand(string): int == oa__system
 
 ++ run a program with specified arguments
 runProgram(prog,args) ==
@@ -218,12 +206,12 @@ runProgram(prog,args) ==
   
 ++ numeric limits
 
-import quiet__double__NaN: () -> double for quietDoubleNaN
+import quietDoubleNaN(): double == quiet__double__NaN
 
 )if %hasFeature %Inert::GCL
-import plus__infinity: () -> double for plusInfinity
+import plusInfinity(): double == plus__infinity
 
-import minus__infinity: () -> double for minusInfinity
+import minusInfinity(): double == minus__infinity
 
 $plusInfinity := plusInfinity()
 $minusInfinity := minusInfinity()
@@ -251,7 +239,7 @@ minusInfinity() ==
 ++ stdStreamIsTerminal:
 ++   returns 1 if the standard stream is attached to a terminal;
 ++   otherwise 0.
-import  std__stream__is__terminal: int -> int for stdStreamIsTerminal
+import stdStreamIsTerminal(int): int == std__stream__is__terminal
 
 --% Data layout
 
@@ -260,4 +248,4 @@ import  std__stream__is__terminal: int -> int for stdStreamIsTerminal
 ++   0: unknown
 ++   1: little endian
 ++   2: big endian
-import oa__get__host__byteorder: () -> int for getHostByteOrder
+import getHostByteOrder(): int == oa__get__host__byteorder

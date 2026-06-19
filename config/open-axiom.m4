@@ -496,6 +496,7 @@ case $oa_lisp_flavor in
     gaia)
        oa_quiet_flags=''
        oa_eval_flags='--eval'
+       ;;
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $OA_LISP]) ;;
 esac
 ])

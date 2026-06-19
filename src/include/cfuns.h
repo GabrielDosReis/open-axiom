@@ -52,6 +52,7 @@ OPENAXIOM_C_EXPORT int oa_unlink(const char*);
 OPENAXIOM_C_EXPORT int oa_rename(const char*, const char*);
 OPENAXIOM_C_EXPORT const char* oa_acquire_temporary_pathname();
 OPENAXIOM_C_EXPORT void oa_release_temporary_pathname(const char*);
+OPENAXIOM_C_EXPORT void oa_release_storage(const char*);
 OPENAXIOM_C_EXPORT int oa_mkdir(const char*);
 OPENAXIOM_C_EXPORT int oa_system(const char*);
 OPENAXIOM_C_EXPORT char* oa_getenv(const char*);

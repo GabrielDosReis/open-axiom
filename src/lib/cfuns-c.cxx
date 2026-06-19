@@ -549,6 +549,14 @@ oa_release_temporary_pathname(const char* s)
    free(const_cast<char*>(s));  // yuck!
 }
 
+/* Release storage returned by an OpenAxiom runtime function that
+   transfers ownership to the caller, e.g. the string from oa_getcwd.  */
+OPENAXIOM_C_EXPORT void
+oa_release_storage(const char* s)
+{
+   free(const_cast<char*>(s));
+}
+
 /* Rename a file or directory.  */
 OPENAXIOM_C_EXPORT int
 oa_rename(const char* old_path, const char* new_path)
