@@ -145,15 +145,15 @@ genericInstanceForm form ==
 
 getConstructorSourceFileFromDB: %Symbol -> %Maybe %String
 getConstructorSourceFileFromDB ctor ==
-  GETDATABASE(ctor,"SOURCEFILE")
+  GETDATABASE(ctor,&SOURCEFILE)
 
 getConstructorModuleFromDB: %Symbol -> %Maybe %String
 getConstructorModuleFromDB ctor ==
-  GETDATABASE(ctor,"OBJECT")
+  GETDATABASE(ctor,&OBJECT)
 
 getConstructorDocumentationFromDB: %Symbol -> %List %Form
 getConstructorDocumentationFromDB ctor ==
-  GETDATABASE(ctor,"DOCUMENTATION")
+  GETDATABASE(ctor,&DOCUMENTATION)
 
 getConstructorOperationsFromDB: %Symbol -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
@@ -207,19 +207,19 @@ niladicConstructor? ctor ==
 
 constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %Code
 constructorHasCategoryFromDB p ==
-  GETDATABASE(p,"HASCATEGORY")
+  GETDATABASE(p,&HASCATEGORY)
 
 getConstructorDefaultFromDB: %Symbol -> %Maybe %Symbol
 getConstructorDefaultFromDB ctor ==
-  GETDATABASE(ctor,"DEFAULTDOMAIN")
+  GETDATABASE(ctor,&DEFAULTDOMAIN)
 
 getOperationFromDB: %Symbol -> %List %Sig
 getOperationFromDB op ==
-  GETDATABASE(op,"OPERATION")
+  GETDATABASE(op,&OPERATION)
 
 getOperationModemapsFromDB: %Symbol -> %List %Modemap
 getOperationModemapsFromDB op ==
-  GETDATABASE(op,"MODEMAPS")
+  GETDATABASE(op,&MODEMAPS)
 
 
 getConstructorArity: %Symbol -> %Short

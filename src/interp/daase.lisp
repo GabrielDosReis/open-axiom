@@ -616,19 +616,19 @@
       (unless (setq struct (|constructorDB| constructor))
 	(setq struct (|makeDB| constructor)))
       (case key
-	    (abbreviation
+	    (:abbreviation
 	     (setf (|dbAbbreviation| struct) value)
 	     (when (symbolp value)
 	       (setf (get value 'abbreviationfor) constructor)))
-	    (superdomain
+	    (:superdomain
 	     (setf (|dbSuperDomain| struct) value))
-	    (constructorkind
+	    (:constructorkind
 	     (setf (|dbConstructorKind| struct) value))))))
 
 (defun deldatabase (constructor key)
   (when (symbolp constructor)
     (case key
-	  (abbreviation
+	  (:abbreviation
 	   (setf (get constructor 'abbreviationfor) nil)))))
 
 (defun getdatabase (constructor key)
@@ -637,47 +637,42 @@
     (format t "getdatabase call: ~20a ~a~%" constructor key))
   (let (data table stream ignore struct)
     (declare (ignore ignore))
-    ;; Normalize the OBJECT key: under GCL ANSI it may reach us as BOOT::OBJECT
-    ;; while the CASE forms below dispatch on SYSTEM::OBJECT (the foreign C type).
-    #+(and :gcl :common-lisp)
-    (when (and (symbolp key) (string= (symbol-name key) "OBJECT"))
-      (setq key 'object))
     (when (or (symbolp constructor)
-	      (and (eq key 'hascategory) (consp constructor)))
+	      (and (eq key :hascategory) (consp constructor)))
       (let ((struct (and (symbolp constructor) (|constructorDB| constructor))))
 	(case key
-	      (operation
+	      (:operation
 	       (setq stream *operation-stream*)
 	       (setq data (gethash constructor *operation-hash*)))
-	      (modemaps
+	      (:modemaps
 	       (setq stream *interp-stream*)
 	       (when struct
 		 (setq data (|dbModemaps| struct))))
-	      (hascategory
+	      (:hascategory
 	       (setq table  |$HasCategoryTable|)
 	       (setq stream *category-stream*)
 	       (setq data (gethash constructor table)))
-	      (object
+	      (:object
 	       (setq stream *interp-stream*)
 	       (when struct
 		 (setq data (|dbModule| struct))))
-	      (constructor?
+	      (:constructor?
 	       (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
-	      (defaultdomain
+	      (:defaultdomain
 		(setq data (cadr (assoc constructor *defaultdomain-list*))))
-	      (sourcefile
+	      (:sourcefile
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (|dbSourceFile| struct))))
-	      (documentation
+	      (:documentation
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (database-documentation struct))))
-	      (users
+	      (:users
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (database-users struct))))
-	      (dependents
+	      (:dependents
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (database-dependents struct))))
@@ -689,31 +684,31 @@
 	  (file-position stream data)
 	  (setq data (read stream))
 	  (case key ; cache the result of the database read
-		(operation           
+		(:operation           
 		 (setf (gethash constructor *operation-hash*) data))
-		(hascategory 
+		(:hascategory 
 		 (setf (gethash constructor |$HasCategoryTable|) data))
-		(modemaps  
+		(:modemaps  
 		 (setf (|dbModemaps| struct) data))
-		(object    
+		(:object    
 		 (setf (|dbModule| struct) data))
-		(documentation 
+		(:documentation 
 		 (setf (database-documentation struct) data))
-		(users     
+		(:users     
 		 (setf (database-users struct) data))
-		(dependents
+		(:dependents
 		 (setf (database-dependents struct) data))
-		(sourcefile
+		(:sourcefile
 		 (setf (|dbSourceFile| struct) data))))
 	(case key ; fixup the special cases
-	      (sourcefile
+	      (:sourcefile
 	       (when (and data (string= (directory-namestring data) "")
 			  (string= (pathname-type data) "spad"))
 		 (setq data
 		       (concatenate 'string 
 				    (|systemRootDirectory|)
 				    "src/algebra/" data))))
-	      (object		       ; fix up system object pathname
+	      (:object		       ; fix up system object pathname
 	       (if (consp data)
 		   (setq data
 			 (if (string= (directory-namestring (car data)) "")
