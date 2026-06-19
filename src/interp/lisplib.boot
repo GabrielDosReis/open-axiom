@@ -768,15 +768,8 @@ getIndexPathname dir ==
 
 getAllIndexPathnames: %String -> %List %Thing
 getAllIndexPathnames dir ==
-  -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from
-  -- everybody else's.  Namely, GCL would return a
-  -- a list of drirectories AND files.  Pretty much like `ls *'.
-  -- Everybody else strips out directories.
-)if %hasFeature KEYWORD::GCL
-  [getIndexPathname filePathString d for d in DIRECTORY strconc(dir,'"*.NRLIB")]
-)else
+  -- Return the index files of all NRLIBs in `dir'.
   DIRECTORY strconc(dir,'"*.NRLIB/",$IndexFilename)
-)endif
   
 
 getAllAldorObjectFiles: %String -> %List %Thing

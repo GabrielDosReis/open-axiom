@@ -327,7 +327,7 @@ static void print_usage(void) {
       { "--compile", Driver::compiler },
       { "--translate", Driver::compiler },
       { "--build-databases", Driver::compiler },
-      { "--build-initdb", Driver::core },
+      { "--build-initdb", Driver::compiler },
       { "--make", Driver::linker },
    };
 
