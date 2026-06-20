@@ -1297,6 +1297,14 @@ set(oa_spad_compile_prefix
 
 set(oa_all_spadfiles "")
 
+# Ensure the destination exists before extraction.  hammer and the plain
+# copy below write whole .spad files into oa_algebra_outsrc, but nothing
+# else creates that directory (the per-constructor extraction below creates
+# its own oa_algebra_builddir).  hammer exits 0 even when it cannot open its
+# output file in a missing directory, so without this the extracts silently
+# produce nothing and initdb later fails on an empty scan directory.
+file(MAKE_DIRECTORY "${oa_algebra_outsrc}")
+
 # -- Pamphlets: extract whole file via hammer --
 foreach(spad ${OA_ALGEBRA_PAMPHLET_BASES})
   set(_pam "${oa_algebra_srcdir}/${spad}.spad.pamphlet")
