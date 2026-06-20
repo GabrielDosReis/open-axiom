@@ -539,9 +539,6 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure|g
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${oa_lisp_generated_fasl}"
       "${OA_STAGE_ROOT}/lisp/"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${oa_lisp_generated_image}"
-      "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
   )
 
   # ECL needs a linkset file and the linkable object in the build layout.
@@ -562,6 +559,7 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure|g
   add_custom_target(stage-lisp-runtime
     ${oa_stage_lisp_commands}
     DEPENDS stage-native-layout "${oa_lisp_generated_image}"
+            "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
     COMMENT "Place Lisp runtime artifacts into the build layout"
   )
 
@@ -683,7 +681,7 @@ function(oa_boot_compile_module stage module clisp_file deps)
       --load-directory=${outdir}
       "${clisp_file}"
     WORKING_DIRECTORY "${outdir}"
-    DEPENDS ${clisp_file} ${deps}
+    DEPENDS ${clisp_file} ${deps} ${OA_LISPSYS}
     COMMENT "[boot/${stage}] Compile ${module}.clisp"
     VERBATIM
   )
@@ -764,7 +762,7 @@ function(oa_boot_link_image stage fasl_list)
       -DWORKDIR=${outdir}
       -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
     WORKING_DIRECTORY "${outdir}"
-    DEPENDS ${fasl_list} stage-lisp-runtime
+    DEPENDS ${fasl_list} ${OA_LISPSYS} stage-lisp-runtime
     COMMENT "[boot/${stage}] Link bootsys image"
     VERBATIM
   )
