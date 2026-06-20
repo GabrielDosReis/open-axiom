@@ -427,27 +427,109 @@ if(OA_LISP_EXECUTABLE AND OA_LISP_FLAVOR MATCHES "^(gcl|ecl|sbcl|clisp|clozure|g
     endif()
   endif()
 
-  # -- Step 3: Link the FASL into a standalone executable image --
+  # -- Step 3: Link the base Lisp image --
   # The Lisp |..| bar-escape syntax contains pipe characters that cmd.exe
-  # interprets as shell pipes, so we write the link form to a file and
-  # --load it instead of passing it via --eval.
-  set(oa_lisp_link_script "${oa_lisp_build_dir}/link-base-lisp.lisp")
-  file(WRITE "${oa_lisp_link_script}"
-    "(load \"core\")\n(|AxiomCore|::|link| \"base-lisp${CMAKE_EXECUTABLE_SUFFIX}\" (quote ${oa_base_lisp_objects}) \"|AxiomCore|::|topLevel|\")\n")
+  # interprets as shell pipes, so link forms go through files run via
+  # cmake/RunCommand.cmake rather than a shell.
+  if(OA_LISP_FLAVOR STREQUAL "gcl")
+    # GCL resolves FASL symbol references against the running image's symbol
+    # table (sfaslelf.c relocation), not against shared libraries, so the
+    # OpenAxiom C runtime (oa_get_host_byteorder, ...) must be STATICALLY
+    # linked into the base image.  |AxiomCore|::|link| only does save-system
+    # (no C linking), so -- exactly as the Autotools src/lisp/Makefile does --
+    # build an intermediate save-system image, then use it to compiler::link
+    # core plus the C-runtime objects into the real base image.
+    #
+    # oa-gcl-c-runtime holds just the three C-runtime translation units (NOT
+    # the whole open-axiom-core, which also bundles the C++ boot translator);
+    # it is compiled with open-axiom-core's include directories and flags.
+    add_library(oa-gcl-c-runtime OBJECT
+      lib/bsdsignal.cxx
+      lib/cfuns-c.cxx
+      lib/sockio-c.cxx
+    )
+    target_include_directories(oa-gcl-c-runtime PRIVATE
+      $<TARGET_PROPERTY:open-axiom-core,INCLUDE_DIRECTORIES>)
+    target_compile_features(oa-gcl-c-runtime PRIVATE cxx_std_20)
+    oa_apply_build_flags(oa-gcl-c-runtime)
 
-  add_custom_command(
-    OUTPUT "${oa_lisp_generated_image}"
-    COMMAND ${OA_LISP_CMD}
-            ${OA_LISP_EVAL_FLAG} "(load \"link-base-lisp.lisp\")"
-    WORKING_DIRECTORY "${oa_lisp_build_dir}"
-    DEPENDS "${oa_lisp_generated_fasl}"
-    COMMENT "Link the OpenAxiom base Lisp image"
-    VERBATIM
-  )
+    set(oa_lisp_stage1_image
+      "${oa_lisp_build_dir}/base-lisp-stage1${CMAKE_EXECUTABLE_SUFFIX}")
+
+    # Stage 1: save-system intermediate image (no C runtime yet).
+    set(oa_lisp_link_script "${oa_lisp_build_dir}/link-base-lisp.lisp")
+    file(WRITE "${oa_lisp_link_script}"
+      "(load \"core\")\n(|AxiomCore|::|link| \"base-lisp-stage1${CMAKE_EXECUTABLE_SUFFIX}\" (quote nil) \"|AxiomCore|::|topLevel|\")\n")
+
+    # Stage 2: compiler::link form.  $<TARGET_OBJECTS:oa-gcl-c-runtime>
+    # resolves to the three C-runtime objects; -lstdc++/-lm satisfy the C++
+    # runtime they reference.  file(GENERATE) expands the generator
+    # expression; the stage-1 image runs this form on stdin.
+    set(oa_gcl_link_form "${oa_lisp_build_dir}/link-gcl-image.lisp")
+    file(GENERATE OUTPUT "${oa_gcl_link_form}" CONTENT
+"(compiler::link
+  '(\"core.${OA_LISP_LNK_EXT}\")
+  \"base-lisp${CMAKE_EXECUTABLE_SUFFIX}\"
+  \"(progn (when (fboundp 'si::sgc-on) (si::sgc-on nil)) (setq si::*top-level-hook* (read-from-string \\\"|AxiomCore|::|topLevel|\\\")))\"
+  \"$<JOIN:$<TARGET_OBJECTS:oa-gcl-c-runtime>, > -lstdc++ -lm\")
+(bye)
+")
+    set(oa_gcl_link_cmdfile "${oa_lisp_build_dir}/link-gcl-image.cmdfile")
+    file(GENERATE OUTPUT "${oa_gcl_link_cmdfile}"
+      CONTENT "${oa_lisp_stage1_image}\n")
+
+    add_custom_command(
+      OUTPUT "${oa_lisp_generated_image}"
+      COMMAND ${OA_LISP_CMD}
+              ${OA_LISP_EVAL_FLAG} "(load \"link-base-lisp.lisp\")"
+      COMMAND ${CMAKE_COMMAND} -E env ${OA_LISP_ENV_VARS}
+              ${CMAKE_COMMAND}
+              -DCMDFILE=${oa_gcl_link_cmdfile}
+              -DSTDINFILE=${oa_gcl_link_form}
+              -DWORKDIR=${oa_lisp_build_dir}
+              -P ${PROJECT_SOURCE_DIR}/cmake/RunCommand.cmake
+      WORKING_DIRECTORY "${oa_lisp_build_dir}"
+      DEPENDS "${oa_lisp_generated_fasl}"
+              oa-gcl-c-runtime
+      COMMENT "Link the OpenAxiom base GCL image (static C runtime)"
+      VERBATIM
+    )
+  else()
+    set(oa_lisp_link_script "${oa_lisp_build_dir}/link-base-lisp.lisp")
+    file(WRITE "${oa_lisp_link_script}"
+      "(load \"core\")\n(|AxiomCore|::|link| \"base-lisp${CMAKE_EXECUTABLE_SUFFIX}\" (quote ${oa_base_lisp_objects}) \"|AxiomCore|::|topLevel|\")\n")
+
+    add_custom_command(
+      OUTPUT "${oa_lisp_generated_image}"
+      COMMAND ${OA_LISP_CMD}
+              ${OA_LISP_EVAL_FLAG} "(load \"link-base-lisp.lisp\")"
+      WORKING_DIRECTORY "${oa_lisp_build_dir}"
+      DEPENDS "${oa_lisp_generated_fasl}"
+      COMMENT "Link the OpenAxiom base Lisp image"
+      VERBATIM
+    )
+  endif()
 
   # -- Step 4: Place Lisp artifacts into the runtime layout --
   # Only artifacts consumed by later build steps belong here.
   # Install-only files (cmake settings) are handled by install() rules.
+  #
+  # Stage the base Lisp image with add_custom_command(OUTPUT ...) -- the same
+  # pattern used for the staged bootsys below -- so the rule that produces it
+  # is resolvable in the dependency graph.  The boot and interpreter steps run
+  # it via --execpath (OA_LISPSYS) and must rebuild when its content changes
+  # (e.g. when the GCL C runtime is relinked into it); a copy hidden inside the
+  # phony stage-lisp-runtime target would not trigger that rebuild.
+  add_custom_command(
+    OUTPUT "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${oa_lisp_generated_image}"
+      "${OA_STAGE_ROOT}/bin/lisp${CMAKE_EXECUTABLE_SUFFIX}"
+    DEPENDS "${oa_lisp_generated_image}" stage-native-layout
+    COMMENT "Stage the base Lisp image"
+    VERBATIM
+  )
+
   set(oa_stage_lisp_commands
     COMMAND ${CMAKE_COMMAND} -E make_directory
       "${OA_STAGE_ROOT}/lisp"
