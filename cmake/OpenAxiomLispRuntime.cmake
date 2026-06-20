@@ -17,6 +17,11 @@
 #   oa_query_lisp(OUTPUT_VAR EXPRESSION <expr>)
 #   oa_set_ffi_type_table(flavor precision)
 
+# CheckCCompilerFlag provides check_c_compiler_flag(), used by
+# oa_configure_lisp_runtime to probe host C-compiler support for the GCL
+# runtime cc-flags.
+include(CheckCCompilerFlag)
+
 
 # ---------------------------------------------------------------------------
 # oa_parse_lisp_flavor -- classify a Lisp implementation from free-form text
@@ -347,6 +352,24 @@ function(oa_configure_lisp_runtime)
   oa_list_to_string(_eval_flags  ${_batch_args} ${_eval_flag})
 
   # -------------------------------------------------------------------
+  # 6b. GCL runtime C-compiler flags.
+  #     GCL compiles the algebra to C and invokes the host C compiler at
+  #     image runtime.  Modern GCC (>= 15) promotes -Wint-conversion to an
+  #     error by default, which aborts that on-the-fly compilation.  When the
+  #     C compiler accepts -Wno-int-conversion, thread it into the GCL image
+  #     (via @oa_gcl_cc_flags@ in core.lisp.in, appended to COMPILER::*CC*)
+  #     so the algebra keeps building.  Mirrors the Autotools
+  #     OPENAXIOM_SATISFY_GCL_NEEDS probe.
+  # -------------------------------------------------------------------
+  set(_gcl_cc_flags "")
+  if(_detected_flavor STREQUAL "gcl")
+    check_c_compiler_flag("-Wno-int-conversion" OA_C_ACCEPTS_WNO_INT_CONVERSION)
+    if(OA_C_ACCEPTS_WNO_INT_CONVERSION)
+      set(_gcl_cc_flags "-Wno-int-conversion")
+    endif()
+  endif()
+
+  # -------------------------------------------------------------------
   # 7. Export everything into the parent scope.
   # -------------------------------------------------------------------
 
@@ -372,6 +395,7 @@ function(oa_configure_lisp_runtime)
   set(oa_quiet_flags       "${_quiet_flags}"      PARENT_SCOPE)
   set(oa_eval_flags        "${_eval_flags}"       PARENT_SCOPE)
   set(oa_optimize_options  "${_optimize_options}"  PARENT_SCOPE)
+  set(oa_gcl_cc_flags      "${_gcl_cc_flags}"      PARENT_SCOPE)
 
   # FFI type names (substituted into core.lisp.in).
   set(void_type    "${_void_type}"    PARENT_SCOPE)
