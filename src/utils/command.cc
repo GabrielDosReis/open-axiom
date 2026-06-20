@@ -483,8 +483,8 @@ execute_core(const Command* command, Driver driver)
       command_line_length += 1  /* blank char as separator */
 	 + 2			/* quotes around every argument.  */
          + strlen(command->rt_args[i]); /* room for each argument */
-   /* Don't forget room for the doubledash string.  */
-   command_line_length += sizeof("--") - 1;
+   /* Don't forget room for the separating blank and the doubledash string.  */
+   command_line_length += 1 + sizeof("--") - 1;
    /* And arguments to the actual command.  */
    for (i = 1; i < command->core.argc; ++i)
       command_line_length += 1 + 2 + strlen(command->core.argv[i]);

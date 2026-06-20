@@ -208,7 +208,7 @@ writeablep(const char* path)
       // -- The file does not exist, so check to see if the directory is writable.
       auto dir = oa_dirname(path);
       auto result = axiom_has_write_access(dir);
-      LocalFree(dir);
+      free(dir);
       return result ? 2 : -1;
    }
    return (attributes & FILE_ATTRIBUTE_READONLY) ? 0 : 1;
