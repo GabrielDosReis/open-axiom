@@ -19,11 +19,23 @@ file(STRINGS "${CMDFILE}" _lines)
 list(GET _lines 0 _prog)
 list(REMOVE_AT _lines 0)
 
-execute_process(
-  COMMAND "${_prog}" ${_lines}
-  WORKING_DIRECTORY "${WORKDIR}"
-  RESULT_VARIABLE _rc
-)
+# STDINFILE (optional) is fed to the command as standard input.  GCL's
+# compiler::link image build reads its link form this way (mirroring the
+# Autotools `| ./base-lisp`).
+if(STDINFILE)
+  execute_process(
+    COMMAND "${_prog}" ${_lines}
+    WORKING_DIRECTORY "${WORKDIR}"
+    INPUT_FILE "${STDINFILE}"
+    RESULT_VARIABLE _rc
+  )
+else()
+  execute_process(
+    COMMAND "${_prog}" ${_lines}
+    WORKING_DIRECTORY "${WORKDIR}"
+    RESULT_VARIABLE _rc
+  )
+endif()
 if(NOT _rc EQUAL 0)
   message(FATAL_ERROR "Command failed with exit code ${_rc}")
 endif()
