@@ -58,6 +58,12 @@ FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
 ifeq (@oa_lisp_flavor@,ecl)
 base_lisp_objects = ("core.$(LNKEXT)")
 oa_base_lisp_linkset = $(oa_target_lispdir)/linkset
+else ifeq (@oa_lisp_flavor@,gaia)
+## Gaia links a standalone image from compiled FASLs, so the base image
+## must include the core runtime FASL explicitly, and images derived from
+## it pick up that FASL through the base link set, just as for ECL.
+base_lisp_objects = ("core.$(FASLEXT)")
+oa_base_lisp_linkset = $(oa_target_lispdir)/linkset
 else
 base_lisp_objects = nil
 oa_base_lisp_linkset =

@@ -1092,6 +1092,13 @@
 ;; this point.  You have been warned.
 (defun |link| (core-image lisp-files 
 			  &optional (entry-point nil) (prologue nil))
+  ;; Most back-ends load every contributing module into the linking image
+  ;; before saving it, so the entry point's package already exists here and the
+  ;; name may be read into a symbol now.  Gaia instead links a fresh executable
+  ;; WITHOUT loading the modules, so the entry point's package does not exist in
+  ;; the linking image; its builder accepts the name as a string and resolves it
+  ;; at image-load time, once the modules have created their packages.
+  #-:gaia
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
   #-(or :ecl :gaia) 
@@ -1101,13 +1108,20 @@
     (|saveCore| core-image entry-point))
   #+:gaia
   (progn
-    ;; Gaia links a fresh executable from the supplied FASLs, so resolve
-    ;; the entry-point suspension before handing it to the builder.
-    (when (consp entry-point)
-      (setq entry-point (apply (car entry-point) (cdr entry-point))))
-    (gaia:build-program core-image
-                        :fasls lisp-files
-                        :entry-point entry-point)
+    ;; Gaia evaluates the :init source at image startup, before it calls the
+    ;; entry point.  Use it to mark the image as carrying the base Lisp -- so
+    ;; complete-fasl-list-for-link prepends the core run-time to any image
+    ;; derived from this one -- and to run the prologue.  The marker is literal
+    ;; text; only the prologue, which arrives here already read into a form, is
+    ;; rendered back to source.
+    (let ((init "(pushnew :open-axiom-base-lisp *features*)"))
+      (when prologue
+        (setq init (concatenate 'string init (string #\Newline)
+                                (prin1-to-string prologue))))
+      (gaia:build-program core-image
+                          :fasls (complete-fasl-list-for-link lisp-files)
+                          :entry-point entry-point
+                          :init init))
     (|coreQuit|))
   #+:ecl 
   (let* ((compiler::*ld* oa-cxx)

@@ -78,10 +78,15 @@ bemol_LDADD = \
 	$(oa_target_libdir)/libopen-axiom-core.a
 
 oa_target_bootdir = $(oa_targetdir)/boot
-if OA_ECL_RT
+# The bootsys linkset lets downstream images (such as interpsys) include the
+# boot FASLs.  It is needed by the back-ends that build a program by linking
+# FASLs -- ECL and Gaia -- but not by those that dump a running image.
+ifeq (@oa_lisp_flavor@,ecl)
+oa_bootsys_linkset = $(oa_target_bootdir)/linkset
+else ifeq (@oa_lisp_flavor@,gaia)
 oa_bootsys_linkset = $(oa_target_bootdir)/linkset
 else
-oa_bootsys_linkset = 
+oa_bootsys_linkset =
 endif
 
 bootsys_DEPENDENCIES = stage2/bootsys$(EXEEXT) $(oa_bootsys_linkset)
