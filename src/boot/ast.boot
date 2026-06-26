@@ -1577,10 +1577,29 @@ bootSymbol s ==
 unknownNativeTypeError t ==
   fatalError strconc('"unsupported native type: ", PNAME t)
 
+++ Map a simple Boot native type to its Gaia FFI keyword designator.
+gaiaNativeType t ==
+  t is "void" => bfInert '"VOID"
+  t is "char" => bfInert '"CHAR8"
+  t in '(byte uint8) => bfInert '"UINT8"
+  t is "int8" => bfInert '"INT8"
+  t is "int16" => bfInert '"INT16"
+  t is "uint16" => bfInert '"UINT16"
+  t in '(int int32) => bfInert '"INT32"
+  t is "uint32" => bfInert '"UINT32"
+  t is "int64" => bfInert '"INT64"
+  t is "uint64" => bfInert '"UINT64"
+  t in '(float float32) => bfInert '"FLOAT32"
+  t in '(double float64) => bfInert '"FLOAT64"
+  t is "pointer" => bfInert '"POINTER"
+  t is "string" => bfInert '"POINTER"
+  unknownNativeTypeError t
+
 
 nativeType t ==
   t = nil => t
   t isnt [.,:.] =>
+    %hasFeature bfInert '"GAIA" => gaiaNativeType t
     t' := rest objectAssoc(coreSymbol t,$NativeTypeTable) => 
       t' := 
 	%hasFeature bfInert '"SBCL" => bfColonColon("SB-ALIEN", t')
@@ -1651,6 +1670,7 @@ nativeType t ==
     unknownNativeTypeError t
   -- composite, reference type.
   first t is "buffer" =>
+    %hasFeature bfInert '"GAIA" => bfInert '"POINTER"
     %hasFeature bfInert '"GCL" => "OBJECT"
     %hasFeature bfInert '"ECL" => bfInert '"OBJECT"
     %hasFeature bfInert '"SBCL" => ["*",nativeType second t]
@@ -1716,9 +1736,10 @@ needsStableReference? t ==
 ++ coerce argument `a' to native type `t', in preparation for
 ++ a call to a native functions.
 coerceToNativeType(a,t) ==
-  -- GCL, ECL, CLISP, and CLOZURE don't do it this way.
+  -- GCL, ECL, CLISP, CLOZURE, and Gaia don't do it this way.
   %hasFeature bfInert '"GCL" or %hasFeature bfInert '"ECL"
-     or %hasFeature bfInert '"CLISP" or %hasFeature bfInert '"CLOZURE" => a
+     or %hasFeature bfInert '"CLISP" or %hasFeature bfInert '"CLOZURE" 
+       or %hasFeature bfInert '"GAIA" => a
   %hasFeature bfInert '"SBCL" =>
     not needsStableReference? t => a
     [.,[c,y]] := t
@@ -2132,6 +2153,51 @@ genCLOZUREnativeTranslation(op,s,t,op',release) ==
   -- Finally, return the definition form
   [["DEFUN", op, parms, call]]
 
+++ Build the lazily-prepared Gaia foreign call form bound to `cache'.  The C
+++ symbol `cname' is resolved from the process-global scope (a NIL library),
+++ which works once the runtime core has been loaded with global visibility.
+gaiaPreparedCall(cache,cname,ret,args) ==
+  ["OR", cache,
+    ["SETQ", cache,
+      [bfColonColon("GAIA","PREPARE-FOREIGN-CALL"),
+        [bfColonColon("GAIA","LOOKUP-FOREIGN-SYMBOL"), nil, cname],
+        [bfColonColon("GAIA","MAKE-FOREIGN-SIGNATURE"),
+          bfInert '"RETURNS", ret,
+          bfInert '"ARGS", ["QUOTE", args]]]]]
+
+++ Generate Gaia's equivalent of an import declaration.  Each import becomes a
+++ wrapper DEFUN over the CFFI-style prepared-call substrate, with the prepared
+++ call cached in a module-level special variable so the symbol lookup and
+++ signature construction happen once.  A `string' return is decoded into a
+++ fresh Lisp string; an owned result (`release') is freed under an
+++ unwind-protect, and a nullable result (a `%Maybe') maps a null pointer to NIL.
+genGAIAnativeTranslation(op,s,t,op',release) ==
+  argtypes := [nativeArgumentType x for x in s]
+  parms := [gensym() for x in s]
+  prepCache := makeSymbol strconc(symbolName op, '"%gaia-prepared")
+  retIsString := maybeBaseType t = "string"
+  sigRet :=
+    retIsString => bfInert '"POINTER"
+    nativeReturnType t
+  callForm := [bfColonColon("GAIA","FOREIGN-CALL"),
+                 gaiaPreparedCall(prepCache,symbolName op',sigRet,argtypes), :parms]
+  not retIsString =>
+    [["DEFPARAMETER",prepCache,nil], ["DEFUN",op,parms,callForm]]
+  p := gensym()
+  body := [bfColonColon("GAIA","FOREIGN-STRING-TO-LISP"), p]
+  relCache := nil
+  if release ~= nil then
+    relCache := makeSymbol strconc(symbolName op, '"%gaia-release")
+    body := ["UNWIND-PROTECT", body,
+               [bfColonColon("GAIA","FOREIGN-CALL"),
+                  gaiaPreparedCall(relCache,symbolName release,bfInert '"VOID",[bfInert '"POINTER"]), p]]
+  if maybeType? t then
+    body := ["IF", [bfColonColon("GAIA","NULL-POINTER-P"), p], nil, body]
+  defun := ["DEFUN", op, parms, ["LET", [[p, callForm]], body]]
+  release ~= nil =>
+    [["DEFPARAMETER",prepCache,nil], ["DEFPARAMETER",relCache,nil], defun]
+  [["DEFPARAMETER",prepCache,nil], defun]
+
 ++ List of foreign function symbols defined in this module.
 $ffs := nil
   
@@ -2161,4 +2227,5 @@ genImportDeclaration(op, sig, props) ==
   %hasFeature bfInert '"CLISP" => genCLISPnativeTranslation(op,s,t,op',release)
   %hasFeature bfInert '"ECL" => genECLnativeTranslation(op,s,t,op',release)
   %hasFeature bfInert '"CLOZURE" => genCLOZUREnativeTranslation(op,s,t,op',release)
+  %hasFeature bfInert '"GAIA" => genGAIAnativeTranslation(op,s,t,op',release)
   fatalError '"import declaration not implemented for this Lisp"
