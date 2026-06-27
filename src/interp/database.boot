@@ -98,6 +98,7 @@ getConstructorAbbreviationFromDB ctor ==
 
 getConstructorCategory: %Symbol -> %Form
 getConstructorCategory ctor ==
+  null constructorDB ctor => nil
   getConstructorKindFromDB ctor = 'category =>
     db := constructorDB ctor
     if not dbBeingDefined? db and dbCategory db isnt [.,:.] then
@@ -113,7 +114,7 @@ getConstructorKindFromDB ctor ==
 getConstructorAncestorsFromDB: %Symbol -> %List %Pair(%Instantiation,%Code)
 getConstructorAncestorsFromDB ctor ==
   builtinConstructor? ctor => nil   -- FIXME: catch at cal sites.
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbAncestors db isnt [.,:.] then
     loadDBIfNecessary db
   dbAncestors db
@@ -122,7 +123,7 @@ getConstructorAncestorsFromDB ctor ==
 ++ of the constructor `form'. 
 getConstructorModemap: %Symbol -> %Mode
 getConstructorModemap ctor ==
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbConstructorModemap db isnt [.,:.] then
     loadDBIfNecessary db
   dbConstructorModemap db
@@ -157,7 +158,7 @@ getConstructorDocumentationFromDB ctor ==
 
 getConstructorOperationsFromDB: %Symbol -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbOperations db isnt [.,:.] then
     loadDBIfNecessary db
   dbOperations db
@@ -170,20 +171,20 @@ getConstructorFullNameFromDB ctor ==
 ++ parameter type at the corresponding position is a category.
 getDualSignature: %Symbol -> %Form
 getDualSignature ctor ==
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbDualSignature db isnt [.,:.] then
     loadDBIfNecessary db
   dbDualSignature db
 
 getConstructorPredicates: %Symbol -> %List %Thing
 getConstructorPredicates ctor ==
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   dbBeingDefined? db => dbPredicates db
   dbPredicates loadDBIfNecessary db
 
 getConstructorParentsFromDB: %Symbol -> %Alist(%Instantiation,%Code)
 getConstructorParentsFromDB ctor ==
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbPrincipals db isnt [.,:.] then
     loadDBIfNecessary db
   dbPrincipals db
@@ -191,7 +192,7 @@ getConstructorParentsFromDB ctor ==
 getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==
   builtinConstructor? ctor => nil
-  db := constructorDB ctor
+  db := constructorDB ctor or return nil
   if not dbBeingDefined? db and dbSuperDomain db isnt [.,:.] then
     loadDBIfNecessary db
   dbSuperDomain db
