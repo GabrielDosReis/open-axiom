@@ -1169,7 +1169,7 @@
 		 (system::%primitive header-ref func
 				     system::%function-name-slot))
 		('else func)))
-  #+(or :SBCL :clisp :ecl :clozure) (if (symbolp func)
+  #+(or :SBCL :clisp :ecl :clozure :gaia) (if (symbolp func)
 			       func
 			     (multiple-value-bind (l c n)
                                  (function-lambda-expression func)

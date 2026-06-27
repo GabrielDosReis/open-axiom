@@ -338,7 +338,10 @@
 ; have category y?". this is answered by constructing a pair of
 ; (x . y) and doing an equal hash into this table.
 
-(defvar *operation-hash* nil
+; On Gaia the table can be consulted before the explicit
+; (setq *operation-hash* (make-hash-table)) initializers below run, so
+; default it to an empty table there; the other back-ends start from NIL.
+(defvar *operation-hash* #+:gaia (make-hash-table) #-:gaia nil
   "given an operation name, what are its modemaps?")
 
 (defvar *miss* nil
