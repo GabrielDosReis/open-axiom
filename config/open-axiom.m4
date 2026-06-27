@@ -228,7 +228,7 @@ dnl should be delayed to runtime.  This is needed for Lisp
 dnl systems that have trouble with DLLs.
 AC_DEFUN([OPENAXIOM_CHECK_DELAYED_FFI], [
 case ${oa_lisp_flavor},$host in
-  sbcl,* | clozure,* | clisp,*) 
+  sbcl,* | clozure,* | clisp,* | gaia,*) 
      oa_delay_ffi=yes
      ;;
   *)
@@ -620,6 +620,18 @@ case $oa_lisp_flavor in
       # Clozure CL wants you to deal with your own mess
       string_type=':address'
       pointer_type=':address'
+      ;;
+   gaia)
+      # Gaia's foreign interface speaks in keyword type designators.
+      void_type=':void'
+      char_type=':char8'
+      int_type=':int32'
+      float_type=':float32'
+      double_type=':float64'
+      # A C string crosses the ABI as a raw pointer; the foreign-call
+      # wrappers marshal Lisp strings to and from that pointer.
+      string_type=':pointer'
+      pointer_type=':pointer'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])

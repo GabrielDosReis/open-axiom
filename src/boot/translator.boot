@@ -50,6 +50,10 @@ $currentModuleName := nil
 ++ List of foreign load units mentioned in foreign imports.
 $foreignLoadUnits := []
 
+++ Foreign library handles opened for Gaia, retained so their symbols stay
+++ resolvable (and the shared objects stay loaded) for the program's lifetime.
+$gaiaForeignLibraries := []
+
 ++ Stack of foreign definitions to cope with CLisp's odd FFI interface.
 $foreignsDefsForCLisp := []
 
@@ -630,6 +634,9 @@ loadNativeModule(m,:dir) ==
     EVAL [bfColonColon("FFI","LOAD-FOREIGN-LIBRARY"), m]
   %hasFeature bfInert '"CLOZURE" =>
     EVAL [bfColonColon("CCL","OPEN-SHARED-LIBRARY"), m]
+  %hasFeature bfInert '"GAIA" =>
+    $gaiaForeignLibraries :=
+      [apply(bfColonColon("GAIA","OPEN-FOREIGN-LIBRARY"),[m]),:$gaiaForeignLibraries]
   coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==
