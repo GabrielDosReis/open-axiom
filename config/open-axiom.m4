@@ -212,6 +212,7 @@ fi
 AC_MSG_RESULT([$oa_lisp_flavor])
 AM_CONDITIONAL([OA_ECL_RT],[test $oa_lisp_flavor = ecl])
 AM_CONDITIONAL([OA_GCL_RT],[test $oa_lisp_flavor = gcl])
+AM_CONDITIONAL([OA_GAIA_RT],[test $oa_lisp_flavor = gaia])
 AM_CONDITIONAL([OA_STANDARD_LINKING],[test $oa_standard_linking = yes])
 
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
@@ -359,8 +360,15 @@ esac
 ## before we proceed to infer other host datatype properties.
 if test -n "$oa_host_lisp_precision"; then
    if test $oa_cxx_compiler_lineage = gnu; then
-     CPPFLAGS="$CPPFLAGS -m$oa_host_lisp_precision"
-     LDFLAGS="$LDFLAGS -m$oa_host_lisp_precision"
+     ## The -m32/-m64 ABI selectors are specific to the x86 family.
+     ## Other architectures (e.g. aarch64) do not recognize them and
+     ## would fail to compile, so only emit them on x86 hosts.
+     case $host in
+        i?86-*|x86_64-*|amd64-*)
+           CPPFLAGS="$CPPFLAGS -m$oa_host_lisp_precision"
+           LDFLAGS="$LDFLAGS -m$oa_host_lisp_precision"
+           ;;
+     esac
    ## else, cross fingers and pray.
    fi
 fi
