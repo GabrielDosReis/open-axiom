@@ -58,9 +58,14 @@ LISP_LINK = \
 
 # We use a noinst_ primary because we take care of installation
 # procedure ourselves.
-noinst_PROGRAMS = bootsys bemol
+# bootsys is produced by the explicit stage rules below (the Gaia/ECL
+# back-ends link FASLs into the image), not by automake's C link rule,
+# so it must not be a noinst_PROGRAMS entry -- otherwise automake emits a
+# 'cc -o bootsys' rule with no objects that fails.
+noinst_PROGRAMS = bemol
+EXTRA_DIST = $(bootsys_boot)
 
-bootsys_SOURCES = \
+bootsys_boot = \
 	utility.boot \
 	tokens.boot \
 	includer.boot \
@@ -81,23 +86,23 @@ oa_target_bootdir = $(oa_targetdir)/boot
 # The bootsys linkset lets downstream images (such as interpsys) include the
 # boot FASLs.  It is needed by the back-ends that build a program by linking
 # FASLs -- ECL and Gaia -- but not by those that dump a running image.
-ifeq (@oa_lisp_flavor@,ecl)
+if OA_ECL_RT
 oa_bootsys_linkset = $(oa_target_bootdir)/linkset
-else ifeq (@oa_lisp_flavor@,gaia)
+else
+if OA_GAIA_RT
 oa_bootsys_linkset = $(oa_target_bootdir)/linkset
 else
 oa_bootsys_linkset =
 endif
-
-bootsys_DEPENDENCIES = stage2/bootsys$(EXEEXT) $(oa_bootsys_linkset)
+endif
 
 # FASLs that comprises `bootsys'
-bootsys_clisp = $(bootsys_SOURCES:.boot=.clisp)
-bootsys_objects = $(bootsys_SOURCES:.boot=.$(LNKEXT))
+bootsys_clisp = $(bootsys_boot:.boot=.clisp)
+bootsys_objects = $(bootsys_boot:.boot=.$(LNKEXT))
 
 # Garbage produced by GCL during compilation
-bootsys_data = $(bootsys_SOURCES:.boot=.data)
-bootsys_fn = $(bootsys_SOURCES:.boot=.fn)
+bootsys_data = $(bootsys_boot:.boot=.data)
+bootsys_fn = $(bootsys_boot:.boot=.fn)
 
 STAMP = touch
 
