@@ -297,7 +297,7 @@ consProplistOf(var,proplist,prop,val) ==
   [[prop,:val],:proplist]
  
 warnLiteral x ==
-  stackWarning('"%1b is BOTH a variable a literal",[x])
+  stackWarning('"%1b is BOTH a variable and a literal",[x])
  
 intersectionEnvironment(e,e') ==
   ce:= makeCommonEnvironment(e,e')

@@ -644,7 +644,7 @@ vectorLocation(db,op,sig,kind) ==
 -----------------------------SLOT1 DATABASE------------------------------------
 
 NRTputInLocalReferences(db,bod) ==
-  ident? bod and (k := assocIndex(db,dom)) => ['%tref,'$,k]
+  ident? bod and (k := assocIndex(db,bod)) => ['%tref,'$,k]
   do
     bod isnt [.,:.] => nil
     bod is ['SPADCALL,:.] =>
