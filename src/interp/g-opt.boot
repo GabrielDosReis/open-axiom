@@ -152,7 +152,7 @@ changeVariableDefinitionToStore(form,vars) ==
 ++ Return true if `x' contains control transfer to a point outside itself.
 jumpToToplevel? x ==
   atomic? x => false
-  abstraction? x or op is '%closure => false
+  abstraction? x or x.op is '%closure => false
   op := x.op
   op is '%seq => CONTAINED('%leave,x.args) -- FIXME: what about GO?
   op in '(%exit %leave) => true
@@ -630,7 +630,7 @@ $VMsideEffectFreeOperators ==
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
     %ilength %ibit %icst0 %icst1 %icstmin %icstmax
     %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-    %idec %irem %iquo %idivide %idec %irandom %imulmod %iaddmod %isubmod
+    %idec %irem %iquo %idivide %irandom %imulmod %iaddmod %isubmod
     %ilshift %irshift %ibigrandom
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
@@ -652,7 +652,7 @@ $VMsideEffectFreeOperators ==
     %initialElement %initialContents
     %vector %aref %vref %vlength %vcopy
     %bitvector
-    %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
+    %bitvecnot %bitvecand %bitvecnand %bitvecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
     %before? %equal %sptreq %ident? %property %tref
     %void %retract %pullback %lambda %closure %external
@@ -915,7 +915,7 @@ optIadd(x is ['%iadd,a,b]) ==
     x
   integer? b =>
     b = 0 => a
-    a is [op,a1,a2] and op in '('%iadd %isub) =>
+    a is [op,a1,a2] and op in '(%iadd %isub) =>
       integer? a1 => simplifyVMForm [op,['%iadd,a1,b],a2]
       integer? a2 => simplifyVMForm ['%iadd,a1,[op,b,a2]]
       x
