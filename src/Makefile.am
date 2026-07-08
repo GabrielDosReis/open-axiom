@@ -125,7 +125,7 @@ all-algebra: all-driver all-interpsys all-share all-hyper-pre
 
 .PHONY: all-algstrap
 all-algstrap: all-driver all-interpsys
-	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
+	cd algebra && $(MAKE) -f Makefile -f extract.mk  $(AM_MAKEFLAGS) $@
 
 .PHONY: all-layer-%
 all-layer-%: all-driver all-interpsys
