@@ -1042,10 +1042,23 @@
 (defparameter |$sysOpts| nil)
 (defparameter |$sysArgs| nil)
 
+;; Parse the command line into $sysOpts/$sysArgs on first demand.  A saved
+;; image may query system options during load-time initialization -- e.g.
+;; systemRootDirectory, reached from build-interpsys on systems that delay FFI
+;; to run time -- before topLevel has parsed the command line.  The command-line
+;; arguments are already available at that point, so parse and memoize them here
+;; so the system root and other options resolve correctly whenever first needed.
+(defun |%ensureSystemOptionsParsed| ()
+  (when (null |$sysOpts|)
+    (multiple-value-setq (|$sysOpts| |$sysArgs|)
+      (|processCommandLine| (cdr (|getCommandLineArguments|)) nil nil))))
+
 (defun |%systemOptions| ()
+  (|%ensureSystemOptionsParsed|)
   |$sysOpts|)
 
 (defun |%systemArguments| ()
+  (|%ensureSystemOptionsParsed|)
   |$sysArgs|)
 
 ;; 
