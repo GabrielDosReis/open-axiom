@@ -541,6 +541,16 @@ bottomUpForm2(t,op,opName,argl,argModeSetList) ==
 
   lookForIt and (u := bottomUpFormTuple(t, op, opName, argl, argModeSetList)) => u
 
+  -- A one-argument SEGMENT `l..` denotes a half-open UniversalSegment(T),
+  -- where T is the type of l.  The library modemap does not tie that result
+  -- element type to the argument type, so with no target from the surrounding
+  -- context the segment type cannot be inferred and selection fails.  Default
+  -- it from the already-analyzed argument type here, exactly as an explicit
+  -- `@ UniversalSegment(T)` or a typed declaration would supply.
+  if opName = "SEGMENT" and argl is [.] and getTarget op = nil and
+    argModeSetList is [[segArgMode]] and segArgMode ~= nil then
+      putTarget(op, ['UniversalSegment, segArgMode])
+
   -- opName can change in the call to selectMms
 
   (lookForIt and (mmS := selectMms(op,argl,getTarget op))) and
