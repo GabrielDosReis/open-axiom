@@ -385,7 +385,7 @@ tuple2List l ==
     ["cons",postTran a,tuple2List l']
   nil
 
-SEGMENT: %ParseTree -> %ParseForm
+SEGMENT: (%ParseTree, %ParseTree) -> %ParseForm
 SEGMENT(a,b) == 
   [i for i in a..b]
 
