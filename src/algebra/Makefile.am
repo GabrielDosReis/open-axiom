@@ -2401,7 +2401,7 @@ strap-2/REPDB.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
 
 strap-2/INTFACT.$(FASLEXT): strap-1/INT.$(FASLEXT)
 
-strap-2/COMBINAT.$(FASLEXT): strap-1/INT.$(FASLEXT)
+strap-2/COMBINAT.$(FASLEXT): strap-1/INT.$(FASLEXT) strap-1/IFARRAY.$(FASLEXT)
 
 strap-2/PMINS.$(FASLEXT): strap-1/INT.$(FASLEXT)
 
