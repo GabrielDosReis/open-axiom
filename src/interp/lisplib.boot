@@ -234,7 +234,7 @@ dbLocateModule db ==
 ++ Error if the file container of the module does not exist.
 findModule db ==
   dbLocateModule db
-    or systemError ['"missing module for ",:bright dbConstructor db]
+    or systemError ['"missing module for ",:bright dbConstructor db, '"needed by", :bright $functorForm.op]
  
 loadLibIfNotLoaded libName ==
   -- loads is library is not already loaded

@@ -1113,7 +1113,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
     sargl := take(# form.args, $TriangleVariableList)
-    $functorForm:= $form:= [$op,:sargl]
+    $functorForm:local := $form := [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     formalBody := dbSubstituteFormals(db,body)
     signature' := dbSubstituteFormals(db,signature')
