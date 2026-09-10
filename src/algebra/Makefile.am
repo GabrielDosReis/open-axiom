@@ -110,7 +110,7 @@ oa_bootstrap_ctors = \
   BOOLE BOOLE- PROPLOG PROPLOG- LLINSET LLINSET- RLINSET RLINSET- \
   LINSET LINSET- SGROUP SGROUP- ABELSG ABELSG- MONOID MONOID- \
   ABELMON ABELMON- CABMON CABMON- OCAMON OCAMON- OAMON OAMON- \
-  OASGP OASGP- ABELGRP ABELGRP- OAGROUP OAGROUP- RNG RNG- \
+  OASGP OASGP- ABELGRP ABELGRP- OAGROUP OAGROUP- RNG RNG- UDPO \
   LMODULE LMODULE- RMODULE RMODULE- BMODULE BMODULE- SRING SRING- \
   RING RING- DIOID DIOID- ORDRING ORDRING- COMRING COMRING- \
   MODULE MODULE- INTDOM INTDOM- GCDDOM GCDDOM- ENTIRER ENTIRER- \
@@ -1161,7 +1161,7 @@ $(OUT)/PAIR.$(FASLEXT): strap-2/KOERCE.$(FASLEXT)
 # were (necessarily) incomplete.
 
 strap-1/FUNCTOR.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
-strap-1/RETRACT.$(FASLEXT): strap-1/KRCFROM.$(FASLEXT) \
+strap-1/RETRACT.$(FASLEXT): strap-1/KRCFROM.$(FASLEXT)
 
 strap-1/COLOR.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/ABELSG.$(FASLEXT) \
 	strap-0/INT.$(FASLEXT) strap-0/DFLOAT.$(FASLEXT) strap-0/PI.$(FASLEXT)
@@ -2440,7 +2440,7 @@ strap-2/FLASORT.$(FASLEXT): strap-1/FLINEXP.$(FASLEXT)
 strap-2/STREAM2.$(FASLEXT): strap-1/STREAM.$(FASLEXT)
 
 strap-2/UDPO.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) \
-	strap-1/LIST.$(FASLEXT)
+	strap-1/LIST.$(FASLEXT) strap-1/VOID.$(FASLEXT)
 
 strap-2/POLYLIFT.$(FASLEXT): strap-1/SUP.$(FASLEXT)
 
@@ -4412,7 +4412,7 @@ $(oa_algebra_layer_22_objects): 21-stamp
 $(oa_algebra_layer_23_objects): 22-stamp
 $(oa_algebra_layer_24_objects): 23-stamp
 
-$(oa_algebra_layer_0_objects): | $(OUT)
+$(oa_algebra_layer_0_objects): all-algstrap | $(OUT)
 $(OUT):
 	$(MKDIR_P) $@
 
